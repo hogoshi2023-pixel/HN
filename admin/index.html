@@ -3,12 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-<script>
-if (window.location.search.includes("recovery_token=")) {
-  window.location.replace("/recovery.html" + window.location.search);
-}
-</script><title>HONG NGUYEN Co. — Login</title>
+  <title>HONG NGUYEN Co. — Login</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='2' y='2' width='32' height='32' fill='%230E2240'/%3E%3Cpath d='M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z' stroke='%23E85D2C' stroke-width='1.5' fill='none'/%3E%3Ctext x='18' y='22' font-family='monospace' font-size='11' font-weight='700' fill='%23E85D2C' text-anchor='middle'%3EHN%3C/text%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,7 +14,6 @@ if (window.location.search.includes("recovery_token=")) {
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
   <div class="max-w-md w-full">
-    <!-- Header -->
     <div class="text-center mb-8">
       <svg width="56" height="56" viewBox="0 0 36 36" fill="none" class="mx-auto mb-3">
         <rect x="2" y="2" width="32" height="32" fill="#1A3358" rx="2"/>
@@ -30,120 +24,104 @@ if (window.location.search.includes("recovery_token=")) {
       <p class="text-slate-400 text-xs font-mono mt-1">宏源新材料 · 后台登录</p>
     </div>
 
-    <!-- Login Card -->
     <div class="bg-white p-8 shadow-2xl">
-      <!-- Status bar showing where we are -->
       <div id="status" class="text-xs font-mono text-gray-400 mb-4">READY</div>
 
-      <!-- LOGIN TAB -->
+      <!-- PASSWORD LOGIN (primary) -->
       <div id="loginPanel">
         <h2 class="text-xl font-bold text-slate-900 mb-1">Sign in</h2>
-        <p class="text-xs text-gray-500 mb-6 font-mono">Use the email and password you set when accepting the invite</p>
+        <p class="text-xs text-gray-500 mb-6 font-mono">Enter the admin password you set in Netlify env vars</p>
 
         <form id="loginForm" class="space-y-4">
           <div>
-            <label class="block text-xs font-mono text-gray-500 mb-1.5">EMAIL</label>
-            <input type="email" id="loginEmail" required placeholder="hogoshi2023@gmail.com"
+            <label class="block text-xs font-mono text-gray-500 mb-1.5">ADMIN PASSWORD</label>
+            <input type="password" id="loginPassword" required minlength="1" autocomplete="current-password" placeholder="The password you set in Netlify"
                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
           </div>
-          <div>
-            <label class="block text-xs font-mono text-gray-500 mb-1.5">PASSWORD</label>
-            <input type="password" id="loginPassword" required minlength="8" placeholder="At least 8 characters"
-                   class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
-          </div>
-          <div id="loginError" class="hidden text-sm text-orange-600 bg-orange-50 p-3 border border-orange-200"></div>
+          <div id="loginError" class="hidden text-sm text-orange-700 bg-orange-50 p-3 border border-orange-200"></div>
           <button type="submit" id="loginBtn"
                   class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 font-semibold transition">
             Sign in
           </button>
         </form>
 
-        <div class="mt-6 pt-6 border-t border-gray-200 text-center space-y-2">
-          <button onclick="showPanel('resetPanel')" class="text-xs text-orange-600 hover:text-orange-700 underline">
-            Forgot password? Send a reset link
+        <div class="mt-6 pt-6 border-t border-gray-200 space-y-3 text-center text-xs">
+          <button onclick="showPanel('helpPanel')" class="text-orange-600 underline">
+            Where do I set the password?
           </button>
-          <div class="text-xs text-gray-400">
-            Don't have an account? Visit
-            <a href="https://app.netlify.com/projects/hn-paint/identity/users" target="_blank" class="text-orange-600 underline">Identity dashboard</a>
-            to invite yourself
+          <div class="text-gray-400">
+            Or <button onclick="showPanel('identityPanel')" class="text-orange-600 underline">use Identity login (if you previously set it up)</button>
           </div>
         </div>
       </div>
 
-      <!-- RESET PASSWORD TAB -->
-      <div id="resetPanel" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-1">Reset password</h2>
-        <p class="text-xs text-gray-500 mb-6 font-mono">We'll email you a one-time link to set a new password</p>
+      <!-- IDENTITY LOGIN (secondary, may be broken) -->
+      <div id="identityPanel" class="hidden">
+        <h2 class="text-xl font-bold text-slate-900 mb-1">Identity login</h2>
+        <p class="text-xs text-gray-500 mb-6 font-mono">Use email + password from your Netlify Identity invite</p>
 
-        <form id="resetForm" class="space-y-4">
+        <form id="identityForm" class="space-y-4">
           <div>
-            <label class="block text-xs font-mono text-gray-500 mb-1.5">YOUR EMAIL</label>
-            <input type="email" id="resetEmail" required placeholder="hogoshi2023@gmail.com"
+            <label class="block text-xs font-mono text-gray-500 mb-1.5">EMAIL</label>
+            <input type="email" id="identityEmail" required placeholder="hogoshi2023@gmail.com"
                    class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
           </div>
-          <div id="resetError" class="hidden text-sm text-orange-600 bg-orange-50 p-3 border border-orange-200"></div>
-          <div id="resetSuccess" class="hidden text-sm text-green-700 bg-green-50 p-3 border border-green-200">
-            ✓ Reset link sent. Check your inbox (and spam folder).
+          <div>
+            <label class="block text-xs font-mono text-gray-500 mb-1.5">PASSWORD</label>
+            <input type="password" id="identityPassword" required minlength="8" placeholder="At least 8 characters"
+                   class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
           </div>
-          <button type="submit" id="resetBtn"
-                  class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 font-semibold transition">
-            Send reset link
+          <div id="identityError" class="hidden text-sm text-orange-700 bg-orange-50 p-3 border border-orange-200"></div>
+          <div id="identityInfo" class="hidden text-sm text-slate-700 bg-slate-50 p-3 border border-slate-200"></div>
+          <button type="submit" id="identityBtn"
+                  class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3.5 font-semibold transition">
+            Sign in via Identity
           </button>
         </form>
 
-        <div class="mt-6 pt-6 border-t border-gray-200 text-center">
-          <button onclick="showPanel('loginPanel')" class="text-xs text-orange-600 hover:text-orange-700 underline">
-            ← Back to sign in
-          </button>
+        <div class="mt-6 pt-6 border-t border-gray-200 text-center text-xs">
+          <button onclick="requestIdentityRecovery()" class="text-orange-600 underline mr-3">Send password-reset email</button>
+          <button onclick="showPanel('loginPanel')" class="text-orange-600 underline">← Back</button>
         </div>
       </div>
 
-      <!-- HELP TAB -->
+      <!-- SETUP HELP -->
       <div id="helpPanel" class="hidden">
-        <h2 class="text-xl font-bold text-slate-900 mb-1">First-time setup</h2>
+        <h2 class="text-xl font-bold text-slate-900 mb-1">Setup</h2>
         <p class="text-xs text-gray-500 mb-4 font-mono">Backend rewritten 2026-07-06</p>
+
+        <div class="bg-amber-50 border border-amber-200 p-3 mb-4 text-xs text-amber-900">
+          ⚠ <strong>Netlify Identity is currently broken</strong> (shows "user_id must be an UUID" error). Use the password login below.
+        </div>
 
         <ol class="space-y-3 text-sm text-slate-700">
           <li class="flex gap-3">
             <span class="flex-shrink-0 w-6 h-6 bg-orange-600 text-white text-xs font-mono flex items-center justify-center rounded-sm">1</span>
             <div>
-              <strong>Open Identity dashboard</strong>:
-              <a href="https://app.netlify.com/projects/hn-paint/identity/users" target="_blank" class="text-orange-600 underline text-xs block break-all">app.netlify.com/projects/hn-paint/identity/users</a>
+              Open <strong>Netlify env vars</strong>:
+              <a href="https://app.netlify.com/projects/hn-paint/configuration/env" target="_blank" class="text-orange-600 underline text-xs block break-all">app.netlify.com/projects/hn-paint/configuration/env</a>
             </div>
           </li>
           <li class="flex gap-3">
             <span class="flex-shrink-0 w-6 h-6 bg-orange-600 text-white text-xs font-mono flex items-center justify-center rounded-sm">2</span>
             <div>
-              <strong>Delete any old accounts</strong> that might be in a bad state (especially if you tried wrong passwords before).
+              Click <strong>"Add a variable"</strong> and create these:
+              <pre class="bg-slate-900 text-slate-100 p-2 mt-1 text-xs font-mono whitespace-pre">ADMIN_PASSWORD      = YourStrongPassword123!
+ADMIN_JWT_SECRET   = randomstring-at-least-32-chars
+GITHUB_TOKEN       = github_pat_xxx... (the PAT you already have)
+GITHUB_REPO        = hogoshi2023-pixel/HN</pre>
             </div>
           </li>
           <li class="flex gap-3">
             <span class="flex-shrink-0 w-6 h-6 bg-orange-600 text-white text-xs font-mono flex items-center justify-center rounded-sm">3</span>
             <div>
-              Click <strong>"Invite users"</strong> → enter your email → Send.
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-600 text-white text-xs font-mono flex items-center justify-center rounded-sm">4</span>
-            <div>
-              Open the invite email → click the link → <strong>set a new password</strong> (≥8 chars).
-            </div>
-          </li>
-          <li class="flex gap-3">
-            <span class="flex-shrink-0 w-6 h-6 bg-orange-600 text-white text-xs font-mono flex items-center justify-center rounded-sm">5</span>
-            <div>
-              Come back here → log in with your email + the password you just set.
+              Wait 30 seconds for env vars to apply → come back here → sign in with <code class="bg-gray-100 px-1">YourStrongPassword123!</code>
             </div>
           </li>
         </ol>
 
-        <div class="mt-6 pt-6 border-t border-gray-200 text-center space-y-2">
-          <button onclick="showPanel('loginPanel')" class="text-xs text-orange-600 hover:text-orange-700 underline">
-            ← Back to sign in
-          </button>
-          <div class="text-xs text-gray-400">
-            Trouble? Email <a href="mailto:hogoshi2023@gmail.com" class="text-orange-600 underline">hogoshi2023@gmail.com</a>
-          </div>
+        <div class="mt-6 pt-6 border-t border-gray-200 text-center text-xs">
+          <button onclick="showPanel('loginPanel')" class="text-orange-600 underline">← Back to login</button>
         </div>
       </div>
 
@@ -159,13 +137,10 @@ if (window.location.search.includes("recovery_token=")) {
     <div class="text-center mt-6 space-x-4 text-xs">
       <a href="/en/" class="text-gray-500 hover:text-gray-300">View EN site</a>
       <a href="/zh/" class="text-gray-500 hover:text-gray-300">中文站</a>
-      <button onclick="showPanel('helpPanel')" class="text-gray-500 hover:text-gray-300 underline">Setup help</button>
     </div>
   </div>
 
   <script>
-  const SITE = 'https://hn-paint.netlify.app';
-
   function log(msg) {
     const el = document.getElementById('status');
     if (el) el.textContent = msg;
@@ -173,7 +148,7 @@ if (window.location.search.includes("recovery_token=")) {
   }
 
   function showPanel(id) {
-    ['loginPanel', 'resetPanel', 'helpPanel', 'authenticatedPanel'].forEach(p => {
+    ['loginPanel', 'identityPanel', 'helpPanel', 'authenticatedPanel'].forEach(p => {
       const el = document.getElementById(p);
       if (el) el.classList.add('hidden');
     });
@@ -189,108 +164,95 @@ if (window.location.search.includes("recovery_token=")) {
   }
 
   function hideError(targetId) {
-    const el = document.getElementById(targetId);
-    el.classList.add('hidden');
+    document.getElementById(targetId).classList.add('hidden');
   }
 
-  async function login(email, password) {
-    log('LOGIN attempt for ' + email);
+  async function passwordLogin(pwd) {
+    const r = await fetch('/.netlify/functions/auth-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const text = await r.text();
+    let body; try { body = JSON.parse(text); } catch { body = { error: text }; }
+    if (!r.ok) throw new Error(body.error || ('HTTP ' + r.status));
+    sessionStorage.setItem('hn_id_token', body.token);
+    sessionStorage.setItem('hn_id_email', body.email);
+    sessionStorage.setItem('hn_auth_kind', 'custom');
+    return body;
+  }
+
+  async function identityLogin(email, password) {
     const r = await fetch('/.netlify/identity/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
     const text = await r.text();
-    let body;
-    try { body = JSON.parse(text); } catch (e) { body = { raw: text }; }
-    if (!r.ok) {
-      throw new Error(body.msg || body.message || body.error_description || ('HTTP ' + r.status));
-    }
-    // body should include { token, id, email }
-    log('LOGIN ok, token len=' + (body.token || '').length);
+    let body; try { body = JSON.parse(text); } catch { body = { msg: text }; }
+    if (!r.ok) throw new Error(body.msg || body.message || ('HTTP ' + r.status));
     sessionStorage.setItem('hn_id_token', body.token);
     sessionStorage.setItem('hn_id_email', body.email);
+    sessionStorage.setItem('hn_auth_kind', 'identity');
     return body;
   }
 
-  async function requestRecovery(email) {
-    log('REQUEST recovery for ' + email);
-    const r = await fetch('/.netlify/identity/recover', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    const text = await r.text();
-    if (!r.ok) {
-      // /recover may return 200 with { recovery_token } even for unknown users
-      let body; try { body = JSON.parse(text); } catch (e) { body = {}; }
-      if (r.status === 404 || (body.msg && body.msg.includes('not found'))) {
-        // Try /request-password-recover as fallback
-        const r2 = await fetch('/.netlify/identity/request-password-recover', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        if (!r2.ok) {
-          const t2 = await r2.text();
-          let b2; try { b2 = JSON.parse(t2); } catch (e) { b2 = {}; }
-          throw new Error(b2.msg || b2.message || ('HTTP ' + r2.status));
-        }
-        return;
-      }
-      throw new Error(body.msg || body.message || ('HTTP ' + r.status));
+  async function requestIdentityRecovery() {
+    const email = document.getElementById('identityEmail').value.trim();
+    if (!email) { showError('identityError', 'Enter your email above first.'); return; }
+    const info = document.getElementById('identityInfo');
+    info.textContent = 'Sending…'; info.classList.remove('hidden');
+    try {
+      const r = await fetch('/.netlify/identity/recover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      info.textContent = '✓ If that email has an account, a reset link has been sent. Check spam folder.';
+    } catch (e) {
+      info.textContent = 'Network error: ' + e.message;
     }
   }
 
-  // Bind login form
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     hideError('loginError');
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value;
+    const pwd = document.getElementById('loginPassword').value;
     const btn = document.getElementById('loginBtn');
-    btn.disabled = true;
-    btn.textContent = 'Signing in…';
+    btn.disabled = true; btn.textContent = 'Signing in…';
     try {
-      await login(email, password);
+      await passwordLogin(pwd);
       showPanel('authenticatedPanel');
-      setTimeout(() => { window.location.href = '/admin/editor.html'; }, 800);
+      setTimeout(() => { window.location.href = '/admin/editor.html'; }, 600);
     } catch (err) {
       showError('loginError', err.message);
-      btn.disabled = false;
-      btn.textContent = 'Sign in';
+      btn.disabled = false; btn.textContent = 'Sign in';
     }
   });
 
-  // Bind reset form
-  document.getElementById('resetForm').addEventListener('submit', async (e) => {
+  document.getElementById('identityForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    hideError('resetError');
-    document.getElementById('resetSuccess').classList.add('hidden');
-    const email = document.getElementById('resetEmail').value.trim();
-    const btn = document.getElementById('resetBtn');
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
+    hideError('identityError');
+    const email = document.getElementById('identityEmail').value.trim();
+    const pwd = document.getElementById('identityPassword').value;
+    const btn = document.getElementById('identityBtn');
+    btn.disabled = true; btn.textContent = 'Signing in…';
     try {
-      await requestRecovery(email);
-      document.getElementById('resetSuccess').classList.remove('hidden');
-      btn.textContent = 'Sent ✓';
-      log('RESET email sent');
+      await identityLogin(email, pwd);
+      showPanel('authenticatedPanel');
+      setTimeout(() => { window.location.href = '/admin/editor.html'; }, 600);
     } catch (err) {
-      showError('resetError', err.message);
-      btn.disabled = false;
-      btn.textContent = 'Send reset link';
+      showError('identityError', err.message);
+      btn.disabled = false; btn.textContent = 'Sign in via Identity';
     }
   });
 
-  // Check if already authenticated
   (function init() {
-    log('BOOT v2026-07-06');
+    log('BOOT v2026-07-06 build2');
     const existing = sessionStorage.getItem('hn_id_token');
     if (existing) {
-      log('Existing token found, redirecting');
       showPanel('authenticatedPanel');
-      setTimeout(() => { window.location.href = '/admin/editor.html'; }, 500);
+      setTimeout(() => { window.location.href = '/admin/editor.html'; }, 400);
     }
   })();
   </script>
