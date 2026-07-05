@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HONG NGUYEN Co. — Content Editor</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='2' y='2' width='32' height='32' fill='%230E2240'/%3E%3Cpath d='M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z' stroke='%23E85D2C' stroke-width='1.5' fill='none'/%3E%3Ctext x='18' y='22' font-family='monospace' font-size='11' font-weight='700' fill='%23E85D2C' text-anchor='middle'%3EHN%3C/text%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #F4F5F7; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .EasyMDEContainer .CodeMirror { border-radius: 0; border-color: #d1d5db; }
+    .editor-toolbar { border-color: #d1d5db; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Top bar -->
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect x="2" y="2" width="32" height="32" fill="#1A3358" rx="2"/>
+          <path d="M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z" stroke="#E85D2C" stroke-width="1.5" fill="none"/>
+          <text x="18" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#E85D2C" text-anchor="middle">HN</text>
+        </svg>
+        <div>
+          <div class="font-bold text-base">Content Editor</div>
+          <div class="text-xs text-slate-400 font-mono" id="userEmail">loading…</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/en/" target="_blank" class="text-xs text-slate-300 hover:text-white">View site →</a>
+        <button id="logoutBtn" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- Gate: must be authenticated -->
+    <div id="authGate" class="bg-white p-8 border border-gray-200 text-center">
+      <div class="text-slate-400 font-mono text-sm">Checking session…</div>
+    </div>
+
+    <!-- Editor (shown when authenticated) -->
+    <div id="editorRoot" class="hidden">
+      <div class="grid lg:grid-cols-12 gap-6">
+        <!-- LEFT: file list -->
+        <aside class="lg:col-span-4 bg-white border border-gray-200">
+          <div class="p-4 border-b border-gray-200">
+            <div class="text-xs font-mono text-gray-500 mb-2">SECTION</div>
+            <select id="sectionSelect" class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500">
+              <option value="news">News & Blog · 行业资讯</option>
+              <option value="cases">Project Cases · 工程案例</option>
+              <option value="faqs">FAQ · 问答</option>
+              <option value="settings">Settings · 站点设置</option>
+            </select>
+          </div>
+          <div id="fileList" class="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto">
+            <div class="p-6 text-center text-gray-400 text-sm">Loading…</div>
+          </div>
+          <div class="p-4 border-t border-gray-200">
+            <button id="newItemBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 text-sm font-mono">
+              + New item
+            </button>
+          </div>
+        </aside>
+
+        <!-- RIGHT: edit form -->
+        <section class="lg:col-span-8 bg-white border border-gray-200">
+          <div id="editorEmpty" class="p-12 text-center text-gray-400">
+            <div class="font-mono text-sm">← Pick a file to edit</div>
+          </div>
+
+          <form id="editorForm" class="hidden">
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-mono text-gray-500" id="editingPath">—</div>
+                <h2 class="font-bold text-slate-900" id="editingTitle">—</h2>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" id="cancelBtn" class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100">Cancel</button>
+                <button type="submit" id="saveBtn" class="px-4 py-1.5 text-sm bg-orange-600 hover:bg-orange-700 text-white font-semibold">Save to GitHub</button>
+              </div>
+            </div>
+
+            <div id="formFields" class="p-6 space-y-5"></div>
+
+            <div id="saveError" class="hidden mx-6 mb-4 text-sm text-orange-700 bg-orange-50 p-3 border border-orange-200"></div>
+            <div id="saveSuccess" class="hidden mx-6 mb-4 text-sm text-green-700 bg-green-50 p-3 border border-green-200"></div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  const SITE = 'https://hn-paint.netlify.app';
+  const GH_TOKEN = null; // Will be set server-side via Netlify env in production; client-side token used here is for local testing ONLY
+  const REPO = 'hogoshi2023-pixel/HN';
+  const GH_TOKEN_CLIENT = ''; // EMPTY: not used in client anymore — writes go through /.netlify/functions/save-content
+
+  // Section → folder mapping
+  const SECTIONS = {
+    news:     { folder: 'content/news',     ext: 'md', manifest: 'content/news/manifest.json',     isMarkdown: true,  fields: ['title','date','author','category','language','excerpt','image','body'] },
+    cases:    { folder: 'content/cases',    ext: 'md', manifest: 'content/cases/manifest.json',    isMarkdown: true,  fields: ['title','case_id','country','year','sector','client','image','summary','highlights','specs','body'] },
+    faqs:     { folder: 'content/faq',      ext: 'md', manifest: 'content/faq/manifest.json',      isMarkdown: true,  fields: ['id','category','question_en','question_zh','answer_en','answer_zh'] },
+    settings: { folder: 'content/settings', ext: 'json', manifest: null, isMarkdown: false, fields: ['site_name_en','site_name_zh','tagline_en','tagline_zh','contact_email','phone_vn','phone_cn','wechat','address_en','address_zh'] }
+  };
+
+  const state = { token: null, email: null, section: 'news', manifest: [], currentFile: null, currentSha: null, currentContent: null, easyMDE: null };
+
+  // ---------- AUTH ----------
+  function getToken() { return state.token || sessionStorage.getItem('hn_id_token'); }
+
+  async function ensureAuth() {
+    const tok = getToken();
+    if (!tok) { window.location.href = '/admin/'; return; }
+    // Verify token with a light call
+    try {
+      const r = await fetch('/.netlify/identity/user', { headers: { 'Authorization': 'Bearer ' + tok } });
+      if (r.status === 401) {
+        sessionStorage.removeItem('hn_id_token');
+        window.location.href = '/admin/';
+        return;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const u = await r.json();
+      state.email = u.email;
+      state.user = u;
+      document.getElementById('userEmail').textContent = 'Signed in as ' + u.email;
+      document.getElementById('authGate').classList.add('hidden');
+      document.getElementById('editorRoot').classList.remove('hidden');
+    } catch (e) {
+      document.getElementById('authGate').innerHTML = '<div class="text-orange-600 font-mono text-sm">Session check failed: ' + e.message + '</div>';
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('hn_id_token');
+    window.location.href = '/admin/';
+  });
+
+  // ---------- MANIFEST / FILE LIST ----------
+  async function loadSection(section) {
+    state.section = section;
+    const sec = SECTIONS[section];
+    const list = document.getElementById('fileList');
+    list.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">Loading…</div>';
+    try {
+      const r = await fetch('/' + sec.manifest + '?ts=' + Date.now());
+      if (!r.ok) throw new Error('Manifest missing: ' + sec.manifest);
+      state.manifest = await r.json();
+      renderFileList();
+    } catch (e) {
+      list.innerHTML = '<div class="p-6 text-orange-600 text-xs font-mono">' + e.message + '</div>';
+    }
+  }
+
+  function renderFileList() {
+    const list = document.getElementById('fileList');
+    if (!state.manifest.length) {
+      list.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">No items yet</div>';
+      return;
+    }
+    list.innerHTML = state.manifest.map((it, i) => `
+      <button data-idx="${i}" class="file-item w-full text-left p-4 hover:bg-orange-50 transition block">
+        <div class="text-xs font-mono text-gray-400">${it.filename || it.path}</div>
+        <div class="font-medium text-slate-900 truncate">${it.title || it.id || it.name_en || '(no title)'}</div>
+        <div class="text-xs text-gray-500 mt-1 truncate">${it.summary || it.excerpt || it.question_en || ''}</div>
+      </button>
+    `).join('');
+    list.querySelectorAll('.file-item').forEach(b => b.addEventListener('click', () => {
+      loadFile(state.manifest[+b.dataset.idx]);
+    }));
+  }
+
+  // ---------- LOAD FILE ----------
+  async function loadFile(item) {
+    state.currentFile = item;
+    const sec = SECTIONS[state.section];
+    document.getElementById('editorEmpty').classList.add('hidden');
+    document.getElementById('editorForm').classList.remove('hidden');
+    document.getElementById('editingPath').textContent = (sec.folder + '/' + item.filename);
+    document.getElementById('editingTitle').textContent = item.title || item.id || item.name_en || item.filename;
+
+    // Fetch raw file content
+    const url = '/' + sec.folder + '/' + item.filename + '?ts=' + Date.now();
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('Cannot fetch ' + url);
+      const raw = await r.text();
+      state.currentContent = raw;
+      renderEditorForm(raw);
+    } catch (e) {
+      document.getElementById('formFields').innerHTML = '<div class="text-orange-600 text-sm">' + e.message + '</div>';
+    }
+  }
+
+  function parseFrontmatter(md) {
+    // Parse simple YAML-ish front matter
+    if (!md.startsWith('---')) return { frontmatter: {}, body: md };
+    const end = md.indexOf('\n---', 4);
+    if (end < 0) return { frontmatter: {}, body: md };
+    const fmText = md.substring(4, end);
+    const body = md.substring(end + 4).replace(/^\s+/, '');
+    const fm = {};
+    fmText.split(/\r?\n/).forEach(line => {
+      const m = line.match(/^([\w_]+):\s*(.*)$/);
+      if (m) {
+        let v = m[2].trim().replace(/^"(.*)"$/, '$1').replace(/^'(.*)'$/, '$1');
+        if (v === 'true') v = true;
+        else if (v === 'false') v = false;
+        else if (/^\d+$/.test(v)) v = +v;
+        fm[m[1]] = v;
+      }
+    });
+    return { frontmatter: fm, body };
+  }
+
+  function serializeFrontmatter(fm, body) {
+    let out = '---\n';
+    Object.keys(fm).forEach(k => {
+      let v = fm[k];
+      if (typeof v === 'string' && (v.includes('\n') || v.includes(':'))) v = JSON.stringify(v);
+      out += `${k}: ${v}\n`;
+    });
+    out += '---\n\n' + body.trim() + '\n';
+    return out;
+  }
+
+  function renderEditorForm(raw) {
+    const fields = SECTIONS[state.section].fields;
+    const isMd = SECTIONS[state.section].isMarkdown;
+    const { frontmatter, body } = parseFrontmatter(raw);
+    const root = document.getElementById('formFields');
+    root.innerHTML = '';
+
+    // Field inputs (skip 'body' here, handled separately for markdown)
+    fields.filter(f => f !== 'body' && f !== 'highlights' && f !== 'specs').forEach(field => {
+      const val = frontmatter[field] ?? '';
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <label class="block text-xs font-mono text-gray-500 mb-1.5">${field.toUpperCase()}</label>
+        <input name="${field}" value="${String(val).replace(/"/g, '&quot;')}"
+               class="w-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-orange-500"/>
+      `;
+      root.appendChild(wrap);
+    });
+
+    // Highlights & specs (list fields)
+    if (fields.includes('highlights')) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<label class="block text-xs font-mono text-gray-500 mb-1.5">HIGHLIGHTS (one per line)</label>`;
+      const ta = document.createElement('textarea');
+      ta.name = 'highlights';
+      ta.rows = 4;
+      ta.className = 'w-full border border-gray-300 px-3 py-2 text-sm font-mono';
+      ta.value = Array.isArray(frontmatter.highlights) ? frontmatter.highlights.join('\n') : (frontmatter.highlights || '');
+      wrap.appendChild(ta);
+      root.appendChild(wrap);
+    }
+    if (fields.includes('specs')) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<label class="block text-xs font-mono text-gray-500 mb-1.5">SPECS (label = value, one per line)</label>`;
+      const ta = document.createElement('textarea');
+      ta.name = 'specs';
+      ta.rows = 4;
+      ta.className = 'w-full border border-gray-300 px-3 py-2 text-sm font-mono';
+      if (Array.isArray(frontmatter.specs)) {
+        ta.value = frontmatter.specs.map(s => `${s.label} = ${s.value}`).join('\n');
+      } else {
+        ta.value = frontmatter.specs || '';
+      }
+      wrap.appendChild(ta);
+      root.appendChild(wrap);
+    }
+
+    // Body
+    if (isMd) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<label class="block text-xs font-mono text-gray-500 mb-1.5">CONTENT (MARKDOWN)</label>`;
+      const ta = document.createElement('textarea');
+      ta.id = 'bodyInput';
+      ta.rows = 18;
+      wrap.appendChild(ta);
+      root.appendChild(wrap);
+      if (state.easyMDE) { try { state.easyMDE.toTextArea(); } catch {} state.easyMDE = null; }
+      state.easyMDE = new EasyMDE({ element: ta, spellChecker: false, status: false, autosave: { enabled: false }, minHeight: '300px', toolbar: ["bold","italic","heading","|","quote","unordered-list","ordered-list","|","link","image","table","code","preview","|","side-by-side","fullscreen"] });
+      state.easyMDE.value(body);
+    } else {
+      // JSON settings
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<label class="block text-xs font-mono text-gray-500 mb-1.5">SETTINGS (JSON)</label>`;
+      const ta = document.createElement('textarea');
+      ta.id = 'bodyInput';
+      ta.rows = 18;
+      ta.className = 'w-full border border-gray-300 px-3 py-2 text-sm font-mono';
+      ta.value = JSON.stringify(frontmatter, null, 2);
+      wrap.appendChild(ta);
+      root.appendChild(wrap);
+    }
+  }
+
+  // ---------- SAVE ----------
+  document.getElementById('editorForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const sec = SECTIONS[state.section];
+    const isMd = sec.isMarkdown;
+    const path = sec.folder + '/' + state.currentFile.filename;
+    const errEl = document.getElementById('saveError');
+    const okEl = document.getElementById('saveSuccess');
+    errEl.classList.add('hidden');
+    okEl.classList.add('hidden');
+
+    // Build new content
+    const fm = {};
+    const form = document.getElementById('editorForm');
+    Array.from(form.querySelectorAll('input[name]')).forEach(input => {
+      fm[input.name] = input.value;
+    });
+    const hTa = form.querySelector('textarea[name="highlights"]');
+    if (hTa) fm.highlights = hTa.value.split('\n').filter(l => l.trim());
+    const sTa = form.querySelector('textarea[name="specs"]');
+    if (sTa) {
+      fm.specs = sTa.value.split('\n').filter(l => l.includes('=')).map(line => {
+        const [label, ...rest] = line.split('=');
+        return { label: label.trim(), value: rest.join('=').trim() };
+      });
+    }
+
+    let body = '';
+    if (isMd) {
+      body = state.easyMDE ? state.easyMDE.value() : (document.getElementById('bodyInput').value || '');
+      state.currentContent = serializeFrontmatter(fm, body);
+    } else {
+      // Settings: send raw JSON
+      const newRaw = document.getElementById('bodyInput').value;
+      try { JSON.parse(newRaw); } catch (err) { showError(errEl, 'Invalid JSON: ' + err.message); return; }
+      state.currentContent = newRaw;
+    }
+
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      // Call Netlify Function to commit (NOT GitHub API directly from client)
+      const r = await fetch('/.netlify/functions/save-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + getToken()
+        },
+        body: JSON.stringify({
+          path: path,
+          content: state.currentContent,
+          message: 'Update via admin editor: ' + state.currentFile.filename,
+          branch: 'main'
+        })
+      });
+      const t = await r.text();
+      let body2; try { body2 = JSON.parse(t); } catch { body2 = { msg: t }; }
+      if (!r.ok) throw new Error(body2.msg || body2.error || ('HTTP ' + r.status));
+      okEl.textContent = '✓ Saved & deployed (commit ' + (body2.sha || '').substring(0, 7) + '). Netlify will redeploy in 30-60s.';
+      okEl.classList.remove('hidden');
+      btn.textContent = 'Saved ✓';
+      setTimeout(() => { btn.textContent = 'Save to GitHub'; btn.disabled = false; }, 2000);
+    } catch (err) {
+      showError(errEl, err.message);
+      btn.disabled = false;
+      btn.textContent = 'Save to GitHub';
+    }
+  });
+
+  function showError(el, msg) { el.textContent = msg; el.classList.remove('hidden'); }
+
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    document.getElementById('editorEmpty').classList.remove('hidden');
+    document.getElementById('editorForm').classList.add('hidden');
+    if (state.easyMDE) { try { state.easyMDE.toTextArea(); } catch {} state.easyMDE = null; }
+  });
+
+  document.getElementById('newItemBtn').addEventListener('click', async () => {
+    const sec = SECTIONS[state.section];
+    if (sec.isMarkdown) {
+      const slug = prompt('Slug (lowercase, hyphenated):', 'new-item');
+      if (!slug) return;
+      const filename = new Date().toISOString().slice(0, 10) + '-' + slug + '.' + sec.ext;
+      const tmpl = `---\ntitle: Untitled\ndate: ${new Date().toISOString().slice(0,10)}\n---\n\nWrite your content here.\n`;
+      state.currentFile = { filename, title: 'Untitled' };
+      state.currentContent = tmpl;
+      renderEditorForm(tmpl);
+      document.getElementById('editorEmpty').classList.add('hidden');
+      document.getElementById('editorForm').classList.remove('hidden');
+      document.getElementById('editingPath').textContent = sec.folder + '/' + filename;
+      document.getElementById('editingTitle').textContent = 'Untitled';
+    } else {
+      showError(document.getElementById('saveError'), 'Settings has a single file. Edit it directly.');
+    }
+  });
+
+  document.getElementById('sectionSelect').addEventListener('change', (e) => {
+    loadSection(e.target.value);
+  });
+
+  // ---------- BOOT ----------
+  (async function init() {
+    await ensureAuth();
+    await loadSection('news');
+  })();
+  </script>
+</body>
+</html>
