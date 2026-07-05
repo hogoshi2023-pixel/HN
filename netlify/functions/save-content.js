@@ -1,13 +1,17 @@
 // Netlify Function: /.netlify/functions/save-content
-// Validates user's Netlify Identity JWT, then commits to GitHub.
+// Validates the user's auth token (either Netlify Identity JWT OR custom JWT from auth-login)
+// then commits the file to GitHub.
 //
-// TWO BACKEND MODES — tries Git Gateway first (no env vars needed if connected):
-//   Mode A (preferred): Use Git Gateway → /.netlify/git/token → GitHub API
-//   Mode B (fallback):  Use GITHUB_TOKEN env var for direct GitHub API access
+// Token sources supported:
+//   1. Netlify Identity JWT (Authorization: Bearer <jwt>) — verified via /.netlify/identity/user
+//   2. Custom JWT signed with ADMIN_JWT_SECRET — verified via HMAC + JSON parse
 //
-// Netlify auto-injects `process.env.URL` and `event.headers.host` for site URL.
+// Backend commit modes:
+//   A. Git Gateway: POST /.netlify/git/token with user JWT → use returned token to call GitHub API
+//   B. GITHUB_TOKEN env var fallback (if Git Gateway unavailable)
 
 const https = require('https');
+const crypto = require('crypto');
 
 function ghRequest(method, apiPath, body, token) {
   return new Promise((resolve, reject) => {
@@ -44,23 +48,70 @@ function ghRequest(method, apiPath, body, token) {
 
 const b64 = (s) => Buffer.from(s, 'utf-8').toString('base64');
 
-function getUserJWT(event) {
+function b64urlDecode(s) {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  return Buffer.from(s, 'base64').toString('utf-8');
+}
+
+function b64urlEncode(buf) {
+  return Buffer.from(buf).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+function jwtVerify(token, secret) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const expectedSig = b64urlEncode(crypto.createHmac('sha256', secret).update(`${parts[0]}.${parts[1]}`).digest());
+    if (expectedSig !== parts[2]) return null;
+    const payload = JSON.parse(b64urlDecode(parts[1]));
+    if (payload.exp && Math.floor(Date.now() / 1000) > payload.exp) return null;
+    return payload;
+  } catch { return null; }
+}
+
+function getToken(event) {
   const h = event.headers || {};
   const auth = h.authorization || h.Authorization;
-  if (auth && auth.startsWith('Bearer ')) return { token: auth.slice(7), viaHeader: true };
-  // Cookie fallback (when client uses fetch with credentials)
+  if (auth && auth.startsWith('Bearer ')) return auth.slice(7);
   const cookie = h.cookie || h.Cookie || '';
-  const m = cookie.match(/nf_jwt=([^;]+)/);
-  if (m) return { token: m[1], viaCookie: true };
+  const m = cookie.match(/nf_jwt=([^;]+)/) || cookie.match(/hn_admin=([^;]+)/);
+  if (m) return m[1];
   return null;
 }
 
-async function getGitGatewayToken(userJWT, siteOrigin) {
-  // Netlify's internal endpoint: /.netlify/git/token
-  // Requires the user JWT in Authorization header
+async function identifyUser(event, context) {
+  // Try Netlify Identity auto-context first (when client sends Authorization: Bearer)
+  const ctxIdentity = context && context.clientContext && context.clientContext.identity;
+  if (ctxIdentity && ctxIdentity.token) {
+    return { token: ctxIdentity.token, email: ctxIdentity.email || '(via-context)', kind: 'identity' };
+  }
+  const token = getToken(event);
+  if (!token) return null;
+
+  // Try custom JWT first (matches our auth-login signing)
+  const secret = process.env.ADMIN_JWT_SECRET || process.env.ADMIN_PASSWORD || 'change-me';
+  const custom = jwtVerify(token, secret);
+  if (custom && custom.role === 'admin') {
+    return { token, email: custom.email, kind: 'custom' };
+  }
+
+  // Fall back to Identity JWT (try Identity user endpoint to validate)
+  const siteOrigin = process.env.URL || `https://${event.headers.host}`;
+  try {
+    const r = await fetch(`${siteOrigin}/.netlify/identity/user`, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (r.ok) {
+      const u = await r.json();
+      return { token, email: u.email, kind: 'identity' };
+    }
+  } catch {}
+  return null;
+}
+
+async function getGitGatewayToken(userToken, siteOrigin) {
   const resp = await fetch(`${siteOrigin}/.netlify/git/token`, {
     method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + userJWT }
+    headers: { 'Authorization': 'Bearer ' + userToken }
   });
   if (!resp.ok) {
     const text = await resp.text();
@@ -68,89 +119,69 @@ async function getGitGatewayToken(userJWT, siteOrigin) {
   }
   const data = await resp.json();
   if (!data || !data.token) throw new Error('git/token returned no token: ' + JSON.stringify(data).substring(0, 200));
-  return data.token;  // This is a short-lived Git provider token (usually GitHub OAuth)
+  return data.token;
 }
 
 exports.handler = async (event, context) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Use POST' }) };
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: JSON.stringify({ error: 'Use POST' }) };
+
+  const user = await identifyUser(event, context);
+  if (!user) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Unauthenticated. Please sign in again.' }) };
   }
 
-  // 1. Identify user
-  const auth = getUserJWT(event);
-  if (!auth) {
-    return { statusCode: 401, body: JSON.stringify({ error: 'No Identity token in request.' }) };
-  }
-
-  // 2. Verify the JWT is valid against Identity
-  const siteOrigin = process.env.URL || `https://${event.headers.host}`;
-  let userEmail = '(unknown)';
-  try {
-    const vr = await fetch(`${siteOrigin}/.netlify/identity/user`, {
-      headers: { 'Authorization': 'Bearer ' + auth.token }
-    });
-    if (!vr.ok) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Identity session expired. Sign in again.' }) };
-    }
-    const u = await vr.json();
-    userEmail = u.email || userEmail;
-  } catch (e) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'Identity verify error: ' + e.message }) };
-  }
-
-  // 3. (Optional) ALLOWED_USERS gate
+  // Optional allowlist by email
   const allowed = (process.env.ALLOWED_USERS || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-  if (allowed.length && !allowed.includes(userEmail.toLowerCase())) {
-    return { statusCode: 403, body: JSON.stringify({ error: 'Email not allowed: ' + userEmail }) };
+  if (allowed.length && !allowed.includes((user.email || '').toLowerCase())) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Email not allowed: ' + user.email }) };
   }
 
-  // 4. Parse payload
   let payload;
   try { payload = JSON.parse(event.body || '{}'); } catch { return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
   const { path, content, message, branch = 'main' } = payload;
   if (!path || typeof content !== 'string') return { statusCode: 400, body: JSON.stringify({ error: 'Missing path or content' }) };
   if (path.includes('..') || path.startsWith('/')) return { statusCode: 400, body: JSON.stringify({ error: 'Invalid path' }) };
 
-  // Allowlist of top-level folders the admin can write to
   const allowedFolders = ['content/', 'assets/images/uploads/'];
   if (!allowedFolders.some(f => path.startsWith(f))) {
     return { statusCode: 403, body: JSON.stringify({ error: 'Path not in allowlist: ' + path }) };
   }
 
-  // 5. Try Git Gateway first; if fails, fall back to GITHUB_TOKEN env var
+  const siteOrigin = process.env.URL || `https://${event.headers.host}`;
+
+  // Get a Git provider token
   let ghToken = null;
   let gwError = null;
-  try {
-    ghToken = await getGitGatewayToken(auth.token, siteOrigin);
-  } catch (e) {
-    gwError = e.message;
+  // Only Identity tokens can use Git Gateway; custom JWTs must use the env var path
+  if (user.kind === 'identity') {
+    try { ghToken = await getGitGatewayToken(user.token, siteOrigin); }
+    catch (e) { gwError = e.message; }
+  }
+  if (!ghToken && process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
+    ghToken = { token: process.env.GITHUB_TOKEN, repo: process.env.GITHUB_REPO };
   }
   if (!ghToken) {
-    if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
-      ghToken = { token: process.env.GITHUB_TOKEN, repo: process.env.GITHUB_REPO };
-    } else {
-      return { statusCode: 500, body: JSON.stringify({ error: 'No git token available.', detail: 'Git Gateway failed: ' + gwError + '. Set GITHUB_TOKEN + GITHUB_REPO env vars to fall back.' }) };
-    }
-  }
-  const TOKEN = typeof ghToken === 'string' ? ghToken : ghToken.token;
-  const REPO = typeof ghToken === 'object' && ghToken.repo ? ghToken.repo : process.env.GITHUB_REPO;
-  if (!REPO) {
-    // Repo can be inferred from the Git Gateway URL response; for safety use known env or hardcoded default
-    return { statusCode: 500, body: JSON.stringify({ error: 'GITHUB_REPO env var required when not using Git Gateway.' }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'No git commit token available.',
+        detail: gwError ? 'Git Gateway error: ' + gwError : '',
+        hint: 'Set GITHUB_TOKEN and GITHUB_REPO in Netlify env vars OR use the Netlify Identity login (top button) so Git Gateway works.'
+      })
+    };
   }
 
-  // 6. Get current SHA (if file exists)
+  const TOKEN = typeof ghToken === 'string' ? ghToken : ghToken.token;
+  const REPO = (typeof ghToken === 'object' && ghToken.repo) ? ghToken.repo : process.env.GITHUB_REPO;
+
   let sha;
   try {
     const ex = await ghRequest('GET', `/repos/${REPO}/contents/${encodeURI(path)}?ref=${branch}`, null, TOKEN);
     if (ex && ex.sha) sha = ex.sha;
   } catch (e) {
-    if (e.status !== 404) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'GitHub GET failed: ' + (e.body && e.body.message) }) };
-    }
+    if (e.status !== 404) return { statusCode: 500, body: JSON.stringify({ error: 'GitHub GET failed: ' + (e.body && e.body.message) }) };
   }
 
-  // 7. Commit
   const body = { message: message || `Update ${path} via admin`, content: b64(content), branch };
   if (sha) body.sha = sha;
 
@@ -160,11 +191,8 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ok: true,
-        sha: resp.content && resp.content.sha,
-        path: resp.content && resp.content.path,
-        commit: resp.commit && resp.commit.sha,
-        message: 'Saved. Netlify will deploy in ~30s.'
+        ok: true, sha: resp.content && resp.content.sha, path: resp.content && resp.content.path,
+        commit: resp.commit && resp.commit.sha, message: 'Saved. Netlify will deploy in ~30s.', authKind: user.kind
       })
     };
   } catch (e) {
