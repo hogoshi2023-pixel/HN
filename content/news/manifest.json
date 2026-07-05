@@ -1,0 +1,29 @@
+[
+  {
+    "file": "2026-06-22-iso-8501-surface-prep.md",
+    "title": "ISO 8501 Surface Preparation Grades — A Practical Guide for Specifiers",
+    "date": "2026-06-22",
+    "category": "Surface Prep",
+    "language": "en",
+    "image": "/assets/images/img-12.png",
+    "excerpt": "Choosing between Sa 1, Sa 2, Sa 2.5, and Sa 3 isn't academic — each grade changes coating adhesion, service life, and project cost by 20–40%."
+  },
+  {
+    "file": "2026-06-15-silicone-vs-ceramic.md",
+    "title": "硅酮vs陶瓷耐高温涂料 — 项目工程师选型指南",
+    "date": "2026-06-15",
+    "category": "Product Comparison",
+    "language": "zh",
+    "image": "/assets/images/img-9.png",
+    "excerpt": "两者均耐400°C以上，但化学体系、施工方式与成本差异显著。为项目工程师提供决策矩阵。"
+  },
+  {
+    "file": "2026-06-08-aama-2605.md",
+    "title": "AAMA 2605 vs 2604 vs 2603 — What Architects Need to Know",
+    "date": "2026-06-08",
+    "category": "Industry Standards",
+    "language": "en",
+    "image": "/assets/images/img-5.png",
+    "excerpt": "The three AAMA architectural coating specs govern exterior facade performance. Here's the real-world difference for tropical and coastal projects."
+  }
+]
