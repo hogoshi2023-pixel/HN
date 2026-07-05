@@ -1,192 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reset Password — HONG NGUYEN Admin</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='2' y='2' width='32' height='32' fill='%230E2240'/%3E%3Cpath d='M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z' stroke='%23E85D2C' stroke-width='1.5' fill='none'/%3E%3Ctext x='18' y='22' font-family='monospace' font-size='11' font-weight='700' fill='%23E85D2C' text-anchor='middle'%3EHN%3C/text%3E%3C/svg%3E">
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body { font-family: 'Inter', system-ui, sans-serif; }
-.font-mono { font-family: 'JetBrains Mono', monospace; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Password — HONG NGUYEN Admin</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='2' y='2' width='32' height='32' fill='%230E2240'/%3E%3Cpath d='M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z' stroke='%23E85D2C' stroke-width='1.5' fill='none'/%3E%3Ctext x='18' y='22' font-family='monospace' font-size='11' font-weight='700' fill='%23E85D2C' text-anchor='middle'%3EHN%3C/text%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
 </head>
 <body class="bg-slate-900 min-h-screen flex items-center justify-center p-4">
   <div class="max-w-md w-full">
     <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-3 mb-4">
-        <svg width="48" height="48" viewBox="0 0 36 36" fill="none">
-          <rect x="2" y="2" width="32" height="32" fill="#1A3358"/>
-          <path d="M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z" stroke="#E85D2C" stroke-width="1.5" fill="none"/>
-          <text x="18" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#E85D2C" text-anchor="middle">HN</text>
-        </svg>
-        <div class="text-left">
-          <div class="font-bold text-white text-lg">HONG NGUYEN</div>
-          <div class="text-gray-400 text-xs font-mono">Admin · 后台管理</div>
-        </div>
-      </div>
+      <svg width="56" height="56" viewBox="0 0 36 36" fill="none" class="mx-auto mb-3">
+        <rect x="2" y="2" width="32" height="32" fill="#1A3358" rx="2"/>
+        <path d="M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z" stroke="#E85D2C" stroke-width="1.5" fill="none"/>
+        <text x="18" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#E85D2C" text-anchor="middle">HN</text>
+      </svg>
+      <h1 class="text-white text-xl font-bold tracking-tight">HONG NGUYEN · PASSWORD RESET</h1>
+      <p class="text-slate-400 text-xs font-mono mt-1">宏源新材料 · 重设密码</p>
     </div>
 
     <div class="bg-white p-8 shadow-2xl">
-      <!-- Loading state -->
-      <div id="loading" class="text-center py-8">
-        <div class="text-slate-400 font-mono text-sm">Verifying reset token...</div>
+      <div id="status" class="text-xs font-mono text-gray-400 mb-4">READY</div>
+
+      <!-- LOADING -->
+      <div id="loadingPanel">
+        <div class="text-center py-8">
+          <div class="w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div class="text-slate-600 text-sm">Verifying reset link…</div>
+        </div>
       </div>
 
-      <!-- Error state -->
-      <div id="error" class="hidden text-center py-8">
-        <div class="text-orange-600 font-bold mb-2">Reset link invalid</div>
-        <div id="errorMsg" class="text-gray-600 text-sm mb-4"></div>
-        <a href="mailto:hogoshi2023@gmail.com?subject=Admin%20access%20problem" class="text-sm text-orange-600 underline">Contact admin</a>
+      <!-- INVALID -->
+      <div id="errorPanel" class="hidden text-center py-8">
+        <div class="text-orange-600 font-bold mb-3 text-lg">⚠ Reset link invalid or expired</div>
+        <p id="errorMsg" class="text-gray-600 text-sm mb-5"></p>
+        <a href="/admin/" class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-5 py-2.5 font-semibold transition">
+          Back to login →
+        </a>
       </div>
 
-      <!-- Reset form -->
-      <div id="resetForm" class="hidden">
-        <h2 class="text-2xl font-bold text-slate-900 mb-2">Set New Password</h2>
-        <p class="text-sm text-gray-600 mb-6">Enter your new password for the Decap CMS admin.</p>
+      <!-- FORM -->
+      <div id="formPanel" class="hidden">
+        <h2 class="text-xl font-bold text-slate-900 mb-1">Set new password</h2>
+        <p class="text-xs text-gray-500 mb-6 font-mono">For account: <span id="confirmedEmail" class="text-slate-900">—</span></p>
 
         <form id="pwdForm" class="space-y-4">
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">NEW PASSWORD</label>
-            <input type="password" id="newPwd" required minlength="8" placeholder="At least 8 characters" class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
+            <input type="password" id="newPwd" required minlength="8" placeholder="At least 8 characters"
+                   class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
             <p id="pwdHint" class="text-xs text-gray-500 mt-1"></p>
           </div>
-
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">CONFIRM PASSWORD</label>
-            <input type="password" id="confirmPwd" required minlength="8" placeholder="Re-enter password" class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
+            <input type="password" id="confirmPwd" required minlength="8" placeholder="Re-enter password"
+                   class="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-orange-500">
           </div>
-
-          <div id="formError" class="hidden text-sm text-orange-600 bg-orange-50 p-3 border border-orange-200"></div>
-
-          <button type="submit" id="submitBtn" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 font-semibold transition disabled:bg-gray-400">
-            Reset Password
+          <div id="formError" class="hidden text-sm text-orange-700 bg-orange-50 p-3 border border-orange-200"></div>
+          <button type="submit" id="submitBtn"
+                  class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 font-semibold transition disabled:bg-gray-400">
+            Save new password
           </button>
         </form>
       </div>
 
-      <!-- Success state -->
-      <div id="success" class="hidden text-center py-8">
-        <div class="text-green-600 font-bold mb-2 text-lg">Password reset successful ✓</div>
+      <!-- SUCCESS -->
+      <div id="successPanel" class="hidden text-center py-8">
+        <div class="text-green-600 font-bold mb-2 text-lg">✓ Password updated</div>
         <p class="text-gray-600 text-sm mb-6">You can now log in to the admin panel.</p>
         <a href="/admin/" class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 font-semibold transition">
-          Go to Admin Login →
+          Go to Admin →
         </a>
       </div>
     </div>
 
     <div class="text-center mt-6">
-      <a href="/" class="text-xs text-gray-500 hover:text-gray-300">← Back to website</a>
+      <a href="/en/" class="text-xs text-gray-500 hover:text-gray-300">← Back to website</a>
     </div>
   </div>
 
-<script>
-const SITE_URL = 'https://hn-paint.netlify.app';
-
-function show(id) {
-  ['loading', 'error', 'resetForm', 'success'].forEach(x => document.getElementById(x).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
-
-async function init() {
-  // Netlify Identity redirects to: /recovery?recovery_token=XXX
-  // OR /?recovery_token=XXX
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('recovery_token') || params.get('token');
-
-  if (!token) {
-    document.getElementById('errorMsg').textContent = 'No reset token found in URL. Please use the link from your email.';
-    show('error');
-    return;
+  <script>
+  function log(msg) {
+    const el = document.getElementById('status');
+    if (el) el.textContent = msg;
+    console.log('[recovery]', msg);
+  }
+  function show(id) {
+    ['loadingPanel', 'errorPanel', 'formPanel', 'successPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
   }
 
-  try {
-    // Exchange recovery token for session
-    const resp = await fetch('/.netlify/identity/recovery', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token })
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.msg || err.message || `Token rejected (${resp.status})`);
+  async function init() {
+    log('BOOT v2026-07-06');
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('recovery_token') || params.get('token');
+    if (!token) {
+      document.getElementById('errorMsg').textContent = 'No reset token found in URL. Please use the link from your email (or the one in the admin login page).';
+      show('errorPanel');
+      return;
     }
 
-    const data = await resp.json();
-    // Stash the session token for the password update step
-    sessionStorage.setItem('hn_recovery_session', JSON.stringify(data));
+    // Step 1: exchange the recovery token for a session token
+    try {
+      log('Exchanging token…');
+      const r = await fetch('/.netlify/identity/recovery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      const text = await r.text();
+      let body; try { body = JSON.parse(text); } catch { body = {}; }
+      if (!r.ok) throw new Error(body.msg || body.message || body.error_description || ('HTTP ' + r.status));
 
-    show('resetForm');
-  } catch (e) {
-    document.getElementById('errorMsg').textContent = e.message;
-    show('error');
-  }
-}
-
-document.getElementById('newPwd').addEventListener('input', (e) => {
-  const pwd = e.target.value;
-  const hint = document.getElementById('pwdHint');
-  if (pwd.length === 0) { hint.textContent = ''; return; }
-  if (pwd.length < 8) {
-    hint.textContent = 'Need at least 8 characters';
-    hint.className = 'text-xs text-orange-600 mt-1';
-  } else {
-    hint.textContent = '✓ Strong enough';
-    hint.className = 'text-xs text-green-600 mt-1';
-  }
-});
-
-document.getElementById('pwdForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const pwd = document.getElementById('newPwd').value;
-  const confirm = document.getElementById('confirmPwd').value;
-  const errEl = document.getElementById('formError');
-  errEl.classList.add('hidden');
-
-  if (pwd !== confirm) {
-    errEl.textContent = 'Passwords do not match';
-    errEl.classList.remove('hidden');
-    return;
-  }
-  if (pwd.length < 8) {
-    errEl.textContent = 'Password must be at least 8 characters';
-    errEl.classList.remove('hidden');
-    return;
-  }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Resetting...';
-
-  try {
-    const sessionData = JSON.parse(sessionStorage.getItem('hn_recovery_session'));
-    // Netlify Identity: PUT /user to update password
-    const resp = await fetch('/.netlify/identity/user', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + sessionData.token
-      },
-      body: JSON.stringify({ password: pwd })
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.msg || err.message || `Update failed (${resp.status})`);
+      log('Got session, email=' + (body.email || '?') + ' tokenLen=' + (body.token || '').length);
+      sessionStorage.setItem('hn_id_token', body.token);
+      sessionStorage.setItem('hn_id_email', body.email || '');
+      document.getElementById('confirmedEmail').textContent = body.email || '(unknown)';
+      show('formPanel');
+    } catch (e) {
+      log('Token rejected: ' + e.message);
+      document.getElementById('errorMsg').textContent = e.message + '. Request a new reset link from the login page.';
+      show('errorPanel');
     }
-
-    sessionStorage.removeItem('hn_recovery_session');
-    show('success');
-  } catch (e) {
-    errEl.textContent = e.message;
-    errEl.classList.remove('hidden');
-    btn.disabled = false;
-    btn.textContent = 'Reset Password';
   }
-});
 
-init();
-</script>
+  document.getElementById('newPwd').addEventListener('input', (e) => {
+    const pwd = e.target.value;
+    const hint = document.getElementById('pwdHint');
+    if (pwd.length === 0) { hint.textContent = ''; return; }
+    if (pwd.length < 8) {
+      hint.textContent = 'Need at least 8 characters';
+      hint.className = 'text-xs text-orange-600 mt-1';
+    } else {
+      hint.textContent = '✓ Strong enough';
+      hint.className = 'text-xs text-green-600 mt-1';
+    }
+  });
+
+  document.getElementById('pwdForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pwd = document.getElementById('newPwd').value;
+    const confirm = document.getElementById('confirmPwd').value;
+    const errEl = document.getElementById('formError');
+    errEl.classList.add('hidden');
+
+    if (pwd !== confirm) { errEl.textContent = 'Passwords do not match'; errEl.classList.remove('hidden'); return; }
+    if (pwd.length < 8) { errEl.textContent = 'Password must be at least 8 characters'; errEl.classList.remove('hidden'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      const token = sessionStorage.getItem('hn_id_token');
+      if (!token) throw new Error('Session lost. Re-open the reset link from your email.');
+
+      const r = await fetch('/.netlify/identity/user', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ password: pwd })
+      });
+      const text = await r.text();
+      let body; try { body = JSON.parse(text); } catch { body = {}; }
+      if (!r.ok) throw new Error(body.msg || body.message || ('HTTP ' + r.status));
+
+      log('Password updated OK');
+      sessionStorage.removeItem('hn_id_token');
+      sessionStorage.removeItem('hn_id_email');
+      show('successPanel');
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.remove('hidden');
+      btn.disabled = false; btn.textContent = 'Save new password';
+    }
+  });
+
+  init();
+  </script>
 </body>
 </html>
