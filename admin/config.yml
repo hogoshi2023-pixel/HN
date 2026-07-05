@@ -1,0 +1,146 @@
+# ============================================================
+# Decap CMS Backend Configuration — Netlify Git Gateway
+# ============================================================
+# HONG NGUYEN Co. — B2B Industrial Coatings Website
+#
+# This config uses Netlify's Git Gateway (enabled in Netlify UI).
+# No GitHub OAuth setup needed — Netlify Identity handles auth.
+#
+# Local testing: change backend.name to "test-repo" and visit /admin/
+# ============================================================
+
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: editorial_workflow
+
+# Media uploads
+media_folder: "assets/images/uploads"
+public_folder: "/assets/images/uploads"
+
+site_url: https://hn-paint.netlify.app
+display_url: https://hn-paint.netlify.app
+
+# ============================================================
+# COLLECTIONS
+# ============================================================
+
+collections:
+  - name: "news"
+    label: "News & Blog / 行业资讯"
+    label_singular: "Article / 文章"
+    folder: "content/news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { name: "title",     label: "Title / 标题", widget: "string" }
+      - { name: "date",      label: "Publish Date / 发布日期", widget: "datetime", format: "YYYY-MM-DD", picker_utc: false }
+      - { name: "author",    label: "Author / 作者", widget: "string", default: "HONG NGUYEN Engineering" }
+      - { name: "category",  label: "Category / 分类", widget: "select", options: ["Application Guide", "Product Comparison", "Industry Standards", "Export & Shipping", "Surface Prep", "Maintenance", "OEM/ODM"] }
+      - { name: "language",  label: "Language / 语言", widget: "select", options: ["en", "zh"], default: "en" }
+      - { name: "image",     label: "Cover Image / 封面图", widget: "image", allow_multiple: false }
+      - { name: "excerpt",   label: "Excerpt / 摘要 (160 chars)", widget: "text", pattern: ['^.{0,160}$', "Max 160 chars"] }
+      - { name: "body",      label: "Content / 正文", widget: "markdown" }
+
+  - name: "cases"
+    label: "Project Cases / 工程案例"
+    label_singular: "Case / 案例"
+    folder: "content/cases"
+    create: true
+    slug: "{{fields.country}}-{{year}}-{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{country}}"
+    sortable_fields: ["year", "country", "title"]
+    fields:
+      - { name: "title",       label: "Project Title / 项目名", widget: "string" }
+      - { name: "case_id",     label: "Case ID / 案例编号", widget: "string", hint: "e.g. CASE-001" }
+      - { name: "country",     label: "Country / 国家", widget: "string" }
+      - { name: "year",        label: "Year / 年份", widget: "number", value_type: "int", min: 2003, max: 2030 }
+      - { name: "sector",      label: "Sector / 行业", widget: "select", options: ["Steel Structure", "Industrial Floor", "Building Facade", "Marine & Offshore", "High-Temperature", "Bridges", "Export Logistics"] }
+      - { name: "client",      label: "Client / 客户", widget: "string" }
+      - { name: "image",       label: "Main Image / 主图", widget: "image", allow_multiple: false }
+      - { name: "summary",     label: "Summary / 简介", widget: "text" }
+      - name: "highlights"
+        label: "Project Highlights / 项目亮点"
+        widget: "list"
+        fields:
+          - { name: "highlight", label: "Highlight / 亮点", widget: "string" }
+      - name: "specs"
+        label: "Project Specs / 项目参数"
+        widget: "list"
+        fields:
+          - { name: "label", label: "Label", widget: "string" }
+          - { name: "value", label: "Value", widget: "string" }
+      - { name: "body",        label: "Full Case Description / 完整描述", widget: "markdown" }
+
+  - name: "products"
+    label: "Products / 产品"
+    label_singular: "Product / 产品"
+    folder: "content/products"
+    create: true
+    slug: "{{fields.code}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{code}} — {{name_en}}"
+    sortable_fields: ["category", "code"]
+    fields:
+      - { name: "code",        label: "Product Code / 产品型号", widget: "string", hint: "e.g. HY-AC-201" }
+      - { name: "name_en",     label: "Name (English) / 英文名", widget: "string" }
+      - { name: "name_zh",     label: "Name (Chinese) / 中文名", widget: "string" }
+      - { name: "category",    label: "Category / 分类", widget: "select", options: ["Anti-Corrosion", "High-Temperature", "Epoxy Floor", "Exterior Topcoat", "Architectural", "Custom"] }
+      - { name: "image",       label: "Product Image / 产品图", widget: "image" }
+      - { name: "summary_en",  label: "Summary (EN) / 英文简介", widget: "text" }
+      - { name: "summary_zh",  label: "Summary (ZH) / 中文简介", widget: "text" }
+      - name: "applications"
+        label: "Applications / 应用领域 (one per line)"
+        widget: "list"
+        fields:
+          - { name: "application", label: "Application / 应用", widget: "string" }
+      - name: "specs"
+        label: "Technical Specs / 技术参数"
+        widget: "list"
+        fields:
+          - { name: "label", label: "Spec", widget: "string" }
+          - { name: "value", label: "Value", widget: "string" }
+      - { name: "warranty",    label: "Warranty / 质保", widget: "string", default: "24 months" }
+      - { name: "moq",         label: "MOQ / 起订量", widget: "string", default: "200 kg" }
+
+  - name: "faqs"
+    label: "FAQ Items / 问答条目"
+    label_singular: "FAQ / 问答"
+    folder: "content/faq"
+    create: true
+    slug: "{{fields.id}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "id",       label: "FAQ ID / 编号", widget: "string", hint: "e.g. Q17" }
+      - { name: "category", label: "Category / 分类", widget: "select", options: ["Order & Logistics", "Quality & Warranty", "Custom & OEM", "Technical & Application"] }
+      - { name: "question_en", label: "Question (EN) / 英文问题", widget: "string" }
+      - { name: "question_zh", label: "Question (ZH) / 中文问题", widget: "string" }
+      - { name: "answer_en",   label: "Answer (EN) / 英文答案", widget: "text" }
+      - { name: "answer_zh",   label: "Answer (ZH) / 中文答案", widget: "text" }
+
+  - name: "settings"
+    label: "Site Settings / 站点设置"
+    files:
+      - name: "general"
+        label: "General / 全局"
+        file: "content/settings/general.json"
+        fields:
+          - { name: "site_name_en", label: "Site Name (EN)", widget: "string" }
+          - { name: "site_name_zh", label: "Site Name (ZH)", widget: "string" }
+          - { name: "tagline_en",   label: "Tagline (EN)", widget: "string" }
+          - { name: "tagline_zh",   label: "Tagline (ZH)", widget: "string" }
+          - { name: "contact_email", label: "Contact Email", widget: "string" }
+          - { name: "phone_vn",     label: "Phone VN", widget: "string" }
+          - { name: "phone_cn",     label: "Phone CN", widget: "string" }
+          - { name: "wechat",       label: "WeChat ID", widget: "string" }
+          - { name: "address_en",   label: "Address (EN)", widget: "text" }
+          - { name: "address_zh",   label: "Address (ZH)", widget: "text" }
