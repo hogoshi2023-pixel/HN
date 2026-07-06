@@ -89,38 +89,48 @@
       <div class="bg-gray-50 p-8 border border-gray-200">
         <h2 class="text-2xl font-bold text-slate-900 mb-2 font-sc">在线询盘</h2>
         <p class="text-sm text-gray-600 mb-6 font-sc">告诉我们您的项目需求。信息越详细，我们的方案越精准。</p>
-        <form class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('formOK').classList.remove('hidden'); this.reset();">
+<form class="space-y-4" action="https://formsubmit.co/hogoshi2023@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="[HONG NGUYEN Website] 新询价 - {{Name}} ({{Country}})">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://hn-paint.netlify.app/zh/contact.html?submitted=1">
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">姓名 *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">公司 *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">姓名 *</label><input type="text" name="Name" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">公司 *</label><input type="text" name="Company" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">国家 *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">邮箱 *</label><input type="email" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">国家 *</label><input type="text" name="Country" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">邮箱 *</label><input type="email" name="Email" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">电话 / WhatsApp</label><input type="tel" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">行业领域</label><select class="w-full border border-gray-300 px-4 py-3 text-sm bg-white"><option>-- 请选择 --</option><option>钢结构工程</option><option>工业地坪</option><option>船舶与海洋工程</option><option>电力与高温设备</option><option>建筑工程</option><option>OEM贴牌</option><option>经销商/分销</option><option>其他</option></select></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">电话 / WhatsApp</label><input type="tel" name="Phone" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">行业</label><select name="Industry" class="w-full border border-gray-300 px-4 py-3 text-sm bg-white"><option value="">-- 请选择 --</option><option>钢结构</option><option>工业地坪</option><option>船舶海工</option><option>高温设备</option><option>建筑工程</option><option>OEM/贴牌</option><option>经销商</option><option>其他</option></select></div>
           </div>
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">意向产品 *</label>
-            <input type="text" required placeholder="例如：HY-AC-201环氧富锌底漆 2吨 RAL 7035色" class="w-full border border-gray-300 px-4 py-3 text-sm">
+            <input type="text" name="Products" required placeholder="如 HY-AC-201 环氧底漆, 2 吨, RAL 7035" class="w-full border border-gray-300 px-4 py-3 text-sm">
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">预计采购量(kg/吨)</label><input type="text" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">期望交货日期</label><input type="date" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">预计采购量 (kg 或 吨)</label><input type="text" name="Quantity" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">期望交期</label><input type="date" name="DeliveryDate" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">项目详情 / 定制需求</label>
-            <textarea rows="5" placeholder="基材类型、环境条件(沿海/化工/热带)、性能指标、颜色、施工方式..." class="w-full border border-gray-300 px-4 py-3 text-sm"></textarea>
+            <textarea rows="5" name="Details" placeholder="底材类型,使用环境（沿海/化工/热带）,性能要求,颜色,施工方式..." class="w-full border border-gray-300 px-4 py-3 text-sm"></textarea>
           </div>
           <div class="flex items-start gap-2">
-            <input type="checkbox" required id="consent" class="mt-1">
-            <label for="consent" class="text-xs text-gray-500 font-sc">我同意宏源就此询盘与我联系。我们尊重您的隐私，不会泄露您的信息。</label>
+            <input type="checkbox" required id="consent" name="Consent" class="mt-1">
+            <label for="consent" class="text-xs text-gray-500">我同意 HONG NGUYEN 就本次询价与我联系。我们尊重您的隐私,不会泄露您的资料。</label>
           </div>
-          <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 font-semibold transition">提交询盘 →</button>
-          <div id="formOK" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 text-sm font-sc">感谢您的询盘。我们的外贸团队将在24小时内联系您。</div>
+          <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 font-semibold transition">提交询价 →</button>
+          <div id="formOK" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 text-sm">✓ 感谢您的询价,我们的外贸团队将在 24 小时内联系您。</div>
         </form>
+        <script>
+          if (window.location.search.includes('submitted=1')) {
+            document.getElementById('formOK').classList.remove('hidden');
+            document.getElementById('formOK').scrollIntoView({ behavior: 'smooth' });
+          }
+        </script>
       </div>
     </div>
   </div>
