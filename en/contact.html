@@ -75,38 +75,50 @@
       <div class="bg-gray-50 p-8 border border-gray-200">
         <h2 class="text-2xl font-bold text-slate-900 mb-2">Request a Quote</h2>
         <p class="text-sm text-gray-600 mb-6">Tell us about your project. The more detail, the more accurate our system recommendation.</p>
-        <form class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('formOK').classList.remove('hidden'); this.reset();">
+        <form class="space-y-4" action="https://formsubmit.co/hogoshi2023@gmail.com" method="POST">
+          <!-- formsubmit.co: free, no signup. First submission triggers a confirmation email to hogoshi2023@gmail.com. After confirmation, all submissions forward to that email. -->
+          <input type="hidden" name="_subject" value="[HONG NGUYEN Website] New inquiry from {{Name}} ({{Country}})">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_next" value="https://hn-paint.netlify.app/en/contact.html?submitted=1">
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">FULL NAME *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">COMPANY *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">FULL NAME *</label><input type="text" name="Name" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">COMPANY *</label><input type="text" name="Company" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">COUNTRY *</label><input type="text" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">EMAIL *</label><input type="email" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">COUNTRY *</label><input type="text" name="Country" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">EMAIL *</label><input type="email" name="Email" required class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">PHONE / WHATSAPP</label><input type="tel" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">INDUSTRY</label><select class="w-full border border-gray-300 px-4 py-3 text-sm bg-white"><option>-- Select --</option><option>Steel structure / 钢结构</option><option>Industrial flooring / 地坪</option><option>Marine & offshore / 船舶海工</option><option>Power & high-temp / 高温设备</option><option>Architectural / 建筑工程</option><option>OEM / private label / 贴牌</option><option>Distributor / 经销商</option><option>Other</option></select></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">PHONE / WHATSAPP</label><input type="tel" name="Phone" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">INDUSTRY</label><select name="Industry" class="w-full border border-gray-300 px-4 py-3 text-sm bg-white"><option value="">-- Select --</option><option>Steel structure / 钢结构</option><option>Industrial flooring / 地坪</option><option>Marine & offshore / 船舶海工</option><option>Power & high-temp / 高温设备</option><option>Architectural / 建筑工程</option><option>OEM / private label / 贴牌</option><option>Distributor / 经销商</option><option>Other</option></select></div>
           </div>
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">PRODUCT(S) INTERESTED IN *</label>
-            <input type="text" required placeholder="e.g. HY-AC-201 epoxy primer, 2 tons, RAL 7035" class="w-full border border-gray-300 px-4 py-3 text-sm">
+            <input type="text" name="Products" required placeholder="e.g. HY-AC-201 epoxy primer, 2 tons, RAL 7035" class="w-full border border-gray-300 px-4 py-3 text-sm">
           </div>
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">ESTIMATED QUANTITY (kg or tons)</label><input type="text" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
-            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">TARGET DELIVERY DATE</label><input type="date" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">ESTIMATED QUANTITY (kg or tons)</label><input type="text" name="Quantity" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
+            <div><label class="block text-xs font-mono text-gray-500 mb-1.5">TARGET DELIVERY DATE</label><input type="date" name="DeliveryDate" class="w-full border border-gray-300 px-4 py-3 text-sm"></div>
           </div>
           <div>
             <label class="block text-xs font-mono text-gray-500 mb-1.5">PROJECT DETAILS / CUSTOM REQUIREMENTS</label>
-            <textarea rows="5" placeholder="Substrate type, environment (coastal, chemical, tropical), performance targets, color, application method..." class="w-full border border-gray-300 px-4 py-3 text-sm"></textarea>
+            <textarea rows="5" name="Details" placeholder="Substrate type, environment (coastal, chemical, tropical), performance targets, color, application method..." class="w-full border border-gray-300 px-4 py-3 text-sm"></textarea>
           </div>
           <div class="flex items-start gap-2">
-            <input type="checkbox" required id="consent" class="mt-1">
+            <input type="checkbox" required id="consent" name="Consent" class="mt-1">
             <label for="consent" class="text-xs text-gray-500">I agree to be contacted by HONG NGUYEN regarding this inquiry. We respect your privacy and will not share your data.</label>
           </div>
           <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 font-semibold transition">Submit Quote Request →</button>
-          <div id="formOK" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 text-sm">Thank you. Our export team will contact you within 24 hours.</div>
+          <div id="formOK" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 text-sm">✓ Thank you. Our export team will contact you within 24 hours.</div>
         </form>
+        <script>
+          // Show success message if redirected back with ?submitted=1
+          if (window.location.search.includes('submitted=1')) {
+            document.getElementById('formOK').classList.remove('hidden');
+            document.getElementById('formOK').scrollIntoView({ behavior: 'smooth' });
+          }
+        </script>
       </div>
     </div>
   </div>
