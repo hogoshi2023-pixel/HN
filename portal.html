@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HONG NGUYEN · Admin Portal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='2' y='2' width='32' height='32' fill='%230E2240'/%3E%3Cpath d='M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z' stroke='%23E85D2C' stroke-width='1.5' fill='none'/%3E%3Ctext x='18' y='22' font-family='monospace' font-size='11' font-weight='700' fill='%23E85D2C' text-anchor='middle'%3EHN%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --primary: #E85D2C; --primary-hover: #C84A1F; --slate-900: #0E2240; --slate-800: #1A3358; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #F4F5F7; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ============== TOP BAR ============== -->
+  <header id="topBar" class="bg-slate-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <rect x="2" y="2" width="32" height="32" fill="#1A3358" rx="2"/>
+          <path d="M8 10 L18 5 L28 10 L28 26 L18 31 L8 26 Z" stroke="#E85D2C" stroke-width="1.5" fill="none"/>
+          <text x="18" y="22" font-family="monospace" font-size="11" font-weight="700" fill="#E85D2C" text-anchor="middle">HN</text>
+        </svg>
+        <div>
+          <div class="font-bold text-base">HONG NGUYEN · Admin Portal</div>
+          <div class="text-xs text-slate-400 font-mono">宏源新材料 · 后台管理 v2026-07-06</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/en/" target="_blank" class="text-xs text-slate-300 hover:text-white px-3 py-1.5">View EN ↗</a>
+        <a href="/zh/" target="_blank" class="text-xs text-slate-300 hover:text-white px-3 py-1.5">中文 ↗</a>
+        <button id="logoutBtn" onclick="logout()" class="hidden text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============== LOGIN GATE ============== -->
+  <main id="loginGate" class="min-h-[80vh] flex items-center justify-center px-4">
+    <div class="max-w-md w-full bg-white p-8 border border-gray-200 shadow-xl fade-in">
+      <div class="text-center mb-6">
+        <div class="text-5xl mb-3">🔐</div>
+        <h1 class="text-xl font-bold text-slate-900">Admin Authentication</h1>
+        <p class="text-xs text-gray-500 font-mono mt-1">Enter your secure PIN to unlock the dashboard</p>
+      </div>
+
+      <form id="pinForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono text-gray-500 mb-1.5">SECURE PIN</label>
+          <input type="password" id="pinInput" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required minlength="4"
+                 class="w-full border border-gray-300 px-4 py-3 text-center text-xl font-mono tracking-widest focus:outline-none focus:border-orange-500"
+                 placeholder="••••••">
+          <p class="text-[10px] text-gray-400 mt-2 font-mono">Default PIN: 838396 (last 6 digits of Vietnam hotline)</p>
+        </div>
+        <div id="pinError" class="hidden text-sm text-orange-700 bg-orange-50 p-3 border border-orange-200">❌ Wrong PIN. Try again.</div>
+        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3.5 font-semibold transition">
+          Unlock Dashboard →
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-gray-200 text-xs text-gray-500 space-y-1">
+        <p>📦 Data stored in browser localStorage</p>
+        <p>🔄 Use Export/Import to sync between devices</p>
+        <p>🔒 All processing happens locally — no backend needed</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============== DASHBOARD ============== -->
+  <main id="dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+      <div class="bg-white p-6 border border-gray-200 fade-in">
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Customer Inquiries</div>
+        <div id="statLeads" class="text-3xl font-black text-slate-900 mt-2 font-mono">0</div>
+        <div class="text-xs text-gray-400 mt-1">From contact forms</div>
+      </div>
+      <div class="bg-white p-6 border border-gray-200 fade-in">
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Active Warranties</div>
+        <div id="statWarranties" class="text-3xl font-black text-emerald-600 mt-2 font-mono">0</div>
+        <div class="text-xs text-gray-400 mt-1">Digital warranty cards</div>
+      </div>
+      <div class="bg-white p-6 border border-gray-200 fade-in">
+        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Storage</div>
+        <div class="text-sm font-bold text-orange-600 mt-2 flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
+          localStorage Active
+        </div>
+        <div class="text-xs text-gray-400 mt-1" id="storageSize">— KB</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border border-gray-200 shadow-sm fade-in">
+      <!-- Tab bar -->
+      <div class="border-b border-gray-200 bg-gray-50 px-6 py-4 flex flex-wrap gap-4 justify-between items-center">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="switchTab('leads')" id="tabBtnLeads" class="bg-slate-900 text-white text-xs font-bold px-4 py-2 uppercase tracking-wider">
+            📞 Inquiries
+          </button>
+          <button onclick="switchTab('warranties')" id="tabBtnWarranties" class="bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 uppercase tracking-wider hover:bg-gray-300">
+            🛡️ Warranties
+          </button>
+          <button onclick="switchTab('settings')" id="tabBtnSettings" class="bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 uppercase tracking-wider hover:bg-gray-300">
+            ⚙️ Settings
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="exportAll()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 uppercase font-bold">↓ Export JSON</button>
+          <label class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 uppercase font-bold cursor-pointer">
+            ↑ Import
+            <input type="file" accept=".json" id="importInput" class="hidden" onchange="importAll(event)">
+          </label>
+        </div>
+      </div>
+
+      <!-- TAB 1: LEADS -->
+      <div id="tabLeads" class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold text-slate-900 uppercase">Customer Inquiries · 客户咨询</h2>
+          <div class="text-xs text-gray-400 font-mono" id="leadsCount">0 records</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-gray-100 text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                <th class="p-3 font-bold">Date</th>
+                <th class="p-3 font-bold">Name</th>
+                <th class="p-3 font-bold">Contact</th>
+                <th class="p-3 font-bold">Service</th>
+                <th class="p-3 font-bold">Area / Volume</th>
+                <th class="p-3 font-bold">Notes</th>
+                <th class="p-3 font-bold text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTbody" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: WARRANTIES -->
+      <div id="tabWarranties" class="hidden p-6">
+        <div class="grid lg:grid-cols-3 gap-6">
+          <!-- New warranty form -->
+          <div class="lg:col-span-1 bg-gray-50 p-6 border border-gray-200">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide border-b border-gray-200 pb-2 mb-4">Issue New Warranty</h3>
+            <form id="warrantyForm" onsubmit="createWarranty(event)" class="space-y-3">
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Customer Phone *</label>
+                <input type="text" id="wPhone" required placeholder="0838396799"
+                       class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Customer / Company *</label>
+                <input type="text" id="wName" required placeholder="e.g. Yazaki Factory"
+                       class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Contract Code *</label>
+                <input type="text" id="wCode" required placeholder="HN-2026-0001"
+                       class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Coating System *</label>
+                <input type="text" id="wSpec" required placeholder="Epoxy Primer + PU Topcoat (120μm)"
+                       class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Start Date *</label>
+                  <input type="date" id="wStart" required
+                         class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                  <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">End Date *</label>
+                  <input type="date" id="wEnd" required
+                         class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 text-xs uppercase tracking-wider">
+                Confirm Issue ✔
+              </button>
+            </form>
+          </div>
+
+          <!-- Warranties table -->
+          <div class="lg:col-span-2 space-y-3">
+            <div class="flex justify-between items-center">
+              <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Active Warranty Database</h3>
+              <div class="text-xs text-gray-400 font-mono" id="warrantyCount">0 records</div>
+            </div>
+            <div class="overflow-x-auto bg-white border border-gray-200">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="bg-gray-100 text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                    <th class="p-3 font-bold">Code</th>
+                    <th class="p-3 font-bold">Customer / Phone</th>
+                    <th class="p-3 font-bold">Coating</th>
+                    <th class="p-3 font-bold">Period</th>
+                    <th class="p-3 font-bold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="warrantiesTbody" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SETTINGS -->
+      <div id="tabSettings" class="hidden p-6 space-y-6">
+        <div class="flex justify-between items-center border-b border-gray-200 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 uppercase">Site Settings · 站点设置</h2>
+            <p class="text-xs text-gray-500 mt-1">Edit contact info displayed across the public site</p>
+          </div>
+          <button onclick="saveSettings()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 text-xs uppercase tracking-wider">Save Settings 💾</button>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Site Name (EN)</label>
+              <input id="setSiteNameEN" type="text" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Site Name (ZH)</label>
+              <input id="setSiteNameZH" type="text" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Contact Email</label>
+              <input id="setEmail" type="email" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Vietnam Phone / Zalo</label>
+              <input id="setPhoneVN" type="text" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">China Phone / WhatsApp</label>
+              <input id="setPhoneCN" type="text" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+          </div>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">WeChat ID</label>
+              <input id="setWeChat" type="text" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500">
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Address (EN)</label>
+              <textarea id="setAddrEN" rows="3" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500"></textarea>
+            </div>
+            <div>
+              <label class="block text-[10px] text-gray-500 font-bold uppercase mb-1">Address (ZH)</label>
+              <textarea id="setAddrZH" rows="3" class="w-full bg-white border border-gray-300 p-2.5 text-xs focus:outline-none focus:border-orange-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div id="settingsSaved" class="hidden text-sm text-green-700 bg-green-50 p-3 border border-green-200">✓ Settings saved locally. They won't sync to the public site automatically — you need to update the HTML files manually and redeploy.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============== PUBLIC FORM HELPER ============== -->
+  <!-- This helper makes the contact form on public site auto-save inquiries to localStorage
+       if loaded in the same browser. Include by adding data-hn-capture-form on contact form. -->
+
+  <script>
+  // ============================
+  // CONFIG
+  // ============================
+  const ADMIN_PIN = "838396";
+  const STORAGE_KEY = "hn_admin_v1";
+
+  // ============================
+  // DATA LAYER
+  // ============================
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { console.error('Load error', e); }
+    return { leads: [], warranties: [], settings: defaults.settings };
+  }
+
+  function saveData(d) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    updateStorageSize();
+  }
+
+  function defaults() {
+    return {
+      leads: [],
+      warranties: [],
+      settings: {
+        siteNameEN: "HONG NGUYEN Industrial Coatings",
+        siteNameZH: "宏源新材料 · HONG NGUYEN",
+        email: "hogoshi2023@gmail.com",
+        phoneVN: "+84 838 396 799",
+        phoneCN: "+86 131 7420 8290",
+        wechat: "hogo13",
+        addrEN: "Xiashi Industrial Zone, Lunjiao Subdistrict, Shunde District, Foshan City, Guangdong Province, P.R.China",
+        addrZH: "广东省佛山市顺德区伦教街道下石工业区"
+      }
+    };
+  }
+
+  let data = loadData();
+
+  function updateStorageSize() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY) || '';
+      const kb = (raw.length / 1024).toFixed(2);
+      document.getElementById('storageSize').textContent = kb + ' KB · ' + data.leads.length + ' leads + ' + data.warranties.length + ' warranties';
+    } catch (e) {}
+  }
+
+  // ============================
+  // LOGIN
+  // ============================
+  document.getElementById('pinForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pin = document.getElementById('pinInput').value.trim();
+    if (pin === ADMIN_PIN) {
+      sessionStorage.setItem('hn_admin_auth', '1');
+      unlock();
+    } else {
+      document.getElementById('pinError').classList.remove('hidden');
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  });
+
+  function unlock() {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('logoutBtn').classList.remove('hidden');
+    renderAll();
+  }
+
+  function logout() {
+    if (!confirm('Lock admin and clear session?')) return;
+    sessionStorage.removeItem('hn_admin_auth');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginGate').classList.remove('hidden');
+    document.getElementById('logoutBtn').classList.add('hidden');
+    document.getElementById('pinInput').value = '';
+  }
+
+  // ============================
+  // TABS
+  // ============================
+  function switchTab(name) {
+    ['Leads', 'Warranties', 'Settings'].forEach(t => {
+      document.getElementById('tab' + t).classList.add('hidden');
+      document.getElementById('tabBtn' + t).className = 'bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 uppercase tracking-wider hover:bg-gray-300';
+    });
+    document.getElementById('tab' + name.charAt(0).toUpperCase() + name.slice(1)).classList.remove('hidden');
+    document.getElementById('tabBtn' + name.charAt(0).toUpperCase() + name.slice(1)).className = 'bg-slate-900 text-white text-xs font-bold px-4 py-2 uppercase tracking-wider';
+    if (name === 'leads') renderLeads();
+    if (name === 'warranties') renderWarranties();
+    if (name === 'settings') renderSettings();
+  }
+
+  // ============================
+  // LEADS
+  // ============================
+  function renderLeads() {
+    document.getElementById('statLeads').textContent = data.leads.length;
+    document.getElementById('leadsCount').textContent = data.leads.length + ' records';
+    const tbody = document.getElementById('leadsTbody');
+    if (data.leads.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-gray-400">No inquiries yet. The contact form on the public site will save here automatically.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.leads.map((l, i) => `
+      <tr class="hover:bg-gray-50">
+        <td class="p-3 font-mono text-[10px] text-gray-500">${formatDate(l.createdAt)}</td>
+        <td class="p-3 font-bold text-slate-900">${escapeHtml(l.name || '-')}</td>
+        <td class="p-3 font-mono text-[11px]">
+          ${l.phone ? `<a href="tel:${l.phone}" class="text-orange-600">${l.phone}</a><br>` : ''}
+          ${l.email ? `<a href="mailto:${l.email}" class="text-orange-600">${l.email}</a>` : ''}
+        </td>
+        <td class="p-3 text-slate-700">${escapeHtml(l.service || l.product || '-')}</td>
+        <td class="p-3 font-mono text-[11px]">${escapeHtml(l.area || l.volume || '-')}</td>
+        <td class="p-3 text-gray-600 text-[11px] max-w-xs truncate" title="${escapeHtml(l.notes || '')}">${escapeHtml(l.notes || '-')}</td>
+        <td class="p-3 text-right">
+          <button onclick="deleteLead(${i})" class="text-xs text-orange-600 hover:text-orange-800">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function deleteLead(i) {
+    if (!confirm('Delete this inquiry?')) return;
+    data.leads.splice(i, 1);
+    saveData(data);
+    renderLeads();
+  }
+
+  // Public form hook — call this on form submit to capture inquiry
+  window.captureInquiry = function(payload) {
+    const lead = {
+      id: 'lead-' + Date.now(),
+      createdAt: new Date().toISOString(),
+      ...payload
+    };
+    data.leads.unshift(lead);
+    saveData(data);
+    return lead;
+  };
+
+  // ============================
+  // WARRANTIES
+  // ============================
+  function createWarranty(e) {
+    e.preventDefault();
+    const w = {
+      id: 'w-' + Date.now(),
+      phone: document.getElementById('wPhone').value.trim(),
+      name: document.getElementById('wName').value.trim(),
+      code: document.getElementById('wCode').value.trim(),
+      spec: document.getElementById('wSpec').value.trim(),
+      start: document.getElementById('wStart').value,
+      end: document.getElementById('wEnd').value,
+      status: 'Active',
+      createdAt: new Date().toISOString()
+    };
+    data.warranties.push(w);
+    saveData(data);
+    document.getElementById('warrantyForm').reset();
+    renderWarranties();
+    alert('✓ Warranty ' + w.code + ' issued.');
+  }
+
+  function renderWarranties() {
+    document.getElementById('statWarranties').textContent = data.warranties.length;
+    document.getElementById('warrantyCount').textContent = data.warranties.length + ' records';
+    const tbody = document.getElementById('warrantiesTbody');
+    if (data.warranties.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400">No warranties yet. Use the form to issue the first one.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.warranties.map((w, i) => `
+      <tr class="hover:bg-gray-50">
+        <td class="p-3 font-mono text-[11px] font-bold text-slate-900">${escapeHtml(w.code)}</td>
+        <td class="p-3 text-slate-700">
+          <div class="font-bold">${escapeHtml(w.name)}</div>
+          <div class="font-mono text-[10px] text-orange-600">${escapeHtml(w.phone)}</div>
+        </td>
+        <td class="p-3 text-[11px] text-gray-600">${escapeHtml(w.spec)}</td>
+        <td class="p-3 font-mono text-[10px] text-gray-500">${w.start}<br>→ ${w.end}</td>
+        <td class="p-3 text-right">
+          <button onclick="lookupWarranty('${escapeAttr(w.phone)}')" class="text-xs text-emerald-600 hover:text-emerald-800 mr-3">Lookup</button>
+          <button onclick="deleteWarranty(${i})" class="text-xs text-orange-600 hover:text-orange-800">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function deleteWarranty(i) {
+    if (!confirm('Delete this warranty?')) return;
+    data.warranties.splice(i, 1);
+    saveData(data);
+    renderWarranties();
+  }
+
+  function lookupWarranty(phone) {
+    alert('Lookup by phone: ' + phone + '\n\nThis is the same data visible in the table. For a public warranty-check page, share the table data via Export JSON.');
+  }
+
+  // ============================
+  // SETTINGS
+  // ============================
+  function renderSettings() {
+    const s = data.settings || defaults().settings;
+    document.getElementById('setSiteNameEN').value = s.siteNameEN || '';
+    document.getElementById('setSiteNameZH').value = s.siteNameZH || '';
+    document.getElementById('setEmail').value = s.email || '';
+    document.getElementById('setPhoneVN').value = s.phoneVN || '';
+    document.getElementById('setPhoneCN').value = s.phoneCN || '';
+    document.getElementById('setWeChat').value = s.wechat || '';
+    document.getElementById('setAddrEN').value = s.addrEN || '';
+    document.getElementById('setAddrZH').value = s.addrZH || '';
+  }
+
+  function saveSettings() {
+    data.settings = {
+      siteNameEN: document.getElementById('setSiteNameEN').value.trim(),
+      siteNameZH: document.getElementById('setSiteNameZH').value.trim(),
+      email: document.getElementById('setEmail').value.trim(),
+      phoneVN: document.getElementById('setPhoneVN').value.trim(),
+      phoneCN: document.getElementById('setPhoneCN').value.trim(),
+      wechat: document.getElementById('setWeChat').value.trim(),
+      addrEN: document.getElementById('setAddrEN').value.trim(),
+      addrZH: document.getElementById('setAddrZH').value.trim()
+    };
+    saveData(data);
+    const ok = document.getElementById('settingsSaved');
+    ok.classList.remove('hidden');
+    setTimeout(() => ok.classList.add('hidden'), 5000);
+  }
+
+  // ============================
+  // EXPORT / IMPORT
+  // ============================
+  function exportAll() {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hn-admin-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importAll(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (!confirm('Importing will REPLACE all current data. Continue?')) {
+      e.target.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const imported = JSON.parse(ev.target.result);
+        data = { leads: imported.leads || [], warranties: imported.warranties || [], settings: imported.settings || defaults().settings };
+        saveData(data);
+        renderAll();
+        alert('✓ Imported successfully.');
+      } catch (err) {
+        alert('❌ Import failed: ' + err.message);
+      }
+    };
+    reader.readAsText(f);
+    e.target.value = '';
+  }
+
+  // ============================
+  // UTILITIES
+  // ============================
+  function renderAll() { renderLeads(); renderWarranties(); renderSettings(); updateStorageSize(); }
+
+  function formatDate(iso) {
+    if (!iso) return '-';
+    try { return new Date(iso).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }); }
+    catch { return iso; }
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function escapeAttr(s) { return String(s || '').replace(/'/g, "\\'"); }
+
+  // ============================
+  // BOOT
+  // ============================
+  (function init() {
+    // Auto-unlock if sessionStorage flag set
+    if (sessionStorage.getItem('hn_admin_auth') === '1') {
+      unlock();
+    }
+    updateStorageSize();
+    document.getElementById('pinInput').focus();
+  })();
+  </script>
+</body>
+</html>
