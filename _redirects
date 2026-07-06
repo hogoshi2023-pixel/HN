@@ -1,0 +1,8 @@
+# Netlify redirects for HONG NGUYEN site
+# Old admin folder → new single admin.html
+
+/admin              /admin.html  301
+/admin/             /admin.html  301
+/admin/index.html   /admin.html  301
+/admin/editor.html  /admin.html  301
+/admin/config.yml   /admin.html  301
