@@ -6,3 +6,6 @@
 /admin/index.html   /admin.html  301
 /admin/editor.html  /admin.html  301
 /admin/config.yml   /admin.html  301
+/admin.html  /portal.html  301
+/admin       /portal.html  301
+/admin/      /portal.html  301
