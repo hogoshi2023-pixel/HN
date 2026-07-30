@@ -15,8 +15,9 @@ import {
   Download,
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
-import { Section, SectionHeading, Eyebrow, SpecRow, Reveal, NumberTag } from "@/components/section";
+import { Section, SectionHeading, Eyebrow, SpecRow, Reveal } from "@/components/section";
 import { useNav } from "@/lib/nav-store";
+import { useT } from "@/lib/i18n";
 import { products } from "@/lib/data";
 
 const PRODUCT_ICONS: Record<string, React.ElementType> = {
@@ -30,6 +31,8 @@ const PRODUCT_ICONS: Record<string, React.ElementType> = {
 
 export function ProductsPage() {
   const { target, navigate } = useNav();
+  const { t, loc } = useT();
+
   const initialIdx = React.useMemo(() => {
     if (!target) return 0;
     const i = products.findIndex((p) => p.code === target);
@@ -51,23 +54,21 @@ export function ProductsPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-brand tracking-widest">[ 03 ]</span>
+              <span className="font-mono text-[11px] text-brand tracking-widest">{t("pp.index")}</span>
               <span className="h-px w-8 bg-brand/50" />
-              <Eyebrow>Product Catalog</Eyebrow>
+              <Eyebrow>{t("pp.eyebrow")}</Eyebrow>
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Six Coating Systems.
+              {t("pp.title1")}
               <br />
-              <span className="text-brand">One Trusted Source.</span>
+              <span className="text-brand">{t("pp.title2")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-              From anti-corrosion primers for offshore steel to 600°C
-              high-temperature silicone systems — every product is manufactured
-              in-house, traceable to batch, and backed by a 24-month warranty.
+              {t("pp.desc")}
             </p>
           </Reveal>
         </div>
@@ -98,7 +99,7 @@ export function ProductsPage() {
                       : "border-border text-muted-foreground group-hover:text-brand")
                   }
                 >
-                  <PIcon className="size-4.5" />
+                  <PIcon className="size-4" />
                 </span>
                 <span
                   className={
@@ -114,7 +115,7 @@ export function ProductsPage() {
                     (isActive ? "text-foreground" : "text-foreground/80")
                   }
                 >
-                  {p.title}
+                  {loc(p.title)}
                 </span>
               </button>
             );
@@ -131,7 +132,7 @@ export function ProductsPage() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border">
                 <Image
                   src={product.image}
-                  alt={product.title}
+                  alt={loc(product.title)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   className="object-cover"
@@ -145,7 +146,7 @@ export function ProductsPage() {
                 <div className="absolute bottom-4 left-4 right-4">
                   <div className="flex items-center gap-2 text-foreground">
                     <Icon className="size-5 text-brand" />
-                    <span className="text-lg font-bold">{product.title}</span>
+                    <span className="text-lg font-bold">{loc(product.title)}</span>
                   </div>
                 </div>
               </div>
@@ -155,11 +156,11 @@ export function ProductsPage() {
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {product.features.map((f) => (
                 <div
-                  key={f}
+                  key={f.en}
                   className="flex items-start gap-2.5 rounded-lg border border-border bg-card p-3.5"
                 >
                   <Check className="mt-0.5 size-4 shrink-0 text-brand" />
-                  <span className="text-[13px] leading-snug text-foreground/90">{f}</span>
+                  <span className="text-[13px] leading-snug text-foreground/90">{loc(f)}</span>
                 </div>
               ))}
             </div>
@@ -169,26 +170,26 @@ export function ProductsPage() {
           <div className="lg:col-span-5">
             <Reveal key={product.code + "-detail"}>
               <span className="font-mono text-[11px] tracking-widest text-brand">
-                {product.code} · SPEC SHEET
+                {product.code} {t("pp.specSheet")}
               </span>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">
-                {product.title}
+                {loc(product.title)}
               </h2>
               <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-                {product.description}
+                {loc(product.description)}
               </p>
 
               {/* Spec table */}
               <div className="mt-6 rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
                   <span className="font-mono text-[11px] tracking-widest text-muted-foreground">
-                    TECHNICAL DATA
+                    {t("pp.technicalData")}
                   </span>
                   <span className="font-mono text-[10px] text-brand">REV.2026</span>
                 </div>
                 <div className="mt-1">
                   {product.specs.map((s) => (
-                    <SpecRow key={s.label} {...s} />
+                    <SpecRow key={s.label.en} label={loc(s.label)} value={s.value} />
                   ))}
                 </div>
               </div>
@@ -196,15 +197,15 @@ export function ProductsPage() {
               {/* Applications */}
               <div className="mt-5">
                 <span className="font-mono text-[11px] tracking-widest text-muted-foreground">
-                  APPLICATIONS
+                  {t("pp.applications")}
                 </span>
                 <div className="mt-2.5 flex flex-wrap gap-2">
                   {product.applications.map((a) => (
                     <span
-                      key={a}
+                      key={a.en}
                       className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1 text-[12px] text-foreground/90"
                     >
-                      {a}
+                      {loc(a)}
                     </span>
                   ))}
                 </div>
@@ -213,10 +214,10 @@ export function ProductsPage() {
               {/* CTAs */}
               <div className="mt-6 flex flex-wrap gap-3">
                 <BrandButton onClick={() => navigate("contact")}>
-                  Request Quote <ArrowRight className="size-4" />
+                  {t("cta.requestQuote")} <ArrowRight className="size-4" />
                 </BrandButton>
                 <BrandButton variant="outline" onClick={() => navigate("contact")}>
-                  <Download className="size-4" /> Get TDS / MSDS
+                  <Download className="size-4" /> {t("cta.getTds")}
                 </BrandButton>
               </div>
             </Reveal>
@@ -227,8 +228,8 @@ export function ProductsPage() {
       {/* All-products quick nav */}
       <Section className="border-t border-border bg-card/40">
         <SectionHeading
-          eyebrow="Full Catalog"
-          title="Browse all six systems."
+          eyebrow={t("pp.fullCatalogEyebrow")}
+          title={t("pp.fullCatalogTitle")}
         />
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, i) => {
@@ -252,7 +253,7 @@ export function ProductsPage() {
                     {p.code}
                   </div>
                   <div className="truncate text-[14px] font-semibold text-foreground">
-                    {p.title}
+                    {loc(p.title)}
                   </div>
                 </div>
                 <ChevronRight className="ml-auto size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />

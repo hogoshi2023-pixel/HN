@@ -96,3 +96,37 @@ Stage Summary:
 - Design: dark industrial aesthetic, amber/orange accent, mono spec-sheet motifs, AI-generated photorealistic imagery.
 - Backend: contact inquiries persist to SQLite via Prisma; GET endpoint returns recent inquiries.
 - All 8 pages interactive; form submission golden path verified; responsive + sticky footer confirmed.
+
+---
+Task ID: I18N-1
+Agent: orchestrator (main)
+Task: Add English / Chinese / Vietnamese language switching to the 8-page B2B site.
+
+Work Log:
+- Created src/lib/i18n.ts: Locale store (Zustand, persisted to localStorage "hn-lang"), LStr type {en,zh,vi}, pick() helper, useT() hook returning {locale, setLocale, t, loc}, and a comprehensive UI dictionary (~180 keys) covering nav, CTAs, all 8 page headers/sections, form labels, toasts, errors, news categories, spec labels.
+- Refactored src/lib/data.ts: converted ALL translatable content fields to LStr objects (company desc/address/whatsapp, stats labels+subs, specSheet labels, 6 products [title/short/desc/features/specs/apps], 8 whyUs, 6 applications, 3 cases [location/title/summary/metrics], 6 certifications, 3 testimonials [quote/role], 6 exportRegions, 6 solutions, 4 process steps, 6 news items, 8 FAQs, 4 capabilities, story bullets, core chips, case outcomes). Technical/numeric values (codes, μm, hours, years, partner names) kept as plain strings — pick() returns them as-is.
+- Built LanguageSwitcher component (dropdown with EN/中/VI, globe icon, checkmark on active) + LangHydrator (useLayoutEffect reads localStorage on mount, sets document.documentElement.lang to avoid hydration mismatch).
+- Added switcher to header utility bar (desktop) + header main row (mobile, <lg) — both share one component.
+- Refactored site-header.tsx & site-footer.tsx to use t()/loc() — all nav, contact labels, product/company/export-region links localized.
+- Refactored all 8 page components (home, products, solutions, cases, about, news, faq, contact) to use useT() — every visible string routed through t() (UI) or loc() (data). News dates formatted per-locale via toLocaleDateString.
+- Contact form: localized all 11 field labels/placeholders, validation errors (mapped from server messages to err.* keys), success screen, and toast. Sends locale in payload.
+- Updated page.tsx to mount <LangHydrator /> once at root.
+
+Verification (Agent Browser):
+- English: home renders fully (nav, hero, spec sheet, products, why-us, cases, certs, testimonials, footer). ✓
+- Switched EN → 中文: nav (首页/产品/解决方案/案例/关于我们/新闻/常见问题/联系), hero "工程化涂料 用于 重型 工业", all product names, why-us, etc. ✓
+- Switched 中文 → Tiếng Việt: nav (Trang chủ/Sản phẩm/.../Liên hệ), hero "Sơn kỹ thuật cho công nghiệp hạng nặng", all content. ✓
+- Language persists across full page reload (localStorage) and across page navigation (Zustand). ✓
+- Products page (VI): tab switching works, spec table labels localized (Hệ thống/Độ dày/Bảo hành/Tải trọng), applications tags localized (Nhà kho/Nhà máy/Bãi đỗ xe/Phòng sạch). ✓
+- FAQ (ZH): all 8 questions localized, accordion expands, search "质保" correctly filters to warranty question. ✓
+- Contact (ZH): all 11 form fields localized, submitted successfully → "询盘已收到" success screen, record (陈伟 / 中国) persisted to DB via /api/contact. ✓
+- Footer (ZH): CTA, 4 columns (products/company/export regions), copyright all localized. ✓
+- Mobile (iPhone 14): language switcher present in header, dropdown opens with 3 options. ✓
+- Sticky footer confirmed (atBottom=true). Zero console/runtime errors. Lint clean.
+
+Stage Summary:
+- Trilingual (EN/中文/Tiếng Việt) language switching fully implemented across all 8 pages.
+- Switcher in header (desktop utility bar + mobile row), persists via localStorage, no hydration mismatch.
+- All UI strings + all data content translated; technical spec values stay universal.
+- Contact form + FAQ search + news dates all locale-aware.
+- Browser-verified end-to-end in all 3 languages.

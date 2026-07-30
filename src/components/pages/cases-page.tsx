@@ -6,12 +6,14 @@ import { ArrowRight, MapPin, Calendar, Ruler, Layers, ShieldCheck } from "lucide
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
 import { useNav } from "@/lib/nav-store";
-import { cases, type ProjectCase } from "@/lib/data";
+import { useT } from "@/lib/i18n";
+import { cases, caseOutcomes, type ProjectCase } from "@/lib/data";
 
 const METRIC_ICONS = [Ruler, Layers, ShieldCheck];
 
 export function CasesPage() {
   const { target, navigate } = useNav();
+  const { t, loc } = useT();
 
   const initialIdx = React.useMemo(() => {
     if (!target) return 0;
@@ -32,21 +34,20 @@ export function CasesPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-brand tracking-widest">[ 06 ]</span>
+              <span className="font-mono text-[11px] text-brand tracking-widest">{t("cases.index")}</span>
               <span className="h-px w-8 bg-brand/50" />
-              <Eyebrow>Project Cases</Eyebrow>
+              <Eyebrow>{t("cp.eyebrow")}</Eyebrow>
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Field-proven across{" "}
-              <span className="text-brand">continents.</span>
+              {t("cp.titlePre")}{" "}
+              <span className="text-brand">{t("cp.titleAccent")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-              Real projects, real performance. Every case below is backed by a
-              full QC dossier and post-installation inspection report.
+              {t("cp.desc")}
             </p>
           </Reveal>
         </div>
@@ -71,7 +72,7 @@ export function CasesPage() {
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
                     src={cc.image}
-                    alt={cc.title}
+                    alt={loc(cc.title)}
                     fill
                     sizes="(max-width: 640px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -84,7 +85,7 @@ export function CasesPage() {
                   </div>
                   <div className="absolute bottom-3 left-3 right-3">
                     <div className="flex items-center gap-2 font-mono text-[10px] tracking-wider text-foreground/90">
-                      <MapPin className="size-3 text-brand" /> {cc.location}
+                      <MapPin className="size-3 text-brand" /> {loc(cc.location)}
                       <span className="opacity-50">·</span>
                       <Calendar className="size-3 text-brand" /> {cc.year}
                     </div>
@@ -105,7 +106,7 @@ export function CasesPage() {
               <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border">
                 <Image
                   src={c.image}
-                  alt={c.title}
+                  alt={loc(c.title)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   className="object-cover"
@@ -121,17 +122,17 @@ export function CasesPage() {
                   {c.code}
                 </span>
                 <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
-                  <MapPin className="size-3.5 text-brand" /> {c.location}
+                  <MapPin className="size-3.5 text-brand" /> {loc(c.location)}
                 </span>
                 <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
                   <Calendar className="size-3.5 text-brand" /> {c.year}
                 </span>
               </div>
               <h2 className="mt-4 text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-3xl">
-                {c.title}
+                {loc(c.title)}
               </h2>
               <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-                {c.summary}
+                {loc(c.summary)}
               </p>
 
               {/* Metrics */}
@@ -140,7 +141,7 @@ export function CasesPage() {
                   const MIcon = METRIC_ICONS[i] ?? Ruler;
                   return (
                     <div
-                      key={m.label}
+                      key={m.label.en}
                       className="rounded-lg border border-border bg-card p-4 text-center"
                     >
                       <MIcon className="mx-auto size-4 text-brand" />
@@ -148,7 +149,7 @@ export function CasesPage() {
                         {m.value}
                       </div>
                       <div className="mt-0.5 text-[11px] text-muted-foreground">
-                        {m.label}
+                        {loc(m.label)}
                       </div>
                     </div>
                   );
@@ -157,10 +158,10 @@ export function CasesPage() {
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <BrandButton onClick={() => navigate("contact")}>
-                  Request Similar Project <ArrowRight className="size-4" />
+                  {t("cta.requestSimilar")} <ArrowRight className="size-4" />
                 </BrandButton>
                 <BrandButton variant="outline" onClick={() => navigate("products")}>
-                  Related Products
+                  {t("cta.relatedProducts")}
                 </BrandButton>
               </div>
             </div>
@@ -170,21 +171,19 @@ export function CasesPage() {
 
       {/* Outcomes band */}
       <Section className="border-t border-border bg-card/40">
+        <div className="mb-8 max-w-2xl">
+          <Eyebrow>{t("cp.outcomesTitle")}</Eyebrow>
+        </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { v: "42,500+", l: "m² coated in featured cases" },
-            { v: "0", l: "coating-failure defects reported" },
-            { v: "60+", l: "countries served" },
-            { v: "24 mo", l: "quality warranty standard" },
-          ].map((s) => (
+          {caseOutcomes.map((s) => (
             <div
-              key={s.l}
+              key={s.v}
               className="rounded-xl border border-border bg-background p-6 text-center"
             >
               <div className="text-3xl font-bold tracking-tight text-brand sm:text-4xl">
                 {s.v}
               </div>
-              <div className="mt-2 text-[12px] text-muted-foreground">{s.l}</div>
+              <div className="mt-2 text-[12px] text-muted-foreground">{loc(s.l)}</div>
             </div>
           ))}
         </div>

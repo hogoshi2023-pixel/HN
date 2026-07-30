@@ -15,7 +15,8 @@ import {
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
 import { useNav } from "@/lib/nav-store";
-import { solutions, applications } from "@/lib/data";
+import { useT } from "@/lib/i18n";
+import { solutions, applications, solutionsProcess } from "@/lib/data";
 
 const ICONS: Record<string, React.ElementType> = {
   Factory,
@@ -28,6 +29,7 @@ const ICONS: Record<string, React.ElementType> = {
 
 export function SolutionsPage() {
   const { navigate } = useNav();
+  const { t, loc } = useT();
 
   return (
     <>
@@ -47,22 +49,20 @@ export function SolutionsPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-brand tracking-widest">[ SOL ]</span>
+              <span className="font-mono text-[11px] text-brand tracking-widest">{t("sol.index")}</span>
               <span className="h-px w-8 bg-brand/50" />
-              <Eyebrow>Industry Solutions</Eyebrow>
+              <Eyebrow>{t("sol.eyebrow")}</Eyebrow>
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Coating systems engineered for your{" "}
-              <span className="text-brand">industry vertical.</span>
+              {t("sol.titlePre")}{" "}
+              <span className="text-brand">{t("sol.titleAccent")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-              We don&apos;t just sell paint — we engineer coating systems matched
-              to your substrate, environment and performance spec. Below are six
-              core industry verticals we serve worldwide.
+              {t("sol.desc")}
             </p>
           </Reveal>
         </div>
@@ -86,23 +86,23 @@ export function SolutionsPage() {
                     </span>
                   </div>
                   <h3 className="mt-5 text-xl font-bold tracking-tight text-foreground">
-                    {s.title}
+                    {loc(s.title)}
                   </h3>
                   <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
-                    {s.desc}
+                    {loc(s.desc)}
                   </p>
                   <div className="mt-5 border-t border-border/60 pt-4">
                     <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
-                      RECOMMENDED SYSTEMS
+                      {t("sol.recommended")}
                     </span>
                     <div className="mt-2.5 flex flex-wrap gap-2">
                       {s.products.map((p) => (
                         <span
-                          key={p}
+                          key={p.en}
                           className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-[12px] text-foreground/90"
                         >
                           <CheckCircle2 className="size-3.5 text-brand" />
-                          {p}
+                          {loc(p)}
                         </span>
                       ))}
                     </div>
@@ -111,7 +111,7 @@ export function SolutionsPage() {
                     onClick={() => navigate("contact")}
                     className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand transition-colors hover:text-brand/80"
                   >
-                    Talk to an engineer <ArrowRight className="size-4" />
+                    {t("cta.talkToEngineer")} <ArrowRight className="size-4" />
                   </button>
                 </div>
               </Reveal>
@@ -123,9 +123,9 @@ export function SolutionsPage() {
       {/* Applications strip */}
       <Section className="border-t border-border bg-card/40">
         <SectionHeading
-          eyebrow="Applications"
-          title="Where HONG NGUYEN coatings work."
-          description="Six core application areas where our systems are field-proven."
+          eyebrow={t("sol.appEyebrow")}
+          title={t("sol.appTitle")}
+          description={t("sol.appDesc")}
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {applications.map((a, i) => (
@@ -139,7 +139,7 @@ export function SolutionsPage() {
                     {a.code}
                   </div>
                   <div className="text-[14px] font-medium text-foreground">
-                    {a.title}
+                    {loc(a.title)}
                   </div>
                 </div>
               </div>
@@ -151,28 +151,23 @@ export function SolutionsPage() {
       {/* Engineering process */}
       <Section>
         <SectionHeading
-          eyebrow="Engineering Process"
-          title="From spec to shipment — four steps."
+          eyebrow={t("sol.procEyebrow")}
+          title={t("sol.procTitle")}
           align="center"
           className="mx-auto"
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { no: "01", t: "Consult", d: "Share substrate, environment, performance targets." },
-            { no: "02", t: "Sample", d: "Lab sample in 7 days. Tune color, hardness, grade." },
-            { no: "03", t: "Produce", d: "50K t/yr plant. Full QC report per batch." },
-            { no: "04", t: "Export", d: "CO, CIQ, MSDS, TDS, UN packaging. On-site training." },
-          ].map((s, i) => (
+          {solutionsProcess.map((s, i) => (
             <Reveal key={s.no} delay={i * 70}>
               <div className="relative rounded-xl border border-border bg-card p-6">
                 <span className="font-mono text-3xl font-bold text-brand/25">
                   {s.no}
                 </span>
-                <h3 className="mt-3 text-[15px] font-bold text-foreground">{s.t}</h3>
+                <h3 className="mt-3 text-[15px] font-bold text-foreground">{loc(s.t)}</h3>
                 <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">
-                  {s.d}
+                  {loc(s.d)}
                 </p>
-                {i < 3 && (
+                {i < solutionsProcess.length - 1 && (
                   <ArrowRight className="absolute -right-3 top-1/2 hidden size-5 -translate-y-1/2 text-brand/40 lg:block" />
                 )}
               </div>
@@ -181,7 +176,7 @@ export function SolutionsPage() {
         </div>
         <div className="mt-10 flex justify-center">
           <BrandButton size="lg" onClick={() => navigate("contact")}>
-            Start Your Project <ArrowRight className="size-4" />
+            {t("cta.startProject")} <ArrowRight className="size-4" />
           </BrandButton>
         </div>
       </Section>

@@ -6,7 +6,6 @@ import {
   Mail,
   MapPin,
   MessageCircle,
-  User,
   Send,
   CheckCircle2,
   Clock,
@@ -15,6 +14,8 @@ import {
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
+import { useNav } from "@/lib/nav-store";
+import { useT } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
 import { company, products, exportRegions } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,8 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 export function ContactPage() {
   const { toast } = useToast();
+  const { t, loc, locale } = useT();
+  const { navigate } = useNav();
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorMsg, setErrorMsg] = React.useState<string>("");
 
@@ -32,7 +35,8 @@ export function ContactPage() {
     setErrorMsg("");
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const payload = Object.fromEntries(fd.entries());
+    const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
+    payload.locale = locale;
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -41,23 +45,34 @@ export function ContactPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) {
-        throw new Error(data?.error || "Submission failed.");
+        const errKey = mapErrKey(data?.error);
+        throw new Error(t(errKey));
       }
       setStatus("success");
       form.reset();
       toast({
-        title: "Inquiry received",
-        description: data.message,
+        title: t("toast.inquiryTitle"),
+        description: t("toast.inquiryDesc"),
       });
     } catch (err) {
       setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Submission failed.");
+      const msg = err instanceof Error ? err.message : t("err.generic");
+      setErrorMsg(msg);
       toast({
-        title: "Could not send",
-        description: err instanceof Error ? err.message : "Please try again.",
+        title: t("err.couldNotSend"),
+        description: msg,
         variant: "destructive",
       });
     }
+  }
+
+  function mapErrKey(serverMsg?: string): string {
+    if (!serverMsg) return "err.generic";
+    const lower = serverMsg.toLowerCase();
+    if (lower.includes("name")) return "err.nameRequired";
+    if (lower.includes("email")) return "err.emailRequired";
+    if (lower.includes("project") || lower.includes("message") || lower.includes("describe")) return "err.messageRequired";
+    return "err.generic";
   }
 
   return (
@@ -69,22 +84,21 @@ export function ContactPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
             <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] text-brand tracking-widest">[ 09 ]</span>
+              <span className="font-mono text-[11px] text-brand tracking-widest">{t("ctp.index")}</span>
               <span className="h-px w-8 bg-brand/50" />
-              <Eyebrow>Request Quote</Eyebrow>
+              <Eyebrow>{t("ctp.eyebrow")}</Eyebrow>
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Get a quote in 24 hours.
+              {t("ctp.title1")}
               <br />
-              <span className="text-brand">Sample shipped in 48.</span>
+              <span className="text-brand">{t("ctp.title2")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-              Tell us your project — substrate, environment, performance
-              requirements. Our coating engineers respond same business day.
+              {t("ctp.desc")}
             </p>
           </Reveal>
         </div>
@@ -95,34 +109,34 @@ export function ContactPage() {
           {/* Contact info */}
           <div className="lg:col-span-5">
             <SectionHeading
-              eyebrow="Direct Contact"
-              title="Talk to a coating engineer."
-              description="Prefer to reach us directly? Use the channels below — we monitor them every business day."
+              eyebrow={t("ctp.directEyebrow")}
+              title={t("ctp.directTitle")}
+              description={t("ctp.directDesc")}
             />
 
             <ul className="mt-8 space-y-3">
               {[
                 {
                   icon: Phone,
-                  label: "Phone",
+                  label: t("footer.contact.phone"),
                   value: company.phone,
                   href: `tel:${company.phone.replace(/\s/g, "")}`,
                 },
                 {
                   icon: Mail,
-                  label: "Email",
+                  label: t("footer.contact.email"),
                   value: company.email,
                   href: `mailto:${company.email}`,
                 },
                 {
                   icon: MessageCircle,
-                  label: "WhatsApp / WeChat",
+                  label: t("footer.contact.whatsapp"),
                   value: company.contact,
                 },
                 {
                   icon: MapPin,
-                  label: "Address",
-                  value: company.address,
+                  label: t("footer.contact.address"),
+                  value: loc(company.address),
                 },
               ].map((c) => (
                 <li key={c.label}>
@@ -149,9 +163,9 @@ export function ContactPage() {
             {/* Trust strip */}
             <div className="mt-6 grid grid-cols-3 gap-3">
               {[
-                { icon: Clock, t: "24h", s: "Quote response" },
-                { icon: Factory, t: "48h", s: "Sample ships" },
-                { icon: ShieldCheck, t: "24 mo", s: "Warranty" },
+                { icon: Clock, t: "24h", s: t("ctp.trustQuote") },
+                { icon: Factory, t: "48h", s: t("ctp.trustSample") },
+                { icon: ShieldCheck, t: "24 mo", s: t("ctp.trustWarranty") },
               ].map((x) => (
                 <div
                   key={x.s}
@@ -176,107 +190,106 @@ export function ContactPage() {
                     <CheckCircle2 className="size-8 text-brand" />
                   </div>
                   <h3 className="mt-5 text-xl font-bold tracking-tight text-foreground">
-                    Inquiry received
+                    {t("ctp.successTitle")}
                   </h3>
                   <p className="mt-2 max-w-sm text-[14px] text-muted-foreground">
-                    Our coating engineers will respond within one business day.
-                    For urgent requests, message us on WhatsApp.
+                    {t("ctp.successDesc")}
                   </p>
                   <BrandButton
                     variant="outline"
                     className="mt-6"
                     onClick={() => setStatus("idle")}
                   >
-                    Send another inquiry
+                    {t("cta.sendAnother")}
                   </BrandButton>
                 </div>
               ) : (
                 <form onSubmit={onSubmit} className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Full name *">
+                    <Field label={`${t("form.fullName")} ${t("form.required")}`}>
                       <input
                         name="name"
                         required
                         className={inputCls}
-                        placeholder="Your name"
+                        placeholder={t("form.namePlaceholder")}
                       />
                     </Field>
-                    <Field label="Company">
+                    <Field label={t("form.company")}>
                       <input
                         name="company"
                         className={inputCls}
-                        placeholder="Company / org"
+                        placeholder={t("form.companyPlaceholder")}
                       />
                     </Field>
-                    <Field label="Email *">
+                    <Field label={`${t("form.email")} ${t("form.required")}`}>
                       <input
                         name="email"
                         type="email"
                         required
                         className={inputCls}
-                        placeholder="you@company.com"
+                        placeholder={t("form.emailPlaceholder")}
                       />
                     </Field>
-                    <Field label="Phone / WhatsApp">
+                    <Field label={t("form.phone")}>
                       <input
                         name="phone"
                         className={inputCls}
-                        placeholder="+84 ..."
+                        placeholder={t("form.phonePlaceholder")}
                       />
                     </Field>
-                    <Field label="Country / region">
+                    <Field label={t("form.country")}>
                       <input
                         name="country"
                         className={inputCls}
-                        placeholder="Vietnam"
+                        placeholder={t("form.countryPlaceholder")}
                       />
                     </Field>
-                    <Field label="Product of interest">
+                    <Field label={t("form.product")}>
                       <select name="product" className={inputCls} defaultValue="">
                         <option value="" disabled>
-                          Select a system…
+                          {t("form.productPlaceholder")}
                         </option>
                         {products.map((p) => (
-                          <option key={p.code} value={p.title}>
-                            {p.code} — {p.title}
+                          <option key={p.code} value={loc(p.title)}>
+                            {p.code} — {loc(p.title)}
                           </option>
                         ))}
-                        <option value="Other">Other / not sure</option>
+                        <option value="Other">{t("form.other")}</option>
                       </select>
                     </Field>
                   </div>
 
                   <div className="grid gap-5 sm:grid-cols-3">
-                    <Field label="Substrate">
+                    <Field label={t("form.substrate")}>
                       <input
                         name="substrate"
                         className={inputCls}
-                        placeholder="Steel / concrete / …"
+                        placeholder={t("form.substratePlaceholder")}
                       />
                     </Field>
-                    <Field label="Environment">
+                    <Field label={t("form.environment")}>
                       <input
                         name="environment"
                         className={inputCls}
-                        placeholder="Marine / indoor / …"
+                        placeholder={t("form.environmentPlaceholder")}
                       />
                     </Field>
-                    <Field label="Quantity (kg)">
+                    <Field label={t("form.quantity")}>
                       <input
                         name="quantity"
                         className={inputCls}
-                        placeholder="e.g. 2,000"
+                        placeholder={t("form.quantityPlaceholder")}
                       />
                     </Field>
                   </div>
 
-                  <Field label="Project details *">
+                  <Field label={`${t("form.message")} ${t("form.required")}`}>
                     <textarea
                       name="message"
                       required
                       rows={5}
                       className={cn(inputCls, "resize-none")}
-                      placeholder="Describe your project — substrate, environment, performance requirements, timeline…"
+                      placeholder={t("form.messagePlaceholder")}
                     />
                   </Field>
 
@@ -288,8 +301,7 @@ export function ContactPage() {
 
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <p className="text-[12px] text-muted-foreground">
-                      We respond within 1 business day. Your data is kept
-                      confidential.
+                      {t("ctp.formPrivacy")}
                     </p>
                     <BrandButton
                       type="submit"
@@ -297,10 +309,10 @@ export function ContactPage() {
                       disabled={status === "submitting"}
                     >
                       {status === "submitting" ? (
-                        "Sending…"
+                        t("cta.sending")
                       ) : (
                         <>
-                          Send Inquiry <Send className="size-4" />
+                          {t("cta.sendInquiry")} <Send className="size-4" />
                         </>
                       )}
                     </BrandButton>
@@ -315,18 +327,18 @@ export function ContactPage() {
       {/* Export regions */}
       <Section className="border-t border-border bg-card/40">
         <SectionHeading
-          eyebrow="Global Export"
-          title="Serving 60+ countries worldwide."
-          description="Active distributor and logistics channels across six regions."
+          eyebrow={t("ctp.globalEyebrow")}
+          title={t("ctp.globalTitle")}
+          description={t("ctp.globalDesc")}
         />
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {exportRegions.map((r) => (
             <div
-              key={r}
+              key={r.en}
               className="flex items-center gap-2.5 rounded-lg border border-border bg-background p-4"
             >
               <span className="size-2 rounded-full bg-brand" />
-              <span className="text-[13px] font-medium text-foreground">{r}</span>
+              <span className="text-[13px] font-medium text-foreground">{loc(r)}</span>
             </div>
           ))}
         </div>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { LangHydrator } from "@/components/language-switcher";
 import { useNav } from "@/lib/nav-store";
 import { HomePage } from "@/components/pages/home-page";
 import { ProductsPage } from "@/components/pages/products-page";
@@ -40,6 +41,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <LangHydrator />
       <SiteHeader />
       <main className="flex-1">
         {/* key forces remount + scroll reset on page change */}

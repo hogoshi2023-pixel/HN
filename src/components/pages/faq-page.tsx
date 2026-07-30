@@ -11,20 +11,31 @@ import {
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
 import { useNav } from "@/lib/nav-store";
+import { useT } from "@/lib/i18n";
 import { faqs } from "@/lib/data";
 
 export function FaqPage() {
   const { navigate } = useNav();
+  const { t, loc, locale } = useT();
   const [query, setQuery] = React.useState("");
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return faqs;
-    return faqs.filter(
-      (f) =>
-        f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q)
-    );
-  }, [query]);
+    return faqs.filter((f) => {
+      const qh = f.q[locale] ?? f.q.en;
+      const ah = f.a[locale] ?? f.a.en;
+      return qh.toLowerCase().includes(q) || ah.toLowerCase().includes(q);
+    });
+  }, [query, locale]);
+
+  const quickFacts: [string, string][] = [
+    [t("fp.moq"), "200 kg"],
+    [t("fp.sampleLead"), "7 days"],
+    [t("fp.prodLead"), "7 – 15 days"],
+    [t("fp.warranty"), "24 months"],
+    [t("fp.exportCountries"), "60+"],
+  ];
 
   return (
     <>
@@ -37,20 +48,18 @@ export function FaqPage() {
             <div className="flex items-center gap-3">
               <span className="font-mono text-[11px] text-brand tracking-widest">[ FAQ ]</span>
               <span className="h-px w-8 bg-brand/50" />
-              <Eyebrow>Frequently Asked Questions</Eyebrow>
+              <Eyebrow>{t("fp.eyebrow")}</Eyebrow>
             </div>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Answers for{" "}
-              <span className="text-brand">B2B buyers.</span>
+              {t("fp.titlePre")}{" "}
+              <span className="text-brand">{t("fp.titleAccent")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
-              Everything you need to know about MOQ, lead time, custom
-              formulation, OEM/private-label, certifications and export — in one
-              place.
+              {t("fp.desc")}
             </p>
           </Reveal>
 
@@ -63,7 +72,7 @@ export function FaqPage() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search questions…"
+                  placeholder={t("fp.searchPlaceholder")}
                   className="h-12 w-full rounded-lg border border-border bg-card pl-10 pr-4 text-[14px] text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </div>
@@ -81,29 +90,22 @@ export function FaqPage() {
               <div className="flex items-center gap-2">
                 <MessageCircleQuestion className="size-5 text-brand" />
                 <h3 className="text-[15px] font-bold text-foreground">
-                  Can&apos;t find an answer?
+                  {t("fp.sidebarTitle")}
                 </h3>
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                Our coating engineers respond the same business day. Tell us your
-                substrate, environment and performance targets.
+                {t("fp.sidebarDesc")}
               </p>
               <BrandButton className="mt-5 w-full" onClick={() => navigate("contact")}>
-                Ask an Engineer <ArrowRight className="size-4" />
+                {t("cta.askEngineer")} <ArrowRight className="size-4" />
               </BrandButton>
 
               <div className="mt-6 border-t border-border/60 pt-5">
                 <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
-                  QUICK FACTS
+                  {t("fp.quickFacts")}
                 </span>
                 <dl className="mt-3 space-y-2.5 text-[13px]">
-                  {[
-                    ["MOQ", "200 kg"],
-                    ["Sample lead", "7 days"],
-                    ["Production lead", "7 – 15 days"],
-                    ["Warranty", "24 months"],
-                    ["Export countries", "60+"],
-                  ].map(([k, v]) => (
+                  {quickFacts.map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between">
                       <dt className="text-muted-foreground">{k}</dt>
                       <dd className="font-mono font-medium text-foreground">{v}</dd>
@@ -119,12 +121,12 @@ export function FaqPage() {
             {filtered.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border p-12 text-center">
                 <p className="text-[14px] text-muted-foreground">
-                  No questions match &ldquo;{query}&rdquo;. Try another term or{" "}
+                  {t("fp.noResults")} &ldquo;{query}&rdquo;{t("fp.tryOrAsk")}{" "}
                   <button
                     onClick={() => navigate("contact")}
                     className="font-medium text-brand hover:underline"
                   >
-                    ask an engineer
+                    {t("cta.askEngineer")}
                   </button>
                   .
                 </p>
@@ -132,16 +134,16 @@ export function FaqPage() {
             ) : (
               <Accordion type="single" collapsible className="space-y-3">
                 {filtered.map((f, i) => (
-                  <Reveal key={f.q} delay={i * 40}>
+                  <Reveal key={f.q.en} delay={i * 40}>
                     <AccordionItem
                       value={`item-${i}`}
                       className="overflow-hidden rounded-xl border border-border bg-card px-5 data-[state=open]:border-brand/40"
                     >
                       <AccordionTrigger className="py-5 text-left text-[15px] font-semibold text-foreground hover:no-underline">
-                        <span className="pr-3">{f.q}</span>
+                        <span className="pr-3">{loc(f.q)}</span>
                       </AccordionTrigger>
                       <AccordionContent className="pb-5 text-[14px] leading-relaxed text-muted-foreground">
-                        {f.a}
+                        {loc(f.a)}
                       </AccordionContent>
                     </AccordionItem>
                   </Reveal>
