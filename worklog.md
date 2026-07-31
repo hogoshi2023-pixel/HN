@@ -449,3 +449,34 @@ Stage Summary:
 - All 30 regenerated images use natural realistic documentary photography style (neutral/cool palette, no artificial amber wash).
 - Site imagery now looks authentic rather than AI-generated.
 - Total site images: 34 (filenames unchanged, all references valid).
+
+---
+Task ID: FINAL-QA
+Agent: orchestrator (main)
+Task: Comprehensive quality review after all image/style work; fix any remaining issues.
+
+QA findings & fixes:
+- VLM full-page assessment of home: 9/10 polish. Flagged Applications (§05) and Cases (§06) card images as "extremely dark/blackened" due to heavy gradient overlays.
+- Fixed gradient overlays (lightened so images are visible):
+  - home-page.tsx applications cards: from-ink/90 via-ink/30 → from-ink/85 via-ink/20
+  - home-page.tsx cases cards: from-ink/80 via-ink/10 → from-ink/75 via-ink/10
+  - cases-page.tsx selector cards: from-ink/80 → from-ink/75
+  - solutions-page.tsx cards: from-card via-card/30 → from-card via-card/20
+- VLM re-verified: Applications cards now "clearly visible, not too dark, natural/realistic". Cases cards "well-lit, high-quality photographs".
+
+Full-site verification (Agent Browser):
+- Home: 17 images, 9/10 VLM polish, no errors.
+- Products: 7 images, h1 renders, 0 errors.
+- Solutions: 7 images, 0 errors.
+- Cases: 4 images, 0 errors.
+- About: 3 images, 0 errors.
+- News: 6 images, 0 errors.
+- FAQ: 1 header bg image, 0 errors.
+- Contact: 1 header bg image, 0 errors.
+- Language switch EN→中文 verified (nav + content localized; news date localized).
+- Admin (?admin=1): lock screen in Chinese, unlock with HN_ADMIN_2026 → dashboard shows inquiry (陈伟, 已联系), all columns localized.
+- Lint clean. No console errors. No 404s.
+
+Stage Summary:
+- Site is production-ready: 8 pages, 3 languages, admin backend, 34 natural-realistic images, no errors.
+- Only fix needed this round: lightened dark gradient overlays on image cards so imagery is visible.

@@ -85,7 +85,7 @@ export function SolutionsPage() {
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
                     <div className="absolute left-4 top-4 flex items-center gap-2">
                       <span className="grid size-9 place-items-center rounded-md border border-brand/40 bg-ink/70 text-brand backdrop-blur">
                         <Icon className="size-5" />

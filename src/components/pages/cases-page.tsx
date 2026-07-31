@@ -77,7 +77,7 @@ export function CasesPage() {
                     sizes="(max-width: 640px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/80 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/75 to-transparent" />
                   <div className="absolute left-3 top-3 flex items-center gap-1.5">
                     <span className="rounded-full bg-brand px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-brand-foreground">
                       {cc.code}
