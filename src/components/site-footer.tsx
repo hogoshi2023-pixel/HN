@@ -183,6 +183,14 @@ export function SiteFooter() {
                 {c}
               </span>
             ))}
+            <span className="opacity-30">·</span>
+            <button
+              onClick={() => navigate("admin")}
+              className="transition-colors hover:text-brand"
+              title="Admin"
+            >
+              Admin
+            </button>
           </p>
         </div>
       </div>

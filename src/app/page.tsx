@@ -13,6 +13,7 @@ import { AboutPage } from "@/components/pages/about-page";
 import { NewsPage } from "@/components/pages/news-page";
 import { FaqPage } from "@/components/pages/faq-page";
 import { ContactPage } from "@/components/pages/contact-page";
+import { AdminPage } from "@/components/pages/admin-page";
 
 function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"] }) {
   switch (page) {
@@ -30,6 +31,8 @@ function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"
       return <FaqPage />;
     case "contact":
       return <ContactPage />;
+    case "admin":
+      return <AdminPage />;
     case "home":
     default:
       return <HomePage />;
@@ -38,16 +41,26 @@ function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"
 
 export default function Page() {
   const page = useNav((s) => s.page);
+  const navigate = useNav((s) => s.navigate);
+
+  // Detect ?admin=1 (or #admin) on mount → switch to admin view.
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const isAdmin = url.searchParams.get("admin") === "1" || url.hash === "#admin";
+    if (isAdmin) navigate("admin");
+  }, []);
+
+  const isAdmin = page === "admin";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LangHydrator />
-      <SiteHeader />
+      {!isAdmin && <SiteHeader />}
       <main className="flex-1">
-        {/* key forces remount + scroll reset on page change */}
         <CurrentPage key={page} page={page} />
       </main>
-      <SiteFooter />
+      {!isAdmin && <SiteFooter />}
     </div>
   );
 }

@@ -130,3 +130,40 @@ Stage Summary:
 - All UI strings + all data content translated; technical spec values stay universal.
 - Contact form + FAQ search + news dates all locale-aware.
 - Browser-verified end-to-end in all 3 languages.
+
+---
+Task ID: ADMIN-1
+Agent: orchestrator (main)
+Task: Build a backend admin panel for managing contact inquiries.
+
+Work Log:
+- Added `admin` to PageId in nav-store (hidden from public nav).
+- page.tsx: detect `?admin=1` or `#admin` on mount → switch to admin view; hides SiteHeader/SiteFooter when in admin.
+- Extended GET /api/contact: returns full fields (email/phone/message/etc.) only when `x-admin-key` header matches ADMIN_KEY; public (no key) gets limited fields. Added status filter, search query, and stats summary (total/new/contacted/closed).
+- Added PATCH /api/contact/[id] (update status new|contacted|closed) + DELETE /api/contact/[id], both gated by x-admin-key (401 without).
+- Added ~40 admin UI strings to i18n.ts (EN/ZH/VI): lock screen, stats, table columns, status labels, actions, dialog.
+- Built admin-page.tsx: LockScreen (passphrase gate, demo key shown) + Dashboard (sticky top bar, 4 stat cards, status filter chips w/ counts, search, CSV export, inquiry table, detail dialog with full fields + mailto + status/delete actions). Auth state in sessionStorage.
+- Added discreet "Admin" link in footer bottom bar (between certs).
+
+Security model (demo-level):
+- ADMIN_KEY = "HN_ADMIN_2026" (shared secret). LockScreen verifies client-side, stores flag in sessionStorage.
+- Management APIs (PATCH/DELETE) + full-field GET require `x-admin-key` header. Public GET returns limited fields (no email/phone/message) — safe for any caller.
+- Noted in UI: production should use NextAuth + server-side sessions.
+
+Verification (Agent Browser):
+- Lock screen renders (EN/ZH), passphrase field, demo key hint shown.
+- Unlocked with HN_ADMIN_2026 → dashboard: 4 stat cards (Total 2, New 2, Contacted 0, Closed 0), status filter chips with counts, search box, Export CSV, table with both inquiries (陈伟 + Budi).
+- Detail dialog opens (View button), shows all fields + mailto + status buttons.
+- Marked 陈伟 "contacted" → table cell + filter chip + stats updated (New 1, Contacted 1); verified persisted in DB via API.
+- Search "Budi" → correctly filters to only Budi row.
+- Language switch EN↔中文↔Việt works in admin (all labels localized).
+- Logout → returns to lock screen.
+- Footer "Admin" link → re-enters admin (skips lock if session still authed).
+- Mobile (iPhone 14): lock screen + dashboard render, table scrolls horizontally.
+- API gating verified: full fields with key, limited without key, PATCH 401 without key.
+- Zero console/runtime errors; lint clean.
+
+Stage Summary:
+- Full admin backend panel complete: inquiry management with stats, search, filter, status workflow (new→contacted→closed), delete, CSV export, detail dialog, trilingual UI.
+- Access via `?admin=1` URL or discreet footer "Admin" link. Passphrase: HN_ADMIN_2026.
+- API protected by shared-secret header; public GET limited to safe fields.
