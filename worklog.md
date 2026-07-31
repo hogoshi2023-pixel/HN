@@ -620,3 +620,38 @@ Verification (Agent Browser):
 Stage Summary:
 - EN/VI/中 all now show full TDS detail when expanding a model.
 - Site fully functional across 8 pages, 3 languages, with 13 detailed product spec sheets.
+
+---
+Task ID: EXPAND-CATALOG
+Agent: orchestrator (main)
+Task: Expand product catalog — add more Rolls products to each HONG NGUYEN category (keep existing structure + HN- naming).
+
+Approach:
+- Did NOT change the 6-category structure or existing HN- model names.
+- Mapped 34 additional Rolls products to new HN- model numbers within existing categories.
+- Each new model carries full TDS detail (产品概述/适用范围/物理参数/施工说明/建议油漆配套/安全守则) copied from Rolls, with 劳斯→宏源 / ROLLS→HONG NGUYEN replacement.
+- Naming: kept HN- prefix pattern. New models use next available numbers (HN-AC-601+, HN-FL-501+, HN-EX-705+, HN-AR-805+, HN-CUSTOM-05+).
+- en = zh = vi for details (full Chinese spec sheet, universal technical values).
+
+New models added per category:
+- CAT-01 防腐: +12 (HN-AC-601..612) = 16 total. Added: 环氧铁红防锈底漆, 环氧彩色厚浆漆, 环氧封闭底漆, 环氧防腐面漆, 环氧磷酸锌底漆, 环氧沥青防腐漆, 丙烯酸漆, 醇酸漆, 氯化橡胶漆, 高渗透改性环氧防腐涂料, 环氧沥青防腐涂料, 桥梁防腐漆.
+- CAT-02 耐高温: +0 (Rolls has only 1 high-temp product, already mapped). 4 total.
+- CAT-03 地坪: +5 (HN-FL-501..505) = 9 total. Added: 聚氨酯地坪罩光清漆, 水性丙烯酸地坪漆, 环氧封闭底漆N5050, 单组份罩光清漆BV0036, 丙烯酸地坪漆BF0557.
+- CAT-04 耐候面漆: +3 (HN-EX-705..707) = 7 total. Added: 工业氟碳烤漆, 钢构氟碳漆, 水性氟碳漆.
+- CAT-05 建筑内外墙: +3 (HN-AR-805..807) = 7 total. Added: 超级纳米健康儿童漆, 油性建筑涂料, 瓷砖翻新涂料.
+- CAT-06 特种定制: +11 (HN-CUSTOM-05..15) = 15 total. Added: 家电板材涂料, 五金塑料烤漆, 汽车漆, 船舶漆, 机械设备漆, 不锈钢无指纹涂料, 水性丙烯酸漆, 水性聚氨酯漆, 水性环氧漆, 水性特种漆, 清水混凝土保护剂.
+
+Total catalog: 24 → 58 models (34 new). All 34 new models have full TDS detail sheets.
+
+Verification (Agent Browser):
+- CAT-01: 16 models ✓ (HN-AC-201..612)
+- CAT-03: 9 models ✓ (HN-FL-101..505)
+- CAT-06: 15 models ✓ (HN-CUSTOM-01..15)
+- TDS expand works on new models (HN-CUSTOM-05 醇酸漆 detail shows full spec with "HONG NGUYEN（宏源）" branding) ✓
+- No "劳斯" anywhere ✓
+- Lint clean, no errors.
+
+Stage Summary:
+- Product catalog expanded from 24 to 58 models across 6 categories.
+- All new models carry complete TDS spec sheets from Rolls catalog (brand replaced).
+- Existing 6-category structure + HN- naming preserved.
