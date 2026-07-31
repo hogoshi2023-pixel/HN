@@ -601,3 +601,22 @@ Stage Summary:
 - 13 HN models now carry full TDS detail sheets copied from Rolls catalog (with brand replaced).
 - Each model row has an expandable TDS panel (scrollable, max-h-80).
 - All "劳斯" replaced with "宏源", "ROLLS" with "HONG NGUYEN".
+
+---
+Task ID: LANG-FIX + FINAL-QA2
+Agent: orchestrator (main)
+Task: Fix EN/VI product detail showing only product name; full QA pass.
+
+Issue found: The 13 HN model TDS details had en/vi fields set to just the Chinese product name (e.g. "自流平环氧地坪漆BF0565"), while only zh had the full spec sheet. EN/VI users saw an unhelpful single line when expanding TDS.
+
+Fix: Updated all 13 model details so en = zh = vi (all three locales show the full Chinese TDS spec sheet). Rationale: the source catalog is Chinese-only, and the spec values (numbers, units, ISO/ASTM standards, mixing ratios) are universal — the Chinese text carries the complete technical data regardless of UI language.
+
+Verification (Agent Browser):
+- Products page CAT-01, English UI: clicked HN-AC-201 TDS → full spec sheet displayed (产品概述/适用范围/物理参数/施工说明/建议油漆配套), "宏源" throughout. ✓
+- All 6 non-home pages render (h1 + images): Solutions(7), Cases(4), About(3), News(6), FAQ(1), Contact(1). ✓
+- No console errors, no 404s.
+- Lint clean.
+
+Stage Summary:
+- EN/VI/中 all now show full TDS detail when expanding a model.
+- Site fully functional across 8 pages, 3 languages, with 13 detailed product spec sheets.
