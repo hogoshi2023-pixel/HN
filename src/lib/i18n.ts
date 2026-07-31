@@ -195,6 +195,8 @@ export const ui: Record<string, LStr> = {
   "pp.featuredModels": { en: "FEATURED MODELS", zh: "产品型号", vi: "MÃ SẢN PHẨM" },
   "pp.expandModels": { en: "Show", zh: "展开", vi: "Hiện" },
   "pp.collapseModels": { en: "Hide", zh: "收起", vi: "Ẩn" },
+  "pp.viewDetail": { en: "TDS", zh: "产品详情", vi: "Thông số" },
+  "pp.hideDetail": { en: "Hide", zh: "收起", vi: "Ẩn" },
 
   // Solutions page
   "sol.index": { en: "[ SOL ]", zh: "[ SOL ]", vi: "[ SOL ]" },

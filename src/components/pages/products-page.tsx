@@ -30,20 +30,26 @@ const PRODUCT_ICONS: Record<string, React.ElementType> = {
   "CAT-06": FlaskConical,
 };
 
-/** Expandable list of concrete product models under a category. */
+/** Expandable list of concrete product models under a category.
+ *  Each model row can be expanded to show full product details (TDS). */
 function ModelList({
   models,
   title,
   expandLabel,
   collapseLabel,
+  detailLabel,
+  hideDetailLabel,
 }: {
-  models: { model: string; desc: { en: string; zh: string; vi: string } }[];
+  models: { model: string; desc: { en: string; zh: string; vi: string }; details?: { en: string; zh: string; vi: string } }[];
   title: string;
   expandLabel: string;
   collapseLabel: string;
+  detailLabel: string;
+  hideDetailLabel: string;
 }) {
   const { loc } = useT();
   const [open, setOpen] = React.useState(true);
+  const [expandedModel, setExpandedModel] = React.useState<string | null>(null);
 
   return (
     <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
@@ -69,19 +75,38 @@ function ModelList({
       </button>
       {open && (
         <ul className="divide-y divide-border/60 border-t border-border/60">
-          {models.map((m) => (
-            <li
-              key={m.model}
-              className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-background/40 sm:flex-row sm:items-center sm:gap-4"
-            >
-              <span className="inline-flex w-fit shrink-0 items-center rounded-md border border-brand/30 bg-brand-muted px-2.5 py-1 font-mono text-[12px] font-bold text-brand">
-                {m.model}
-              </span>
-              <span className="text-[13px] leading-snug text-foreground/90">
-                {loc(m.desc)}
-              </span>
-            </li>
-          ))}
+          {models.map((m) => {
+            const hasDetails = !!m.details;
+            const isExpanded = expandedModel === m.model;
+            return (
+              <li key={m.model} className="px-4 py-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                  <span className="inline-flex w-fit shrink-0 items-center rounded-md border border-brand/30 bg-brand-muted px-2.5 py-1 font-mono text-[12px] font-bold text-brand">
+                    {m.model}
+                  </span>
+                  <span className="flex-1 text-[13px] leading-snug text-foreground/90">
+                    {loc(m.desc)}
+                  </span>
+                  {hasDetails && (
+                    <button
+                      onClick={() => setExpandedModel(isExpanded ? null : m.model)}
+                      className="inline-flex w-fit shrink-0 items-center gap-1 rounded-md border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-brand transition-colors hover:border-brand/40 hover:bg-brand-muted"
+                    >
+                      {isExpanded ? hideDetailLabel : detailLabel}
+                      <ChevronDown
+                        className={"size-3.5 transition-transform " + (isExpanded ? "rotate-180" : "")}
+                      />
+                    </button>
+                  )}
+                </div>
+                {hasDetails && isExpanded && (
+                  <pre className="mt-3 max-h-80 overflow-y-auto scroll-thin whitespace-pre-wrap rounded-lg border border-border/60 bg-background p-4 font-sans text-[12.5px] leading-relaxed text-foreground/85">
+                    {loc(m.details)}
+                  </pre>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
@@ -293,6 +318,8 @@ export function ProductsPage() {
                 title={t("pp.featuredModels")}
                 expandLabel={t("pp.expandModels")}
                 collapseLabel={t("pp.collapseModels")}
+                detailLabel={t("pp.viewDetail")}
+                hideDetailLabel={t("pp.hideDetail")}
               />
 
               {/* CTAs */}

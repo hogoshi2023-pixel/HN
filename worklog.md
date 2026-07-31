@@ -525,3 +525,79 @@ Stage Summary:
 - Model naming per user rule: HY-* → HN-*, CUSTOM-* → HN-CUSTOM-*.
 - Expandable model list with localized descriptions, plus 4-card headline stats row.
 - Trilingual (EN/ZH/VI) verified.
+
+---
+Task ID: SCRAPE-1
+Agent: scraping subagent
+Task: Scrape complete Rolls product catalog (46 products) with detailed specs.
+
+Work Log:
+- Read worklog.md to understand project context (HONG NGUYEN Industrial Coatings B2B site, dark industrial aesthetic, amber/orange accent).
+- Inspected z-ai-web-dev-sdk package; confirmed page_reader function signature: `zai.functions.invoke('page_reader', { url })` returns `{ data: { html, title, url, ... } }`.
+- Tested list page fetch via `z-ai function -n page_reader` CLI; confirmed 12 product cards on page 1 with `target="_blank"` links (the sidebar category links also use wareshow URLs but lack `target="_blank"`).
+- Discovered the task-suggested pagination URL `?action=list|rolls|1|cn|12511|12511|N|&sortid=` redirects to homepage (malformed). Tested alternates and verified the correct pagination pattern: `/index.php/list/rolls/1/cn/12511/12511/N.html` — pages 1-4 yield 12+12+12+10 = 46 products total.
+- Wrote `/home/z/my-project/scripts/scrape-rolls.mjs`: a single ZAI instance script that fetches 4 list pages sequentially, extracts product card links (id/name/url) via regex, then fetches each detail page with 2s rate-limit delay and skip-if-exists caching to `/tmp/rolls-detail-<ID>.json`. Includes retry-once on failure and force-flushed log output.
+- Ran scrape in background via `nohup` (the wrapper shell hits a 540s hard timeout). The SDK process silently died twice mid-batch (likely OOM or connection-pool issue) but skip-if-exists caching let each re-run resume from where it left off. After 3 background runs all 46 detail pages were cached.
+- Wrote `/home/z/my-project/scripts/reparse-rolls.mjs`: a no-network re-parser that reads cached detail pages and extracts structured fields. Iterated 3 times on the parser:
+  1. Initial regex `<strong>SECTION<br></strong>` failed for many products (some use `<strong><br>SECTION`, some use inline `<br>SECTION：` without `<strong>`, some use variant names like 典型油漆系统/安全事项/产品简介/用途/基本参数/施工条件/配套油漆系统).
+  2. Added flexible `findSectionMarkers` that handles both bolded and inline forms, with optional `<br>`/whitespace/colon around the section name.
+  3. Added 7 field-buckets with 30+ section-name variants (e.g. overview={产品概述,产品简介,产品介绍,产品描述,简介}, safety={安全守则,安全事项,安全防护,注意安全,安全}, etc.), longer names matched first to avoid "施工" clobbering "施工说明".
+- For category: extracted the first `sortid` link inside the 同系列产品 section (bounded between the series header and the first content marker). Where no sortid link exists in that section (15 products, mostly sibling product pages), category is left as empty string per task spec.
+- Final output written to `/tmp/rolls-products.json` (97KB, 46 products, 11 fields each: id, name, category, url, overview, application, physicalParams, construction, recommendedSystem, notes, safety).
+
+Stage Summary:
+- Total products scraped: 46 / 46 (100%)
+- Output file: /tmp/rolls-products.json
+- Field fill stats: overview 44/46, application 43/46, physicalParams 43/46, construction 38/46, recommendedSystem 33/46, notes 19/46, safety 36/46, category 31/46.
+- 5 products have <5 of 7 standard sections filled (30961, 30962, 30969, 30977, 30979) — these use non-standard layouts (e.g. 30961 uses 使用说明/组成/特性/用途/施工参数/安全防护; 30969 is a service-offering page about 防腐工程 not a product spec sheet; 30977 uses 氟碳面漆的组成/技术指标/喷涂/声明). Missing fields are set to empty string per task spec.
+- Data-quality notes for orchestrator:
+  - Product 30973 (船舶漆) detail page actually contains content for 醇酸漆 — source-site data inconsistency (title/breadcrumb say 船舶漆, body says 醇酸漆). Kept as-is per "do not modify original text" instruction.
+  - Products 30993-30997 (building/architectural paints) have category="地坪漆系列" because that's the first sortid link shown in their 同系列产品 section — technically a sibling category, not the parent. Source site does not expose the true parent category in the detail page HTML.
+  - The text contains "劳斯" (brand name) throughout — kept as-is per task instructions; orchestrator to handle replacement.
+- Failures: 0 detail pages failed to fetch (all 46 cached successfully after 3 background runs).
+- Scripts produced: scripts/scrape-rolls.mjs (fetcher, ~150 lines), scripts/reparse-rolls.mjs (parser, ~225 lines). Both are idempotent and safe to re-run.
+
+---
+Task ID: ROLLS-COPY
+Agent: orchestrator (main)
+Task: Copy detailed product specs from Rolls (rolls7.cn) catalog into our site's HN- models; replace 劳斯→宏源, ROLLS→HONG NGUYEN.
+
+Source: http://www.rolls7.cn/index.php/list/rolls/1/cn/12511/12511.html (46 products, 4 pages).
+Scraping (SCRAPE-1 subagent): fetched all 46 detail pages via ZAI page_reader, extracted {overview, application, physicalParams, construction, recommendedSystem, notes, safety} per product. Output: /tmp/rolls-products.json.
+
+Mapping (Rolls product → HN model):
+- 环氧富锌底漆P5160 → HN-AC-201
+- 环氧云铁中间漆 → HN-AC-302
+- 聚氨酯漆(丙烯酸PU面漆) → HN-AC-405
+- 环氧玻璃磷片漆 → HN-AC-501
+- 有机硅耐高温漆 → HN-HT-200
+- 自流平环氧地坪漆BF0565 → HN-FL-101
+- 环氧地坪漆F5440 → HN-FL-202
+- 水性环氧地坪漆E5440 → HN-FL-303
+- 聚氨酯地坪漆 → HN-FL-404
+- 建筑氟碳漆 → HN-EX-701
+- 聚氨酯漆 → HN-EX-702 (reuse)
+- 内墙涂料 → HN-AR-801
+- 外墙涂料 → HN-AR-802
+(13 of 24 models got detailed specs; remaining 11 keep their short descriptions.)
+
+Brand replacement: 劳斯→宏源, ROLLS（劳斯）→HONG NGUYEN（宏源）, ROLLS→HONG NGUYEN. Applied to all extracted text.
+
+Data changes (src/lib/data.ts):
+- Added `details?: LStr` field to Product.models type.
+- Injected full TDS details (产品概述/适用范围/物理参数/施工说明/建议油漆配套/安全守则) into 13 HN models.
+
+UI changes (src/components/pages/products-page.tsx):
+- ModelList: each model row now has a "TDS" (产品详情/Thông số) expand button. Clicking expands a scrollable <pre> panel showing the full product spec sheet in the current language.
+- Added pp.viewDetail / pp.hideDetail i18n strings (EN: TDS/Hide, ZH: 产品详情/收起, VI: Thông số/Ẩn).
+
+Verification (Agent Browser):
+- Products page: 4 TDS buttons per category (for mapped models) ✓.
+- Clicked HN-AC-201 TDS in Chinese → full spec sheet displayed (产品概述/适用范围/物理参数/施工说明/建议油漆配套), "宏源" throughout (no 劳斯) ✓.
+- Brand check: no "劳斯" anywhere on page; "HONG NGUYEN" present ✓.
+- Lint clean, no errors.
+
+Stage Summary:
+- 13 HN models now carry full TDS detail sheets copied from Rolls catalog (with brand replaced).
+- Each model row has an expandable TDS panel (scrollable, max-h-80).
+- All "劳斯" replaced with "宏源", "ROLLS" with "HONG NGUYEN".
