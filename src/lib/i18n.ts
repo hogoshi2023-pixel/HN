@@ -192,6 +192,9 @@ export const ui: Record<string, LStr> = {
   "pp.applications": { en: "APPLICATIONS", zh: "应用领域", vi: "ỨNG DỤNG" },
   "pp.fullCatalogEyebrow": { en: "Full Catalog", zh: "完整目录", vi: "Toàn bộ catalog" },
   "pp.fullCatalogTitle": { en: "Browse all six systems.", zh: "浏览全部六大体系。", vi: "Xem cả sáu hệ sơn." },
+  "pp.featuredModels": { en: "FEATURED MODELS", zh: "产品型号", vi: "MÃ SẢN PHẨM" },
+  "pp.expandModels": { en: "Show", zh: "展开", vi: "Hiện" },
+  "pp.collapseModels": { en: "Hide", zh: "收起", vi: "Ẩn" },
 
   // Solutions page
   "sol.index": { en: "[ SOL ]", zh: "[ SOL ]", vi: "[ SOL ]" },

@@ -13,6 +13,7 @@ import {
   FlaskConical,
   Check,
   Download,
+  ChevronDown,
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, SpecRow, Reveal } from "@/components/section";
@@ -28,6 +29,64 @@ const PRODUCT_ICONS: Record<string, React.ElementType> = {
   "CAT-05": Palette,
   "CAT-06": FlaskConical,
 };
+
+/** Expandable list of concrete product models under a category. */
+function ModelList({
+  models,
+  title,
+  expandLabel,
+  collapseLabel,
+}: {
+  models: { model: string; desc: { en: string; zh: string; vi: string } }[];
+  title: string;
+  expandLabel: string;
+  collapseLabel: string;
+}) {
+  const { loc } = useT();
+  const [open, setOpen] = React.useState(true);
+
+  return (
+    <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-accent/40"
+        aria-expanded={open}
+      >
+        <span className="flex items-center gap-2">
+          <span className="font-mono text-[11px] tracking-widest text-brand">
+            {title}
+          </span>
+          <span className="rounded-full bg-brand-muted px-2 py-0.5 font-mono text-[10px] text-brand">
+            {models.length}
+          </span>
+        </span>
+        <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+          {open ? collapseLabel : expandLabel}
+          <ChevronDown
+            className={"size-4 text-brand transition-transform " + (open ? "rotate-180" : "")}
+          />
+        </span>
+      </button>
+      {open && (
+        <ul className="divide-y divide-border/60 border-t border-border/60">
+          {models.map((m) => (
+            <li
+              key={m.model}
+              className="flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-background/40 sm:flex-row sm:items-center sm:gap-4"
+            >
+              <span className="inline-flex w-fit shrink-0 items-center rounded-md border border-brand/30 bg-brand-muted px-2.5 py-1 font-mono text-[12px] font-bold text-brand">
+                {m.model}
+              </span>
+              <span className="text-[13px] leading-snug text-foreground/90">
+                {loc(m.desc)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function ProductsPage() {
   const { target, navigate } = useNav();
@@ -126,7 +185,7 @@ export function ProductsPage() {
       {/* Active product detail */}
       <Section className="!pt-0">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
-          {/* Image */}
+          {/* Image + category stats + features */}
           <div className="lg:col-span-7">
             <Reveal key={product.code}>
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border">
@@ -149,6 +208,23 @@ export function ProductsPage() {
                     <span className="text-lg font-bold">{loc(product.title)}</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Category headline stats (4 quick specs from catalog) */}
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {product.categorySpecs.map((cs) => (
+                  <div
+                    key={cs.label.en}
+                    className="rounded-lg border border-border bg-card p-3 text-center"
+                  >
+                    <div className="font-mono text-[15px] font-bold text-brand">
+                      {cs.value}
+                    </div>
+                    <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">
+                      {loc(cs.label)}
+                    </div>
+                  </div>
+                ))}
               </div>
             </Reveal>
 
@@ -210,6 +286,14 @@ export function ProductsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Featured product models (expandable) */}
+              <ModelList
+                models={product.models}
+                title={t("pp.featuredModels")}
+                expandLabel={t("pp.expandModels")}
+                collapseLabel={t("pp.collapseModels")}
+              />
 
               {/* CTAs */}
               <div className="mt-6 flex flex-wrap gap-3">

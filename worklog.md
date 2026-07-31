@@ -480,3 +480,48 @@ Full-site verification (Agent Browser):
 Stage Summary:
 - Site is production-ready: 8 pages, 3 languages, admin backend, 34 natural-realistic images, no errors.
 - Only fix needed this round: lightened dark gradient overlays on image cards so imagery is visible.
+
+---
+Task ID: PRODUCT-REFILL
+Agent: orchestrator (main)
+Task: Refill product content from reference site catalog; rename models (HY-* → HN-*, CUSTOM-* → HN-CUSTOM-*); add expandable model list per category.
+
+Source: https://hn-paint.netlify.app/en/products (read via page_reader).
+Rules applied:
+1. Keep all 6 categories (reference site has NO wood paint — all 6 are industrial/anti-corrosion).
+2. Model rename: HY-AC-201 → HN-AC-201; HY-HT-200 → HN-HT-200; HY-FL-101 → HN-FL-101; HY-EX-701 → HN-EX-701; HY-AR-801 → HN-AR-801; CUSTOM-01 → HN-CUSTOM-01 (per user instruction).
+3. Depth = B: each category lists 4 concrete models with localized descriptions, in an expandable list.
+
+Data changes (src/lib/data.ts):
+- Extended Product type: added `categorySpecs` (4 quick headline stats from catalog) and `models` (concrete model list with LStr descriptions).
+- Rewrote all 6 products with reference-site data:
+  - CAT-01 防腐: specs ≥1500h salt spray / 5 MPa / 80–250μm / 2–6h pot life; models HN-AC-201/302/405/501.
+  - CAT-02 耐高温: 200–600°C / 500+ cycles / 25–80μm / air-heat cure; models HN-HT-200/400/600/CUS.
+  - CAT-03 地坪: ≥80 MPa / ≤0.05g abrasion / 2–8mm / Shore D 80; models HN-FL-101/202/303/404.
+  - CAT-04 耐候面漆: ≥85% gloss / QUV 4000h / 30–60μm / 15yr; models HN-EX-701/702/703/704.
+  - CAT-05 建筑内外墙: ≥10000x wash / <20 g/L VOC / 8–12 m²/L / Class A; models HN-AR-801/802/803/804.
+  - CAT-06 定制: 12 chemists / 7d sample / 30d production / REACH-IMO; models HN-CUSTOM-01/02/03/04.
+- Updated descriptions, features, specs, applications to match reference catalog (e.g. C5-I/C5-M ISO 12944, AAMA 2605, ASTM D4060, etc.).
+
+UI changes (src/components/pages/products-page.tsx):
+- Added ModelList component: expandable list with model badge + localized description, toggle button with count badge, chevron rotation.
+- Added categorySpecs row (4 quick-stat cards) under the product image.
+- Inserted ModelList between Applications and CTAs in the product detail panel.
+
+i18n (src/lib/i18n.ts):
+- Added pp.featuredModels (FEATURED MODELS / 产品型号 / MÃ SẢN PHẨM), pp.expandModels (Show/展开/Hiện), pp.collapseModels (Hide/收起/Ẩn).
+
+Verification (Agent Browser):
+- CAT-01: stats ≥1500h/5 MPa/80–250 μm/2–6 h ✓; models HN-AC-201/302/405/501 ✓.
+- CAT-03: stats ≥80 MPa/≤0.05 g/2–8 mm/Shore D 80 ✓; models HN-FL-101/202/303/404 ✓.
+- CAT-06: models HN-CUSTOM-01/02/03/04 ✓ (per user's explicit naming rule).
+- Expand/collapse toggle works (0 models when collapsed).
+- Chinese language: model descriptions localized (HN-CUSTOM-01 性能调校——硬度、柔韧性...), category titles localized (特种定制工业涂料 etc.).
+- Home product cards show new titles (工业重防腐涂料, 工业耐高温涂料, 工业地坪漆, etc.), 17 images intact.
+- Lint clean, no console errors, no 404s.
+
+Stage Summary:
+- All 6 product categories now carry reference-site-accurate specs + 4 concrete HN- models each (24 models total).
+- Model naming per user rule: HY-* → HN-*, CUSTOM-* → HN-CUSTOM-*.
+- Expandable model list with localized descriptions, plus 4-card headline stats row.
+- Trilingual (EN/ZH/VI) verified.
