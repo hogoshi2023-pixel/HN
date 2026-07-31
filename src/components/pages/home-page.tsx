@@ -48,25 +48,16 @@ export function HomePage() {
 
   return (
     <>
-      {/* ───────── HERO ───────── */}
-      <section className="relative overflow-hidden bg-ink text-foreground">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/hero.jpg"
-            alt="Industrial steel structure with fresh anti-corrosion coating"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover opacity-55"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-transparent to-ink/60" />
-          <div className="absolute inset-0 grid-bg text-foreground/30 opacity-40" />
-        </div>
+      {/* ───────── HERO — bright, airy, modern ───────── */}
+      <section className="relative overflow-hidden bg-background">
+        {/* Soft copper-tinted gradient backdrop */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-muted via-background to-secondary" />
+        <div className="absolute inset-0 grid-bg text-steel opacity-[0.07]" />
+        <div className="pointer-events-none absolute -right-32 -top-32 size-[480px] rounded-full bg-brand/8 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-6 pt-16 pb-20 sm:pt-20 sm:pb-28 lg:pt-28 lg:pb-36">
-          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            <div className="lg:col-span-7">
+        <div className="relative mx-auto max-w-7xl px-6 pt-14 pb-16 sm:pt-18 sm:pb-24 lg:pt-20 lg:pb-28">
+          <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
+            <div className="lg:col-span-6">
               <Reveal>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-[11px] text-brand tracking-widest">
@@ -78,7 +69,7 @@ export function HomePage() {
               </Reveal>
 
               <Reveal delay={80}>
-                <h1 className="mt-5 text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
+                <h1 className="mt-5 text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-[4.2rem]">
                   {t("hero.title1")}{" "}
                   {t("hero.title2")}{" "}
                   <span className="text-brand">{t("hero.titleAccent")}</span>{" "}
@@ -335,7 +326,7 @@ export function HomePage() {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent" />
                 <div className="absolute left-4 top-4">
                   <span className="rounded-full bg-ink/70 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-brand backdrop-blur">
                     {a.code}
@@ -380,7 +371,7 @@ export function HomePage() {
                     sizes="(max-width: 1024px) 100vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/65 via-ink/5 to-transparent" />
                   <div className="absolute left-4 top-4 flex items-center gap-2">
                     <span className="rounded-full bg-brand px-2.5 py-0.5 font-mono text-[10px] font-bold tracking-wider text-brand-foreground">
                       {c.code}

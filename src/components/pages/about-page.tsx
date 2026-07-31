@@ -39,19 +39,9 @@ export function AboutPage() {
   return (
     <>
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-border bg-ink text-foreground">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/factory.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/90 to-ink/60" />
-          <div className="absolute inset-0 grid-bg text-foreground/20 opacity-40" />
-        </div>
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-muted via-background to-secondary">
+        <div className="absolute inset-0 grid-bg text-steel opacity-[0.06]" />
+        <div className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-brand/8 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
@@ -221,7 +211,7 @@ export function AboutPage() {
             {process.map((s, i) => (
               <Reveal key={s.no} delay={i * 80}>
                 <div className="relative text-center lg:text-left">
-                  <div className="mx-auto flex size-14 items-center justify-center rounded-full border-2 border-brand bg-ink font-mono text-lg font-bold text-brand lg:mx-0">
+                  <div className="mx-auto flex size-14 items-center justify-center rounded-full border-2 border-brand dark bg-ink font-mono text-lg font-bold text-brand lg:mx-0">
                     {s.no}
                   </div>
                   <h3 className="mt-4 text-[15px] font-bold text-foreground">{loc(s.title)}</h3>
@@ -273,10 +263,10 @@ export function AboutPage() {
         </div>
       </Section>
 
-      {/* CTA */}
+      {/* CTA — bright copper-tinted card */}
       <Section>
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-ink p-8 sm:p-12">
-          <div className="absolute inset-0 grid-bg text-foreground/15 opacity-60" />
+        <div className="relative overflow-hidden rounded-2xl border border-brand/20 bg-gradient-to-br from-brand-muted via-background to-secondary p-8 sm:p-12">
+          <div className="absolute inset-0 grid-bg text-steel opacity-[0.05]" />
           <div className="pointer-events-none absolute -right-20 -top-20 size-60 rounded-full bg-brand/15 blur-3xl" />
           <div className="relative flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
             <div className="max-w-xl">

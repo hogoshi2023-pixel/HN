@@ -55,112 +55,112 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HONG NGUYEN — "Steel Guardian" Design System
-   深钢青(Steel Teal) + 铜橙(Copper) + 哑光银(Silver)
-   防腐涂层的视觉隐喻:钢铁的可靠 + 铜的防腐 + 银的现代
+   HONG NGUYEN — "Clear Steel" Design System
+   明亮通透 + 铜橙强调 + 深石板色文字
+   打破暗黑压抑:白底为主,呼吸感,像 Apple/Stripe 的 B2B SaaS
+   重工业 ≠ 暗黑;现代工厂 = 明亮洁净
    ═══════════════════════════════════════════════════════════════ */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 
-  /* Light sections — cool neutral base (极浅冷灰,不是暖黄) */
-  --background: oklch(0.98 0.003 220);
-  --foreground: oklch(0.18 0.02 215);
+  /* 明亮基底 — 纯净白 + 极浅冷灰,通透呼吸感 */
+  --background: oklch(0.99 0.001 220);
+  --foreground: oklch(0.24 0.02 215);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 215);
+  --card-foreground: oklch(0.24 0.02 215);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 215);
-  --primary: oklch(0.22 0.025 200);
-  --primary-foreground: oklch(0.98 0.003 220);
-  --secondary: oklch(0.95 0.006 220);
-  --secondary-foreground: oklch(0.22 0.025 200);
-  --muted: oklch(0.95 0.006 220);
-  --muted-foreground: oklch(0.45 0.015 215);
-  --accent: oklch(0.93 0.02 45);
-  --accent-foreground: oklch(0.22 0.025 200);
+  --popover-foreground: oklch(0.24 0.02 215);
+  --primary: oklch(0.3 0.03 215);
+  --primary-foreground: oklch(0.99 0.001 220);
+  --secondary: oklch(0.96 0.005 220);
+  --secondary-foreground: oklch(0.3 0.03 215);
+  --muted: oklch(0.96 0.005 220);
+  --muted-foreground: oklch(0.48 0.015 215);
+  --accent: oklch(0.95 0.025 45);
+  --accent-foreground: oklch(0.3 0.03 215);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.008 220);
-  --input: oklch(0.9 0.008 220);
-  --ring: oklch(0.68 0.16 45);
-  --chart-1: oklch(0.68 0.16 45);
-  --chart-2: oklch(0.22 0.025 200);
-  --chart-3: oklch(0.72 0.008 220);
+  --border: oklch(0.91 0.006 220);
+  --input: oklch(0.91 0.006 220);
+  --ring: oklch(0.65 0.17 45);
+  --chart-1: oklch(0.65 0.17 45);
+  --chart-2: oklch(0.3 0.03 215);
+  --chart-3: oklch(0.72 0.01 220);
   --chart-4: oklch(0.55 0.1 200);
   --chart-5: oklch(0.6 0.12 30);
-  --sidebar: oklch(0.98 0.003 220);
-  --sidebar-foreground: oklch(0.18 0.02 215);
-  --sidebar-primary: oklch(0.22 0.025 200);
-  --sidebar-primary-foreground: oklch(0.98 0.003 220);
-  --sidebar-accent: oklch(0.95 0.006 220);
-  --sidebar-accent-foreground: oklch(0.22 0.025 200);
-  --sidebar-border: oklch(0.9 0.008 220);
-  --sidebar-ring: oklch(0.68 0.16 45);
+  --sidebar: oklch(0.99 0.001 220);
+  --sidebar-foreground: oklch(0.24 0.02 215);
+  --sidebar-primary: oklch(0.3 0.03 215);
+  --sidebar-primary-foreground: oklch(0.99 0.001 220);
+  --sidebar-accent: oklch(0.96 0.005 220);
+  --sidebar-accent-foreground: oklch(0.3 0.03 215);
+  --sidebar-border: oklch(0.91 0.006 220);
+  --sidebar-ring: oklch(0.65 0.17 45);
 
-  /* Brand — Copper (铜橙):防腐的视觉隐喻,暖而不刺 */
-  --brand: oklch(0.68 0.16 45);
+  /* Brand — Copper (铜橙):防腐隐喻,暖而不刺 */
+  --brand: oklch(0.66 0.17 42);
   --brand-foreground: oklch(0.99 0.004 80);
-  --brand-muted: oklch(0.68 0.16 45 / 0.12);
+  --brand-muted: oklch(0.66 0.17 42 / 0.1);
 
-  /* Industrial surfaces — Steel Teal (深钢青) */
-  --ink: oklch(0.22 0.025 200);
-  --steel: oklch(0.28 0.022 200);
-  --steel-light: oklch(0.38 0.02 200);
-  --silver: oklch(0.72 0.008 220);
+  /* Dark accent surfaces — only for hero/CTA, deep slate NOT black */
+  --ink: oklch(0.26 0.025 215);
+  --steel: oklch(0.32 0.022 215);
+  --steel-light: oklch(0.42 0.02 215);
+  --silver: oklch(0.7 0.008 220);
 
-  /* Footer — deep steel teal (比纯黑柔和,带工业基因) */
-  --footer-bg: oklch(0.24 0.028 200);
-  --footer-fg: oklch(0.82 0.012 210);
-  --footer-accent: oklch(0.72 0.15 48);
-  --footer-accent-strong: oklch(0.78 0.16 46);
+  /* Footer — light slate (石板色,有呼吸,不压抑) */
+  --footer-bg: oklch(0.38 0.016 215);
+  --footer-fg: oklch(0.82 0.01 210);
+  --footer-accent: oklch(0.74 0.15 45);
+  --footer-accent-strong: oklch(0.8 0.16 43);
 }
 
+/* Dark mode kept for hero/CTA sections only — deep slate, not black */
 .dark {
-  /* Dark sections — Steel Teal base (淬火钢的青黑,可见青调) */
-  --background: oklch(0.2 0.03 210);
+  --background: oklch(0.26 0.025 215);
   --foreground: oklch(0.95 0.006 210);
-  --card: oklch(0.25 0.035 210);
+  --card: oklch(0.31 0.022 215);
   --card-foreground: oklch(0.95 0.006 210);
-  --popover: oklch(0.25 0.035 210);
+  --popover: oklch(0.31 0.022 215);
   --popover-foreground: oklch(0.95 0.006 210);
   --primary: oklch(0.95 0.006 210);
-  --primary-foreground: oklch(0.2 0.03 210);
-  --secondary: oklch(0.3 0.03 210);
+  --primary-foreground: oklch(0.26 0.025 215);
+  --secondary: oklch(0.35 0.02 215);
   --secondary-foreground: oklch(0.95 0.006 210);
-  --muted: oklch(0.28 0.028 210);
-  --muted-foreground: oklch(0.7 0.015 210);
-  --accent: oklch(0.32 0.032 210);
+  --muted: oklch(0.33 0.018 215);
+  --muted-foreground: oklch(0.7 0.012 210);
+  --accent: oklch(0.37 0.02 215);
   --accent-foreground: oklch(0.95 0.006 210);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.75 0.02 210 / 14%);
-  --input: oklch(0.75 0.02 210 / 18%);
+  --border: oklch(0.75 0.015 210 / 15%);
+  --input: oklch(0.75 0.015 210 / 20%);
   --ring: oklch(0.68 0.16 45);
   --chart-1: oklch(0.68 0.16 45);
-  --chart-2: oklch(0.22 0.025 200);
+  --chart-2: oklch(0.95 0.006 210);
   --chart-3: oklch(0.72 0.008 220);
   --chart-4: oklch(0.55 0.1 200);
   --chart-5: oklch(0.6 0.12 30);
-  --sidebar: oklch(0.25 0.035 210);
+  --sidebar: oklch(0.31 0.022 215);
   --sidebar-foreground: oklch(0.95 0.006 210);
   --sidebar-primary: oklch(0.95 0.006 210);
-  --sidebar-primary-foreground: oklch(0.2 0.03 210);
-  --sidebar-accent: oklch(0.3 0.03 210);
+  --sidebar-primary-foreground: oklch(0.26 0.025 215);
+  --sidebar-accent: oklch(0.35 0.02 215);
   --sidebar-accent-foreground: oklch(0.95 0.006 210);
-  --sidebar-border: oklch(0.75 0.02 210 / 14%);
+  --sidebar-border: oklch(0.75 0.015 210 / 15%);
   --sidebar-ring: oklch(0.68 0.16 45);
 
-  --brand: oklch(0.7 0.16 46);
+  --brand: oklch(0.7 0.16 44);
   --brand-foreground: oklch(0.99 0.004 80);
-  --brand-muted: oklch(0.7 0.16 46 / 0.16);
+  --brand-muted: oklch(0.7 0.16 44 / 0.16);
 
-  --ink: oklch(0.18 0.03 210);
-  --steel: oklch(0.25 0.035 210);
-  --steel-light: oklch(0.35 0.03 210);
-  --silver: oklch(0.75 0.012 210);
+  --ink: oklch(0.22 0.022 215);
+  --steel: oklch(0.31 0.022 215);
+  --steel-light: oklch(0.42 0.02 215);
+  --silver: oklch(0.72 0.01 220);
 
-  /* Footer — deep steel teal (visible) */
-  --footer-bg: oklch(0.22 0.035 210);
-  --footer-fg: oklch(0.84 0.014 210);
-  --footer-accent: oklch(0.74 0.15 48);
-  --footer-accent-strong: oklch(0.8 0.16 46);
+  --footer-bg: oklch(0.24 0.022 215);
+  --footer-fg: oklch(0.84 0.012 210);
+  --footer-accent: oklch(0.74 0.15 45);
+  --footer-accent-strong: oklch(0.8 0.16 43);
 }
 
 @layer base {
@@ -176,17 +176,17 @@
   }
 }
 
-/* Utility: industrial grid background — uses steel-teal tint */
+/* Utility: industrial grid background — subtle slate tint */
 .grid-bg {
   background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--silver) 8%, transparent) 1px, transparent 1px),
-    linear-gradient(to-bottom, color-mix(in oklch, var(--silver) 8%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklch, var(--steel) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(to-bottom, color-mix(in oklch, var(--steel) 10%, transparent) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 .grid-bg-sm {
   background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--silver) 6%, transparent) 1px, transparent 1px),
-    linear-gradient(to-bottom, color-mix(in oklch, var(--silver) 6%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklch, var(--steel) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to-bottom, color-mix(in oklch, var(--steel) 7%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -197,7 +197,7 @@
   text-transform: uppercase;
 }
 
-/* Custom scrollbar for long lists — copper accent */
+/* Custom scrollbar — copper accent */
 .scroll-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--brand) transparent;
@@ -207,7 +207,7 @@
   height: 6px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: color-mix(in oklch, var(--brand) 70%, transparent);
+  background: color-mix(in oklch, var(--brand) 65%, transparent);
   border-radius: 999px;
 }
 .scroll-thin::-webkit-scrollbar-track {
@@ -232,8 +232,8 @@
   animation: marquee 32s linear infinite;
 }
 
-/* Copper glow for brand accents — warm, not harsh */
+/* Copper glow for brand accents */
 .brand-glow {
-  box-shadow: 0 0 0 1px color-mix(in oklch, var(--brand) 40%, transparent),
-    0 8px 30px -8px color-mix(in oklch, var(--brand) 30%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--brand) 35%, transparent),
+    0 8px 30px -8px color-mix(in oklch, var(--brand) 28%, transparent);
 }

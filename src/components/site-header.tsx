@@ -48,7 +48,7 @@ export function SiteHeader() {
       )}
     >
       {/* Top utility bar */}
-      <div className="hidden md:block border-b border-border/60 bg-ink/40 text-muted-foreground">
+      <div className="hidden md:block border-b border-border/60 dark bg-ink/40 text-muted-foreground">
         <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-6 text-[12px]">
           <div className="flex items-center gap-4 font-mono tracking-wider">
             <span className="text-brand">{t("topbar.established")} {company.established}</span>

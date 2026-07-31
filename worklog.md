@@ -756,3 +756,31 @@ Stage Summary:
 - Complete palette overhaul from oppressive black+amber-yellow to professional steel-teal + copper + silver.
 - Steel-teal conveys reliability/protection (防腐隐喻), copper = anti-corrosion metaphor (铜绿), silver = modern equipment.
 - Visually verified as "steel-like, professional, balanced" by VLM.
+
+---
+Task ID: PALETTE-BRIGHT
+Agent: orchestrator (main)
+Task: Break out of dark/oppressive feel — completely switch to bright/airy modern aesthetic.
+
+Root cause diagnosed: the site was forced into dark mode (layout had className="dark"), so EVERY page was dark regardless of color tweaks. Real fix = light mode default + only use dark for small accent areas.
+
+Complete overhaul:
+1. layout.tsx: removed className="dark" → site now defaults to LIGHT mode.
+2. globals.css: rewrote :root (light mode) as the primary palette — pure white/off-white background, deep slate text, copper accent. Dark mode kept only for hero/CTA sections (deep slate, not black).
+3. Home hero: completely redesigned — was dark image+overlay, now bright gradient (brand-muted via background to secondary) + subtle grid + copper glow. White spec-sheet card with shadow. Brightness 8/10 (was 3/10).
+4. All page headers (products/solutions/cases/about/news/faq/contact): converted from `dark bg-ink` to bright `bg-gradient-to-br from-brand-muted via-background to-secondary`. Removed dark image overlays (cta-bg/faq-bg/contact-bg/factory.jpg) → replaced with subtle grid + copper glow.
+5. Card image overlays: lightened (from-ink/85→70, /75→65, /60→55) so images show more on bright cards.
+6. About page CTA: was dark bg-ink bar → now bright copper-tinted gradient card.
+7. Footer: lightened from deep slate (0.28) to medium-light slate (0.38) for softer transition from white body.
+
+Verification (Agent Browser + VLM):
+- Home: brightness 8/10, "modern/airy/Apple-like, premium B2B SaaS aesthetic, clean trustworthy professional". ✓
+- Footer: "balanced medium tone, not oppressive, appropriate visual weight". ✓
+- All 7 non-home pages render correctly (h1 + content), body bg = L98.8% (near-white) on all. ✓
+- No errors, lint clean.
+
+Stage Summary:
+- Site transformed from dark/oppressive to bright/airy/modern.
+- Brightness 3/10 → 8/10. VLM confirms "Apple/Stripe aesthetic, premium whitespace, breathing room".
+- Light mode default; dark only for minor accents.
+- Color: white/off-white base + copper accent + deep slate text/footer.

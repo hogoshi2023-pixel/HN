@@ -41,8 +41,8 @@ export function NewsPage() {
   return (
     <>
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-border bg-ink text-foreground">
-        <div className="absolute inset-0 grid-bg text-foreground/20 opacity-50" />
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-muted via-background to-secondary">
+        <div className="absolute inset-0 grid-bg text-steel opacity-[0.06]" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
@@ -102,7 +102,7 @@ export function NewsPage() {
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/40 to-transparent" />
                 <div className="pointer-events-none absolute -right-16 -top-16 size-60 rounded-full bg-brand/20 blur-3xl" />
                 <div className="relative flex h-full flex-col justify-between p-8">
                   <div className="flex items-center gap-2">

@@ -132,7 +132,7 @@ export function ProductsPage() {
   return (
     <>
       {/* Page header */}
-      <section className="relative overflow-hidden border-b border-border bg-ink text-foreground">
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-muted via-background to-secondary">
         <div className="absolute inset-0 grid-bg text-foreground/20 opacity-50" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">

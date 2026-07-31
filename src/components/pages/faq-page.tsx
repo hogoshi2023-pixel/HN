@@ -41,19 +41,9 @@ export function FaqPage() {
   return (
     <>
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-border bg-ink text-foreground">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/faq-bg.jpg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/90 to-ink/60" />
-          <div className="absolute inset-0 grid-bg text-foreground/20 opacity-40" />
-        </div>
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-brand-muted via-background to-secondary">
+        <div className="absolute inset-0 grid-bg text-steel opacity-[0.06]" />
+        <div className="pointer-events-none absolute -left-24 -top-24 size-80 rounded-full bg-brand/8 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>

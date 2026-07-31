@@ -133,7 +133,7 @@ function LockScreen({
   }
 
   return (
-    <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden bg-ink px-6 py-16">
+    <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden dark bg-ink px-6 py-16">
       <div className="absolute inset-0 grid-bg text-foreground/20 opacity-50" />
       <div className="pointer-events-none absolute -right-20 -top-20 size-80 rounded-full bg-brand/15 blur-3xl" />
       <div className="relative w-full max-w-md">
@@ -616,7 +616,7 @@ function Dashboard({
 
       {/* toast */}
       {toastMsg && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-border bg-ink px-4 py-2 text-[13px] text-foreground shadow-xl">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-border dark bg-ink px-4 py-2 text-[13px] text-foreground shadow-xl">
           {toastMsg.k === "ok" ? (
             <CheckCircle2 className="inline size-4 text-brand" />
           ) : (
