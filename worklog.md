@@ -718,3 +718,41 @@ Verification (Agent Browser):
 Stage Summary:
 - About page company profile fully replaced with user's 4-paragraph text (trilingual).
 - Header tagline updated to highlight "China's coatings hometown" positioning.
+
+---
+Task ID: PALETTE-OVERHAUL
+Agent: orchestrator (main)
+Task: Complete site color palette redesign — "Steel Guardian" (深钢青 + 铜橙 + 哑光银).
+
+Industry analysis:
+- Product: heavy-duty anti-corrosion coatings (protect steel/concrete/marine for decades).
+- Buyers: B2B procurement directors, project managers, engineers — want reliability, not flashiness.
+- Old palette problem: pure black + amber yellow felt oppressive, like a chemical small-factory; yellow = warning/danger subconsciously, contradicts "protection/safety"; conflicts with "green development" ethos.
+- Competitors: Hempel (blue+red), Jotun (red), AkzoNobel (blue+green), PPG (blue+yellow) — blue is overused.
+
+New direction: "Steel Guardian" — 深钢青(Steel Teal) + 铜橙(Copper) + 哑光银(Silver).
+- Steel Teal (oklch 0.22 0.035 210): quenched-steel blue-green, conveys reliability + protection, softer than pure black, industrial DNA.
+- Copper (oklch 0.68 0.16 45): copper is naturally anti-corrosion (patina) — the accent IS the brand metaphor; warm but not harsh warning-yellow.
+- Silver (oklch 0.75 0.012 210): brushed-metal for borders/dividers, modern equipment feel.
+
+Changes (globals.css complete rewrite):
+- :root (light mode): background cool neutral (0.98 0.003 220), foreground steel-ink, primary steel-teal, brand copper.
+- .dark: background steel-teal (0.2 0.03 210, visible teal not pure black), card slightly lighter steel, borders silver-tinted.
+- --ink/--steel/--steel-light: all steel-teal hue 210.
+- --footer-bg: deep steel teal (0.22 0.035 210).
+- All chart colors, sidebar, ring updated to teal/copper/silver system.
+- Grid background now uses silver tint instead of foreground.
+- Scrollbar thumb = copper.
+
+Initial issue: first pass had too-low chroma (0.018) at dark lightness → teal invisible, read as black. Fixed by raising chroma to 0.03-0.035 and lightness to 0.2-0.25 for dark surfaces, making the steel-teal hue perceptible.
+
+Verification (Agent Browser + VLM):
+- Home hero: VLM confirms "dark teal/blue-grey (steel-like), gunmetal, cool undertones, not pure black". Professional feel 9/10. ✓
+- Footer: VLM confirms "dark teal/steel-blue (cool), vibrant orange accents, professional and balanced, not oppressive". ✓
+- All 7 non-home pages render correctly (h1 + content). ✓
+- No console errors, lint clean.
+
+Stage Summary:
+- Complete palette overhaul from oppressive black+amber-yellow to professional steel-teal + copper + silver.
+- Steel-teal conveys reliability/protection (防腐隐喻), copper = anti-corrosion metaphor (铜绿), silver = modern equipment.
+- Visually verified as "steel-like, professional, balanced" by VLM.
