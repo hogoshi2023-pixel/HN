@@ -36,18 +36,33 @@ export function ContactPage() {
     setErrorMsg("");
     const form = e.currentTarget;
     const fd = new FormData(form);
-    const payload: Record<string, unknown> = Object.fromEntries(fd.entries());
-    payload.locale = locale;
+
+    // Basic client validation
+    const name = String(fd.get("name") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
+    const message = String(fd.get("message") ?? "").trim();
+    if (!name) { setErrorMsg(t("err.nameRequired")); setStatus("error"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErrorMsg(t("err.emailRequired")); setStatus("error"); return; }
+    if (!message) { setErrorMsg(t("err.messageRequired")); setStatus("error"); return; }
+
+    // Submit to Netlify Forms (URL-encoded POST to "/")
+    const body = new URLSearchParams();
+    body.append("form-name", "contact");
+    body.append("subject", `Website inquiry from ${name}`);
+    for (const [k, v] of fd.entries()) {
+      body.append(k, String(v));
+    }
+    body.append("locale", locale);
+    body.append("_language", locale);
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
       });
-      const data = await res.json();
-      if (!res.ok || !data.ok) {
-        const errKey = mapErrKey(data?.error);
-        throw new Error(t(errKey));
+      if (!res.ok) {
+        throw new Error(t("err.generic"));
       }
       setStatus("success");
       form.reset();
@@ -65,15 +80,6 @@ export function ContactPage() {
         variant: "destructive",
       });
     }
-  }
-
-  function mapErrKey(serverMsg?: string): string {
-    if (!serverMsg) return "err.generic";
-    const lower = serverMsg.toLowerCase();
-    if (lower.includes("name")) return "err.nameRequired";
-    if (lower.includes("email")) return "err.emailRequired";
-    if (lower.includes("project") || lower.includes("message") || lower.includes("describe")) return "err.messageRequired";
-    return "err.generic";
   }
 
   return (
@@ -212,7 +218,18 @@ export function ContactPage() {
                   </BrandButton>
                 </div>
               ) : (
-                <form onSubmit={onSubmit} className="space-y-5">
+                <form
+                  onSubmit={onSubmit}
+                  name="contact"
+                  method="POST"
+                  data-netlify="true"
+                  netlify-honeypot="bot-field"
+                  className="space-y-5"
+                >
+                  <input type="hidden" name="form-name" value="contact" />
+                  <p className="hidden">
+                    <label>Don't fill this out: <input name="bot-field" /></label>
+                  </p>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <Field label={`${t("form.fullName")} ${t("form.required")}`}>
                       <input
