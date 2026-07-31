@@ -40,7 +40,18 @@ export function AboutPage() {
     <>
       {/* Header */}
       <section className="relative overflow-hidden border-b border-border bg-ink text-foreground">
-        <div className="absolute inset-0 grid-bg text-foreground/20 opacity-50" />
+        <div className="absolute inset-0">
+          <Image
+            src="/images/factory.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/90 to-ink/60" />
+          <div className="absolute inset-0 grid-bg text-foreground/20 opacity-40" />
+        </div>
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
         <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
           <Reveal>
@@ -144,6 +155,50 @@ export function AboutPage() {
             );
           })}
         </div>
+
+        {/* R&D / QC image band */}
+        <Reveal delay={120}>
+          <div className="mt-8 grid overflow-hidden rounded-xl border border-border lg:grid-cols-2">
+            <div className="relative aspect-[16/10] lg:aspect-auto">
+              <Image
+                src="/images/about-rd.jpg"
+                alt="HONG NGUYEN R&D laboratory"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/40" />
+            </div>
+            <div className="bg-background p-7 lg:p-9">
+              <div className="flex items-center gap-2">
+                <FlaskConical className="size-5 text-brand" />
+                <span className="eyebrow text-brand text-[11px]">R&D / QC LAB</span>
+              </div>
+              <h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">
+                {loc({ en: "12 senior chemists. Batch-to-batch consistency.", zh: "12名资深化学师,批次间始终如一。", vi: "12 kỹ sư hóa học — đồng đều giữa các lô." })}
+              </h3>
+              <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+                {loc({
+                  en: "Every formulation is tuned in-house and every batch ships with a full QC report. Our spectrophotometry and salt-spray suite cuts sample turnaround to 7 days.",
+                  zh: "每个配方均在内部调校,每批出货附带完整QC报告。光谱分析与盐雾测试套件将样品周转缩短至7天。",
+                  vi: "Mọi công thức đều phối chế nội bộ, mỗi lô kèm báo cáo QC đầy đủ. Bộ quang phổ và phun muối rút ngắn giao mẫu xuống 7 ngày.",
+                })}
+              </p>
+              <ul className="mt-5 grid gap-2 sm:grid-cols-2">
+                {[
+                  { en: "Spectrophotometry suite", zh: "光谱分析套件", vi: "Bộ quang phổ" },
+                  { en: "Salt-spray testing", zh: "盐雾测试", vi: "Thử phun muối" },
+                  { en: "Cross-cut adhesion", zh: "划格附着力", vi: "Bám dính cắt chéo" },
+                  { en: "Sample in 7 days", zh: "7天出样", vi: "Mẫu 7 ngày" },
+                ].map((x) => (
+                  <li key={x.en} className="flex items-center gap-2 text-[13px] text-foreground/90">
+                    <CheckCircle2 className="size-4 text-brand" /> {loc(x)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Reveal>
       </Section>
 
       {/* Process timeline */}

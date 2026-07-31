@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { ArrowRight, Clock, Newspaper, ChevronRight } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
@@ -93,21 +94,28 @@ export function NewsPage() {
         <Section className="!pt-0">
           <Reveal>
             <article className="group grid overflow-hidden rounded-2xl border border-border bg-card lg:grid-cols-2">
-              <div className="relative min-h-[260px] overflow-hidden bg-ink">
-                <div className="absolute inset-0 grid-bg text-foreground/20 opacity-60" />
+              <div className="relative min-h-[280px] overflow-hidden bg-ink">
+                <Image
+                  src={featured.image}
+                  alt={loc(featured.title)}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/20" />
                 <div className="pointer-events-none absolute -right-16 -top-16 size-60 rounded-full bg-brand/20 blur-3xl" />
                 <div className="relative flex h-full flex-col justify-between p-8">
                   <div className="flex items-center gap-2">
                     <span className="rounded-full bg-brand px-3 py-1 font-mono text-[10px] font-bold tracking-widest text-brand-foreground">
                       {t("np.featured")}
                     </span>
-                    <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] tracking-widest text-muted-foreground">
+                    <span className="rounded-full border border-border bg-ink/60 px-3 py-1 font-mono text-[10px] tracking-widest text-foreground backdrop-blur">
                       {t(`cat.${featured.category}`)}
                     </span>
                   </div>
                   <div>
                     <Newspaper className="size-10 text-brand" />
-                    <p className="mt-4 font-mono text-[11px] tracking-widest text-muted-foreground">
+                    <p className="mt-4 font-mono text-[11px] tracking-widest text-foreground/80">
                       {formatDate(featured.date, locale)} · {loc(featured.read)}
                     </p>
                   </div>
@@ -144,26 +152,38 @@ export function NewsPage() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((n, i) => (
             <Reveal key={n.title.en} delay={i * 60}>
-              <article className="group flex h-full flex-col rounded-xl border border-border bg-card p-6 transition-all hover:border-brand/40 hover:shadow-lg">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full border border-border bg-background px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-muted-foreground">
-                    {t(`cat.${n.category}`)}
-                  </span>
+              <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-brand/40 hover:shadow-lg">
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <Image
+                    src={n.image}
+                    alt={loc(n.title)}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card/90 via-transparent to-transparent" />
+                  <div className="absolute left-3 top-3">
+                    <span className="rounded-full bg-ink/70 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-foreground backdrop-blur">
+                      {t(`cat.${n.category}`)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col p-5">
                   <span className="font-mono text-[11px] text-muted-foreground">
                     {formatDate(n.date, locale)}
                   </span>
-                </div>
-                <h3 className="mt-4 text-[16px] font-bold leading-snug tracking-tight text-foreground">
-                  {loc(n.title)}
-                </h3>
-                <p className="mt-2.5 flex-1 text-[13px] leading-relaxed text-muted-foreground">
-                  {loc(n.excerpt)}
-                </p>
-                <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-4">
-                  <span className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
-                    <Clock className="size-3.5 text-brand" /> {loc(n.read)}
-                  </span>
-                  <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />
+                  <h3 className="mt-2 text-[16px] font-bold leading-snug tracking-tight text-foreground">
+                    {loc(n.title)}
+                  </h3>
+                  <p className="mt-2.5 flex-1 text-[13px] leading-relaxed text-muted-foreground">
+                    {loc(n.excerpt)}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                    <span className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                      <Clock className="size-3.5 text-brand" /> {loc(n.read)}
+                    </span>
+                    <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />
+                  </div>
                 </div>
               </article>
             </Reveal>

@@ -75,44 +75,57 @@ export function SolutionsPage() {
             const Icon = ICONS[s.icon] ?? Factory;
             return (
               <Reveal key={s.code} delay={i * 70}>
-                <div className="group relative h-full overflow-hidden rounded-xl border border-border bg-card p-7 transition-all hover:border-brand/40 hover:shadow-xl">
-                  <div className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-brand/5 blur-3xl transition-opacity group-hover:opacity-100" />
-                  <div className="flex items-start justify-between">
-                    <span className="grid size-12 place-items-center rounded-lg border border-brand/30 bg-brand-muted text-brand">
-                      <Icon className="size-6" />
-                    </span>
-                    <span className="font-mono text-[11px] tracking-widest text-muted-foreground">
-                      {s.code}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 text-xl font-bold tracking-tight text-foreground">
-                    {loc(s.title)}
-                  </h3>
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
-                    {loc(s.desc)}
-                  </p>
-                  <div className="mt-5 border-t border-border/60 pt-4">
-                    <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
-                      {t("sol.recommended")}
-                    </span>
-                    <div className="mt-2.5 flex flex-wrap gap-2">
-                      {s.products.map((p) => (
-                        <span
-                          key={p.en}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-[12px] text-foreground/90"
-                        >
-                          <CheckCircle2 className="size-3.5 text-brand" />
-                          {loc(p)}
-                        </span>
-                      ))}
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-brand/40 hover:shadow-xl">
+                  {/* Image header */}
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <Image
+                      src={s.image}
+                      alt={loc(s.title)}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+                    <div className="absolute left-4 top-4 flex items-center gap-2">
+                      <span className="grid size-9 place-items-center rounded-md border border-brand/40 bg-ink/70 text-brand backdrop-blur">
+                        <Icon className="size-5" />
+                      </span>
+                      <span className="rounded-full bg-ink/70 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-foreground backdrop-blur">
+                        {s.code}
+                      </span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => navigate("contact")}
-                    className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand transition-colors hover:text-brand/80"
-                  >
-                    {t("cta.talkToEngineer")} <ArrowRight className="size-4" />
-                  </button>
+                  {/* Body */}
+                  <div className="relative -mt-8 p-7">
+                    <h3 className="text-xl font-bold tracking-tight text-foreground">
+                      {loc(s.title)}
+                    </h3>
+                    <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
+                      {loc(s.desc)}
+                    </p>
+                    <div className="mt-5 border-t border-border/60 pt-4">
+                      <span className="font-mono text-[10px] tracking-widest text-muted-foreground">
+                        {t("sol.recommended")}
+                      </span>
+                      <div className="mt-2.5 flex flex-wrap gap-2">
+                        {s.products.map((p) => (
+                          <span
+                            key={p.en}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-[12px] text-foreground/90"
+                          >
+                            <CheckCircle2 className="size-3.5 text-brand" />
+                            {loc(p)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate("contact")}
+                      className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-brand transition-colors hover:text-brand/80"
+                    >
+                      {t("cta.talkToEngineer")} <ArrowRight className="size-4" />
+                    </button>
+                  </div>
                 </div>
               </Reveal>
             );

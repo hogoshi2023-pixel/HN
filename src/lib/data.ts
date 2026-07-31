@@ -210,7 +210,7 @@ export const products: Product[] = [
       { label: { en: "VOC", zh: "VOC", vi: "VOC" }, value: "< 50 g/L" },
       { label: { en: "Finish", zh: "饰面", vi: "Bề mặt" }, value: "Smooth / Textured" },
     ],
-    image: "/images/product-exterior.jpg",
+    image: "/images/product-architectural.jpg",
     applications: [
       { en: "Interiors", zh: "室内", vi: "Nội thất" },
       { en: "Exteriors", zh: "室外", vi: "Ngoại thất" },
@@ -421,6 +421,7 @@ export const solutions: {
   desc: LStr;
   products: LStr[];
   icon: string;
+  image: string;
 }[] = [
   {
     code: "SOL-01",
@@ -431,6 +432,7 @@ export const solutions: {
       { en: "High-Temperature Coatings", zh: "耐高温涂料", vi: "Sơn chịu nhiệt cao" },
     ],
     icon: "Factory",
+    image: "/images/sol-oil-gas.jpg",
   },
   {
     code: "SOL-02",
@@ -441,6 +443,7 @@ export const solutions: {
       { en: "Custom Engineered Coatings", zh: "定制工程涂料", vi: "Sơn kỹ thuật theo yêu cầu" },
     ],
     icon: "Ship",
+    image: "/images/sol-marine.jpg",
   },
   {
     code: "SOL-03",
@@ -451,6 +454,7 @@ export const solutions: {
       { en: "Custom Engineered Coatings", zh: "定制工程涂料", vi: "Sơn kỹ thuật theo yêu cầu" },
     ],
     icon: "Flame",
+    image: "/images/sol-power.jpg",
   },
   {
     code: "SOL-04",
@@ -461,6 +465,7 @@ export const solutions: {
       { en: "Custom Engineered Coatings", zh: "定制工程涂料", vi: "Sơn kỹ thuật theo yêu cầu" },
     ],
     icon: "Construction",
+    image: "/images/sol-infrastructure.jpg",
   },
   {
     code: "SOL-05",
@@ -471,6 +476,7 @@ export const solutions: {
       { en: "Architectural Wall Coatings", zh: "建筑墙面涂料", vi: "Sơn tường kiến trúc" },
     ],
     icon: "Building2",
+    image: "/images/sol-architecture.jpg",
   },
   {
     code: "SOL-06",
@@ -478,6 +484,7 @@ export const solutions: {
     desc: { en: "Warehouses, plants and parking decks. Self-leveling, anti-static and heavy-duty mortar systems rated for forklift traffic.", zh: "仓库、厂房与停车场。自流平、防静电及重型砂浆体系,可承受叉车通行。", vi: "Nhà kho, nhà máy và bãi đỗ xe. Hệ tự chảy, chống tĩnh điện và vữa nặng chịu xe nâng." },
     products: [{ en: "Epoxy Floor Coatings", zh: "环氧地坪涂料", vi: "Sơn nền epoxy" }],
     icon: "LayoutGrid",
+    image: "/images/sol-flooring.jpg",
   },
 ];
 
@@ -520,6 +527,7 @@ export const news: {
   title: LStr;
   excerpt: LStr;
   read: LStr;
+  image: string;
 }[] = [
   {
     date: "2025-09-18",
@@ -531,6 +539,7 @@ export const news: {
       vi: "Hệ sơn phủ fluorocarbon mới đã vượt thử nghiệm thời tiết tăng tốc 15 năm, hiện nhận đơn OEM/nhãn riêng tại Trung Đông và Đông Nam Á.",
     },
     read: { en: "4 min read", zh: "4 分钟阅读", vi: "4 phút đọc" },
+    image: "/images/news-1.jpg",
   },
   {
     date: "2025-08-02",
@@ -542,6 +551,7 @@ export const news: {
       vi: "Hệ lót epoxy giàu kẽm + phủ PU giao trong 45 ngày, không phát hiện lỗi sơn trên gói kết cấu thép.",
     },
     read: { en: "3 min read", zh: "3 分钟阅读", vi: "3 phút đọc" },
+    image: "/images/news-2.jpg",
   },
   {
     date: "2025-06-21",
@@ -553,6 +563,7 @@ export const news: {
       vi: "Hệ thống quản lý môi trường đã được tái chứng nhận, khẳng định cam kết sản xuất sơn VOC thấp, bền vững.",
     },
     read: { en: "2 min read", zh: "2 分钟阅读", vi: "2 phút đọc" },
+    image: "/images/news-3.jpg",
   },
   {
     date: "2025-04-10",
@@ -564,6 +575,7 @@ export const news: {
       vi: "Đối tác phân phối mới tại Nam Mỹ và Đông Âu đưa mạng lưới xuất khẩu lên hơn 60 quốc gia.",
     },
     read: { en: "3 min read", zh: "3 分钟阅读", vi: "3 phút đọc" },
+    image: "/images/news-4.jpg",
   },
   {
     date: "2025-02-15",
@@ -575,6 +587,7 @@ export const news: {
       vi: "Phòng R&D sơn bổ sung bộ quang phổ và phun muối riêng, rút ngắn giao mẫu xuống 7 ngày.",
     },
     read: { en: "4 min read", zh: "4 分钟阅读", vi: "4 phút đọc" },
+    image: "/images/news-5.jpg",
   },
   {
     date: "2024-11-30",
@@ -586,6 +599,7 @@ export const news: {
       vi: "Tài liệu kỹ thuật về công thức VOC dưới 50 g/L duy trì hiệu suất trong bối cảnh quy định môi trường ngày càng khắt khe.",
     },
     read: { en: "6 min read", zh: "6 分钟阅读", vi: "6 phút đọc" },
+    image: "/images/news-6.jpg",
   },
 ];
 

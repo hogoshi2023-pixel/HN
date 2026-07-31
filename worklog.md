@@ -167,3 +167,83 @@ Stage Summary:
 - Full admin backend panel complete: inquiry management with stats, search, filter, status workflow (new→contacted→closed), delete, CSV export, detail dialog, trilingual UI.
 - Access via `?admin=1` URL or discreet footer "Admin" link. Passphrase: HN_ADMIN_2026.
 - API protected by shared-secret header; public GET limited to safe fields.
+
+---
+Task ID: IMG-2
+Agent: image-generation subagent
+Task: Generate missing content images (products, solutions, news, about) for the B2B website.
+
+Work Log:
+- Read worklog.md to confirm project context (HONG NGUYEN Industrial Coatings, dark industrial aesthetic with amber/orange accent, NO blue/indigo, 8-page SPA, IMG-1 already produced 11 base images).
+- Invoked image-generation skill to confirm z-ai CLI syntax and supported sizes (1344x768 for 16:9, 1152x864 for 4:3 — both multiples of 32).
+- Authored 14 photorealistic prompts with a shared style suffix ("photorealistic cinematic B2B industrial photography, dark moody high-contrast, amber orange accent lighting, no text, no logos, no watermarks") and explicit "no blue/indigo" guidance via the amber-accent descriptor.
+- First attempt: ran a sequential bash script (gen-img2.sh) invoking `z-ai image` per file with 2s delays and retry-once logic. Hit the 10-minute tool timeout after generating 3 images (product-architectural, sol-oil-gas, sol-marine).
+- Second attempt: ran a resume script for indices 4–8. Hit the 9-minute tool timeout after generating 4 images (sol-power, sol-infrastructure, sol-architecture, sol-flooring); news-1 was in-flight when the timeout fired.
+- Third attempt: switched to a single-process Node.js script (gen-img2-node.mjs) that initializes ZAI once and generates all remaining images sequentially to avoid per-CLI-call SDK init overhead. Got 3 images done (news-1, news-2, news-3) before hitting the 9-minute tool timeout.
+- Fourth attempt: smaller 2-image Node batches. Generated news-4 and news-5 in ~25s and ~35s respectively (no retries needed).
+- Fifth attempt: final 2-image Node batch. news-6 already existed on disk (carried over from the third run's last in-flight write — verified non-empty), and about-rd.jpg generated in ~40s.
+- Verified all 14 files exist, are non-empty, and have the correct pixel dimensions via `file`: 7 landscape images at 1344x768 and 7 portrait/4:3 images at 1152x864.
+
+Stage Summary:
+- Generated image filenames and paths (all under /home/z/my-project/public/images/):
+  1.  product-architectural.jpg  — 1152x864 (4:3),  160KB — modern building lobby, textured stone-effect wall coatings, warm natural light
+  2.  sol-oil-gas.jpg            — 1344x768 (16:9), 144KB — oil refinery & storage tanks at amber sunset
+  3.  sol-marine.jpg             — 1344x768 (16:9), 115KB — ship hull in dry dock being coated, moody ocean backdrop
+  4.  sol-power.jpg              — 1344x768 (16:9), 140KB — power plant with smokestacks, steam, golden-hour sky
+  5.  sol-infrastructure.jpg     — 1344x768 (16:9), 157KB — cable-stayed steel bridge, freshly coated, golden hour
+  6.  sol-architecture.jpg       — 1344x768 (16:9), 109KB — modern commercial tower facade, premium exterior coating
+  7.  sol-flooring.jpg           — 1344x768 (16:9), 147KB — warehouse interior with glossy self-leveling epoxy floor
+  8.  news-1.jpg                 — 1152x864 (4:3),   71KB — fluorocarbon topcoat sample panel under weatherability heat lamp
+  9.  news-2.jpg                 — 1152x864 (4:3),  196KB — freshly coated steel plant structure with workers in safety gear
+  10. news-3.jpg                 — 1152x864 (4:3),  141KB — clean modern paint factory with greenery, eco concept
+  11. news-4.jpg                 — 1152x864 (4:3),  146KB — shipping containers + paint drums at port, amber-toned
+  12. news-5.jpg                 — 1152x864 (4:3),   94KB — coatings R&D lab with chemists, spectrophotometer, beakers
+  13. news-6.jpg                 — 1152x864 (4:3),   96KB — chemist holding low-VOC coating sample, eco-friendly lab
+  14. about-rd.jpg               — 1152x864 (4:3),   88KB — senior chemist reviewing formulation on tablet, paint samples
+- Failures / retries:
+  - No image-generation API failures occurred; every successful generation returned a valid base64 payload on the first attempt.
+  - Tool timeouts (context deadline exceeded) required splitting the work across 5 sequential batches. Switched from per-file CLI invocation to a single-process Node script (gen-img2-node.mjs) to amortize SDK init cost.
+  - All 14 final files verified non-empty with correct dimensions (no retries with simplified prompts were needed).
+
+---
+Task ID: IMG-2 + LAYOUT-1
+Agent: orchestrator (main)
+Task: Audit full site for missing images and add content-appropriate images everywhere.
+
+Audit findings (before):
+- Home: hero.jpg + 3 case images. Product/why-us/certs/testimonials sections = no images (icon-only, intentional).
+- Products: used product.image but CAT-04 & CAT-05 SHARED product-exterior.jpg; CAT-06 used lab.jpg.
+- Solutions: only cta-bg in header; 6 solution cards = NO images (icon-only).
+- Cases: 3 case images (OK).
+- About: factory.jpg in story; capability pillars = icon-only; no R&D/QC image.
+- News: featured article used STYLIZED PLACEHOLDER (grid-bg + blur, no real image); grid cards = no images.
+- FAQ: no images (appropriate).
+- Contact: no images (appropriate).
+
+Images generated (IMG-2 subagent, 14 new):
+- product-architectural.jpg (CAT-05 dedicated)
+- sol-oil-gas.jpg, sol-marine.jpg, sol-power.jpg, sol-infrastructure.jpg, sol-architecture.jpg, sol-flooring.jpg (6 solution verticals)
+- news-1.jpg … news-6.jpg (6 articles)
+- about-rd.jpg (R&D/QC lab band)
+
+Layout changes:
+- data.ts: added `image` field to solutions[] and news[]; CAT-05 now uses product-architectural.jpg.
+- solutions-page.tsx: redesigned each solution card with a 16:9 image header (gradient overlay + icon+code chip), body overlaps image with -mt-8. Hover zoom on image.
+- news-page.tsx: featured article now uses real image (replaced stylized placeholder) with dark gradient + chips; grid cards now have 16:10 image headers with category chip overlay + hover zoom.
+- about-page.tsx: header now uses factory.jpg as dimmed background (opacity-25 + gradient); added new R&D/QC image band (about-rd.jpg + localized copy + 4 lab-feature bullets) inside capability section.
+
+Verification (Agent Browser):
+- Home: 4 images (hero + 3 cases). ✓
+- Products: 1 image per active tab; CAT-05 confirmed using product-architectural.jpg. ✓
+- Solutions: 7 images (1 header bg + 6 cards). ✓
+- Cases: 4 images (3 selector + 1 detail). ✓
+- About: 3 images (factory header bg + factory story + about-rd R&D band). ✓
+- News: 6 images (1 featured + 5 grid). ✓
+- Mobile (iPhone 14) Solutions: 7 images render correctly. ✓
+- No 404s in dev.log, no console errors, no broken images.
+- Lint clean.
+
+Stage Summary:
+- Every content section that should have an image now has a contextually-appropriate, AI-generated photorealistic image.
+- Total images on site: 25 (11 original + 14 new). All industrial-coating themed, amber accent, no text/logos.
+- No image duplication across distinct content (CAT-04 vs CAT-05 now distinct; solutions vs cases vs news all unique).
