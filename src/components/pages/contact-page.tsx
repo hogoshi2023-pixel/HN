@@ -29,10 +29,10 @@ export function ContactPage() {
   const { navigate } = useNav();
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorMsg, setErrorMsg] = React.useState<string>("");
+  const [waLink, setWaLink] = React.useState<string>("");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("submitting");
     setErrorMsg("");
     const form = e.currentTarget;
     const fd = new FormData(form);
@@ -40,46 +40,56 @@ export function ContactPage() {
     // Basic client validation
     const name = String(fd.get("name") ?? "").trim();
     const email = String(fd.get("email") ?? "").trim();
+    const phone = String(fd.get("phone") ?? "").trim();
+    const company = String(fd.get("company") ?? "").trim();
+    const country = String(fd.get("country") ?? "").trim();
+    const product = String(fd.get("product") ?? "").trim();
+    const substrate = String(fd.get("substrate") ?? "").trim();
+    const environment = String(fd.get("environment") ?? "").trim();
+    const quantity = String(fd.get("quantity") ?? "").trim();
     const message = String(fd.get("message") ?? "").trim();
     if (!name) { setErrorMsg(t("err.nameRequired")); setStatus("error"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErrorMsg(t("err.emailRequired")); setStatus("error"); return; }
     if (!message) { setErrorMsg(t("err.messageRequired")); setStatus("error"); return; }
 
-    // Submit to Netlify Forms (URL-encoded POST to "/")
-    const body = new URLSearchParams();
-    body.append("form-name", "contact");
-    body.append("subject", `Website inquiry from ${name}`);
-    for (const [k, v] of fd.entries()) {
-      body.append(k, String(v));
-    }
-    body.append("locale", locale);
-    body.append("_language", locale);
+    // Build a formatted inquiry body
+    const lines = [
+      `Name: ${name}`,
+      company && `Company: ${company}`,
+      `Email: ${email}`,
+      phone && `Phone/WhatsApp: ${phone}`,
+      country && `Country: ${country}`,
+      product && `Product: ${product}`,
+      substrate && `Substrate: ${substrate}`,
+      environment && `Environment: ${environment}`,
+      quantity && `Quantity: ${quantity} kg`,
+      "",
+      "Message:",
+      message,
+    ].filter(Boolean);
+    const body = lines.join("\n");
 
-    try {
-      const res = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
-      });
-      if (!res.ok) {
-        throw new Error(t("err.generic"));
-      }
-      setStatus("success");
-      form.reset();
-      toast({
-        title: t("toast.inquiryTitle"),
-        description: t("toast.inquiryDesc"),
-      });
-    } catch (err) {
-      setStatus("error");
-      const msg = err instanceof Error ? err.message : t("err.generic");
-      setErrorMsg(msg);
-      toast({
-        title: t("err.couldNotSend"),
-        description: msg,
-        variant: "destructive",
-      });
-    }
+    // Open user's email client with pre-filled inquiry
+    const mailto = `mailto:hogoshi2023@gmail.com?subject=${encodeURIComponent(
+      `Website inquiry from ${name}`
+    )}&body=${encodeURIComponent(body)}`;
+
+    // Also offer WhatsApp with a short summary
+    const waText = `Website inquiry from ${name}\nEmail: ${email}${product ? `\nProduct: ${product}` : ""}\n${message}`;
+    const waUrl = `https://wa.me/8613174208290?text=${encodeURIComponent(waText)}`;
+
+    // Store WhatsApp link so the success screen can offer it
+    setWaLink(waUrl);
+
+    // Open email client
+    window.location.href = mailto;
+
+    setStatus("success");
+    form.reset();
+    toast({
+      title: t("toast.inquiryTitle"),
+      description: t("toast.inquiryDesc"),
+    });
   }
 
   return (
@@ -209,9 +219,19 @@ export function ContactPage() {
                   <p className="mt-2 max-w-sm text-[14px] text-muted-foreground">
                     {t("ctp.successDesc")}
                   </p>
+                  {waLink && (
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-brand px-5 text-sm font-semibold text-brand-foreground transition-all hover:brightness-110"
+                    >
+                      <MessageCircle className="size-4" /> {t("cta.whatsappChat")}
+                    </a>
+                  )}
                   <BrandButton
                     variant="outline"
-                    className="mt-6"
+                    className="mt-3"
                     onClick={() => setStatus("idle")}
                   >
                     {t("cta.sendAnother")}
@@ -220,16 +240,8 @@ export function ContactPage() {
               ) : (
                 <form
                   onSubmit={onSubmit}
-                  name="contact"
-                  method="POST"
-                  data-netlify="true"
-                  netlify-honeypot="bot-field"
                   className="space-y-5"
                 >
-                  <input type="hidden" name="form-name" value="contact" />
-                  <p className="hidden">
-                    <label>Don't fill this out: <input name="bot-field" /></label>
-                  </p>
                   <div className="grid gap-5 sm:grid-cols-2">
                     <Field label={`${t("form.fullName")} ${t("form.required")}`}>
                       <input

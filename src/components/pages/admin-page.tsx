@@ -212,6 +212,7 @@ function Dashboard({
   const [search, setSearch] = React.useState("");
   const [selected, setSelected] = React.useState<Inquiry | null>(null);
   const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null);
+  const [staticNotice, setStaticNotice] = React.useState(false);
 
   async function load() {
     setLoading(true);
@@ -222,6 +223,7 @@ function Dashboard({
       const res = await fetch(`/api/contact?${params.toString()}`, {
         headers: { "x-admin-key": ADMIN_KEY },
       });
+      if (!res.ok) throw new Error("no-api");
       const data = await res.json();
       if (data.ok) {
         setInquiries(data.data as Inquiry[]);
@@ -229,7 +231,8 @@ function Dashboard({
         setLastUpdated(new Date());
       }
     } catch {
-      // ignore
+      // Static deployment (GitHub Pages) has no API — show notice
+      setStaticNotice(true);
     } finally {
       setLoading(false);
     }
@@ -414,6 +417,26 @@ function Dashboard({
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           {t("admin.title")}
         </h1>
+
+        {staticNotice && (
+          <div className="mt-6 rounded-xl border border-brand/30 bg-brand-muted p-5">
+            <div className="flex items-start gap-3">
+              <ShieldAlert className="mt-0.5 size-5 shrink-0 text-brand" />
+              <div>
+                <p className="text-[14px] font-semibold text-foreground">
+                  {loc({ en: "Inquiry management is disabled on this static deployment", zh: "当前静态部署不支持询盘管理", vi: "Quản lý yêu cầu không khả dụng trên triển khai tĩnh" })}
+                </p>
+                <p className="mt-1 text-[13px] text-muted-foreground">
+                  {loc({
+                    en: "Inquiries are sent directly to your email and WhatsApp. To enable the admin panel, deploy to a server platform (Vercel / Netlify).",
+                    zh: "询盘会直接发送到您的邮箱和 WhatsApp。如需启用后台管理,请部署到支持服务端的平台(Vercel / Netlify)。",
+                    vi: "Yêu cầu được gửi trực tiếp đến email và WhatsApp. Để bật bảng quản trị, hãy triển khai lên nền tảng máy chủ (Vercel / Netlify).",
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
