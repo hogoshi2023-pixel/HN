@@ -55,3 +55,9 @@ server.log
 # Database (Netlify deployment uses Netlify Forms, no local DB)
 /db/
 /prisma/migrations/dev.db*
+
+# Generated tooling (not part of website)
+/tool-results/
+/scripts/
+*.log
+
