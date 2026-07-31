@@ -142,6 +142,12 @@ export function ContactPage() {
                 },
                 {
                   icon: MessageCircle,
+                  label: "WhatsApp",
+                  value: company.whatsapp,
+                  href: `https://wa.me/${company.whatsapp.replace(/\D/g, "")}`,
+                },
+                {
+                  icon: MessageCircle,
                   label: t("footer.contact.whatsapp"),
                   value: company.contact,
                 },

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Menu, X, Phone, Mail, ChevronRight } from "lucide-react";
+import { Menu, X, Phone, Mail, ChevronRight, MessageCircle } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useNav, type PageId } from "@/lib/nav-store";
@@ -65,6 +65,14 @@ export function SiteHeader() {
               className="flex items-center gap-1.5 transition-colors hover:text-foreground"
             >
               <Phone className="size-3.5" /> {company.phone}
+            </a>
+            <a
+              href={`https://wa.me/${company.whatsapp.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
+              <MessageCircle className="size-3.5" /> {company.whatsapp}
             </a>
             <a
               href={`mailto:${company.email}`}

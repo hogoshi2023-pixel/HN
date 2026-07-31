@@ -655,3 +655,36 @@ Stage Summary:
 - Product catalog expanded from 24 to 58 models across 6 categories.
 - All new models carry complete TDS spec sheets from Rolls catalog (brand replaced).
 - Existing 6-category structure + HN- naming preserved.
+
+---
+Task ID: DETAIL-FIX
+Agent: orchestrator (main)
+Task: (1) Add WhatsApp number +8613174208290 across site; (2) Change footer copyright to © 2019 + warmer 3-color palette (less oppressive).
+
+Changes:
+1. WhatsApp number (+86 131 7420 8290):
+   - data.ts: changed `whatsapp` field from LStr label to string "+86 131 7420 8290"; added `whatsappChat` LStr for the old label.
+   - site-header.tsx: added WhatsApp link (wa.me/8613174208290) in top utility bar alongside phone/email.
+   - site-footer.tsx: WhatsApp now shows the number as a clickable wa.me link.
+   - contact-page.tsx: added dedicated WhatsApp row showing the number + wa.me link, kept WeChat/contact row separate.
+
+2. Copyright year: changed `new Date().getFullYear()` → hardcoded `2019` in footer.
+
+3. Footer color palette (was: pure black bg-ink + amber + white, felt oppressive):
+   - Added CSS variables --footer-bg (warm graphite oklch 0.19 0.012 55), --footer-fg (warm ivory oklch 0.82 0.015 70), --footer-accent (warm gold oklch 0.78 0.15 65), --footer-accent-strong (oklch 0.82 0.16 62) in both :root and .dark.
+   - Mapped to Tailwind theme (--color-footer-*).
+   - Rewrote footer: bg uses --footer-bg (warm graphite, softer than pure ink), text uses --footer-fg (warm ivory, not pure white), accents use --footer-accent (warm gold), headings/brand use white, logo badge uses gold-on-graphite.
+   - All borders changed from border-border/60 to border-white/8 for subtler separation on dark.
+   - Hover states: text-white (brightens on hover).
+
+Verification (Agent Browser):
+- Header utility bar shows "+86 131 7420 8290" ✓
+- Footer shows WhatsApp number + © 2019 ✓
+- Contact page shows WhatsApp number ✓
+- VLM assessment of footer: "warm graphite/charcoal background, softer than pure black; warm gold/amber accents; warm and balanced, not oppressive; professional yet inviting" ✓
+- No errors, lint clean.
+
+Stage Summary:
+- WhatsApp +86 131 7420 8290 added to header, footer, contact page (all clickable wa.me links).
+- Footer copyright now © 2019.
+- Footer palette changed from oppressive pure-black+amber+white to warm-graphite + warm-gold + warm-ivory (3-color, softer, more balanced).

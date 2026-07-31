@@ -17,7 +17,8 @@ export const company = {
   } as LStr,
   email: "hogoshi2023@gmail.com",
   phone: "+84 838 396 799",
-  whatsapp: { en: "WhatsApp Business Chat", zh: "WhatsApp 商务咨询", vi: "Trò chuyện WhatsApp Business" } as LStr,
+  whatsapp: "+86 131 7420 8290",
+  whatsappChat: { en: "WhatsApp Business Chat", zh: "WhatsApp 商务咨询", vi: "Trò chuyện WhatsApp Business" } as LStr,
   contact: "Mr Hogo Shi · WeChat: hogo13",
   address: {
     en: "Xiashi Industrial Zone, Lunjiao Subdistrict, Shunde District, Foshan City, Guangdong Province, P.R.China",
