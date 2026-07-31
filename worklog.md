@@ -688,3 +688,33 @@ Stage Summary:
 - WhatsApp +86 131 7420 8290 added to header, footer, contact page (all clickable wa.me links).
 - Footer copyright now © 2019.
 - Footer palette changed from oppressive pure-black+amber+white to warm-graphite + warm-gold + warm-ivory (3-color, softer, more balanced).
+
+---
+Task ID: ABOUT-REWRITE
+Agent: orchestrator (main)
+Task: Replace "About Us" company profile with user-provided Chinese text (4 paragraphs).
+
+Content provided by user (verbatim):
+1. 宏源成立于2003年...中国涂料之乡...现代化厂房...
+2. 企业长期与行业科研机构...ISO9001/ISO14001...
+3. 公司主要产品有:"HONG NGUYEN" 水性防腐漆系列...
+4. 公司始终坚守品质为本、绿色发展...
+
+Changes:
+- i18n.ts:
+  - Updated ap.titlePre/ap.titleAccent: "自2003年,立足 中国涂料之乡。"
+  - Updated ap.desc (header subtitle) = first paragraph summary.
+  - Changed ap.storyEyebrow: "公司介绍" (was "我们的故事").
+  - Changed ap.storyTitle: "品质为本,绿色发展。"
+  - Added ap.storyP1..P4: the 4 full paragraphs (EN/ZH/VI all translated).
+- about-page.tsx: story section now renders 4 <p> paragraphs (storyP1-P4) above the bullet list.
+- Fixed quote parsing error: Chinese straight quotes " around 中国涂料之乡 and HONG NGUYEN (0x22) broke JS strings → replaced with curly quotes "" (U+201C/U+201D).
+
+Verification (Agent Browser):
+- Chinese: header "自2003年,立足 中国涂料之乡。", story title "品质为本,绿色发展。", all 4 paragraphs render with full text (成立/科研合作/产品系列/经营理念). ✓
+- English: "Since 2003, from China's coatings hometown." / "Quality-rooted, green development." ✓
+- No 劳斯, no errors, lint clean.
+
+Stage Summary:
+- About page company profile fully replaced with user's 4-paragraph text (trilingual).
+- Header tagline updated to highlight "China's coatings hometown" positioning.

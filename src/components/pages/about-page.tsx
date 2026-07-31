@@ -123,6 +123,12 @@ export function AboutPage() {
               eyebrow={t("ap.storyEyebrow")}
               title={t("ap.storyTitle")}
             />
+            <div className="mt-6 space-y-4 text-[14px] leading-relaxed text-muted-foreground">
+              <p>{t("ap.storyP1")}</p>
+              <p>{t("ap.storyP2")}</p>
+              <p>{t("ap.storyP3")}</p>
+              <p>{t("ap.storyP4")}</p>
+            </div>
             <ul className="mt-6 grid gap-2.5 sm:grid-cols-2">
               {storyBullets.map((b) => (
                 <li key={b.en} className="flex items-center gap-2 text-[13px] text-foreground/90">
