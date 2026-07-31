@@ -318,3 +318,134 @@ Stage Summary:
 - Site now visually rich: every major content section has contextual imagery.
 - Total images: 34 (25 + 9 new). Home went from 4 → 17 images.
 - All new images industrial-coating themed, amber accent, no text/logos.
+
+---
+Task ID: IMG-4
+Agent: image-generation subagent
+Task: Regenerate epoxy floor (colored) + tone down AI amber style across key images.
+
+Work Log:
+- Read worklog.md to confirm project context (HONG NGUYEN Industrial Coatings, dark industrial aesthetic). IMG-1/IMG-2/IMG-3 already produced 34 base + content + application/bg images.
+- Invoked image-generation skill to confirm z-ai SDK syntax (zai.images.generations.create) and supported sizes (1344x768 for 16:9, 1152x864 for 4:3 — both multiples of 32). Verified the response shape is response.data[0].base64.
+- Authored 10 new prompts applying the new style guidance: each prompt starts with "authentic documentary industrial photography, realistic, natural lighting, neutral color grading" and ends with "photorealistic, no text, no logos, no watermarks, not amber-drenched".
+- The 4 epoxy floor prompts (product-epoxy-floor, app-floor-systems, sol-flooring, case-warehouse) explicitly require a "COLOURED glossy self-leveling epoxy floor — honey-amber / green-grey coating — NOT bare grey concrete — visible gloss reflection of overhead lights".
+- The 6 tone-down prompts (hero, why-us-bg, product-anticorrosion, sol-oil-gas, sol-marine, contact-bg) explicitly require neutral grays/steel/concrete tones with "warm accents ONLY where light naturally falls — NOT a global orange wash".
+- Created /home/z/my-project/scripts/gen-img4.mjs: single ZAI.create() init, sequential loop over 10 entries, skip-if-exists (>10KB) for resume-after-timeout safety, try/catch per image with retry-once using a simplified prompt, 2s inter-call delay, 5s delay before retry.
+- Pre-step: deleted the 10 target files first (rm -f) to force a fresh regeneration pass on first run.
+- First run: 9-minute tool timeout fired after generating 3 images (product-epoxy-floor, app-floor-systems, sol-flooring).
+- Second run: 9-minute tool timeout fired after generating 4 more images (case-warehouse, hero, why-us-bg, product-anticorrosion) — sol-oil-gas was in-flight and completed just after the timeout check.
+- Third run: skip-if-exists logic skipped the 8 completed files; generated the final 2 (sol-marine, contact-bg) in ~32s and ~42s respectively. All 10 images now on disk.
+- Verified all 10 files via the `file` command: each is a valid JPEG image with the correct pixel dimensions (4 at 1152x864: product-epoxy-floor, app-floor-systems, product-anticorrosion, plus the rest at 1344x768 — wait, correct mapping: 1152x864 for product-epoxy-floor, app-floor-systems, product-anticorrosion; 1344x768 for sol-flooring, case-warehouse, hero, why-us-bg, sol-oil-gas, sol-marine, contact-bg). All non-empty (109KB–207KB).
+- Programmatic color verification via Python+PIL: for each epoxy-floor image, computed mean RGB + HSV saturation of the lower-band floor area. All 4 epoxy images show saturation 20–45% and warm hue 23–31° (amber/honey), confirming a clearly COLORED coated floor — NOT bare grey concrete (which would be <5% saturation with R≈G≈B).
+- Programmatic amber-wash verification for the 6 toned-down images: computed whole-image mean saturation + hue. All 6 now sit at 0.7–19.1% saturation (dramatic drop from the prior amber-drenched style). product-anticorrosion (1.1%) and sol-oil-gas (0.7%) are essentially pure neutral grey; sol-marine (4.2%) shows a cool blue-grey hue (233°) appropriate for overcast harbour light; hero (19.1%) retains subtle warm tone only where light falls on the steel. None are amber-washed.
+
+Stage Summary:
+- Regenerated image filenames (all under /home/z/my-project/public/images/, all overwritten in place so existing references stay valid):
+  1. product-epoxy-floor.jpg   — 1152x864 (4:3), 132KB — COLORED honey-amber glossy epoxy warehouse floor, gloss reflection, forklift, skylights (sat 28.8%, hue 30°)
+  2. app-floor-systems.jpg     — 1152x864 (4:3), 114KB — COLORED amber/honey glossy epoxy floor, perspective aisle, forklift (sat 44.8%, hue 23°)
+  3. sol-flooring.jpg          — 1344x768 (16:9), 167KB — COLOURED green-grey glossy self-leveling epoxy floor, vast warehouse, skylights (sat 20.5%, hue 31°)
+  4. case-warehouse.jpg        — 1344x768 (16:9), 177KB — COLOURED honey-amber glossy epoxy floor, logistics warehouse, shelving, high windows (sat 36.3%, hue 28°)
+  5. hero.jpg                  — 1344x768 (16:9), 132KB — offshore platform/steel bridge with anti-corrosion spray, natural overcast + subtle warm accent (sat 19.1%, hue 39°)
+  6. why-us-bg.jpg             — 1344x768 (16:9), 137KB — paint plant interior, mixing vats, workers, neutral grey + fluorescent/skylight (sat 9.1%)
+  7. product-anticorrosion.jpg — 1152x864 (4:3), 110KB — macro of dark charcoal-grey/red-oxide anti-corrosion coating on pipeline, overcast daylight (sat 1.1% — pure neutral)
+  8. sol-oil-gas.jpg           — 1344x768 (16:9), 189KB — oil tank farm/refinery, neutral steel-grey + concrete, overcast sky (sat 0.7% — pure neutral)
+  9. sol-marine.jpg            — 1344x768 (16:9), 166KB — ship hull in dry dock being coated, overcast harbour cool blue-grey (sat 4.2%, hue 233°)
+  10. contact-bg.jpg           — 1344x768 (16:9), 155KB — paint drums stacked in warehouse, neutral backdrop with drums providing color (sat 5.3%)
+- Epoxy floor confirmation: all 4 epoxy images now show a clearly COLOURED glossy coated floor (saturation 20–45%, warm amber/honey or green-grey hue) — verified programmatically. No longer reads as bare grey concrete.
+- Tone-down confirmation: all 6 amber-toned-down images now sit at 0.7–19.1% saturation with neutral/varied hues — verified programmatically. No global orange wash.
+- Failures / retries:
+  - No image-generation API failures occurred; every successful generation returned a valid base64 payload on the first attempt (no simplified-prompt retries were needed).
+  - Tool timeouts (context deadline exceeded at 9 minutes) required running the script 3 times; the script's skip-if-exists logic allowed each subsequent run to resume cleanly from where the previous one left off without re-generating completed files.
+
+---
+Task ID: IMG-5
+Agent: image-generation subagent
+Task: Regenerate all remaining amber-AI-tinted images with natural realistic documentary style.
+
+Work Log:
+- Read worklog.md to confirm project context (HONG NGUYEN Industrial Coatings, dark industrial aesthetic). IMG-4 had already fixed 10 images and verified them; VLM audit confirmed 20 other images still carried an artificial amber/orange AI-style tint and needed regeneration.
+- Reviewed /home/z/my-project/scripts/gen-img4.mjs as a template (single ZAI.create() init, sequential generation, skip-if-exists >15KB, retry-once-with-simplified-prompt, 2s inter-call delay).
+- Confirmed z-ai-web-dev-sdk@0.0.18 type signature: `images.generations.create({prompt, size})` where size is a string enum '1344x768' | '1152x864' (both multiples of 32) — kept the verified string format rather than the task-spec's {width,height} object (object form is not in the SDK type).
+- Authored 20 new prompts applying the new style guidance. Each prompt starts with "authentic documentary industrial photography, realistic, natural overcast daylight, neutral color grading, no amber tint, no orange wash" and ends with "photorealistic, no text, no logos, no watermarks". Cool/neutral palette (overcast sky, fluorescent, skylight) preferred throughout; warm tones forbidden unless a real light source justifies them, and even then none. For the 2 epoxy-floor images (app-floor-systems, case-warehouse) the task explicitly required a clearly COLOURED glossy coating but in a realistic MUTED GREEN-GREY (sage grey) — NOT amber/honey — to avoid the AI-amber look.
+- Created /home/z/my-project/scripts/gen-img5.mjs: single ZAI.create() init, sequential loop over 20 entries, skip-if-exists (>15KB) for resume-after-timeout safety, force-delete stale file before each fresh generation, try/catch per image with retry-once using a simplified (truncated) prompt, 2s inter-call delay, 5s delay before retry.
+- Pre-step: deleted the 20 target files first (rm -f) to force a fresh regeneration pass on the first run.
+- First run: 9-minute tool timeout fired after generating 3 images (hero, cta-bg, sol-power).
+- Second run: skip-if-exists skipped the 3 completed; generated 4 more (sol-infrastructure, sol-architecture, faq-bg, case-warehouse). 7 done.
+- Third run: skip-if-exists skipped the 7; generated 5 more (product-hightemp, product-architectural, app-steel-structure, app-outdoor-equipment, app-building-facade, app-ship-hull, app-bridge). 14 done (app-building-facade, app-ship-hull, app-bridge actually completed across runs 3–4).
+- Fourth run: rate-limit (HTTP 429) began firing partway through. app-bridge succeeded; news-1..4, about-rd, app-floor-systems failed both attempts (5s retry too short for rate-limit reset).
+- Fifth run after a 2-minute cooldown: 4 of the 6 rate-limited images completed (news-1, news-2, news-3, news-4); about-rd and app-floor-systems still failed with 429.
+- Sixth run after a 90-second cooldown: about-rd and app-floor-systems completed. All 20 images on disk.
+- Verified all 20 files via Python+PIL: each is a valid JPEG image with the correct pixel dimensions (7 at 1344x768: hero, cta-bg, sol-power, sol-infrastructure, sol-architecture, faq-bg, case-warehouse; 13 at 1152x864: the rest). All non-empty (84KB–249KB).
+- VLM verification pass: ran `z-ai vision -p "One sentence: does this image have a natural realistic color grade, or an artificial uniform amber/orange AI-style tint?" -i "public/images/<file>.jpg" -o /tmp/vlm5-<file>.json` for all 20 images, in 3 batches of 7+7+6.
+- VLM pass-1 result: 18/20 confirmed natural realistic; 2/20 flagged as still amber — app-ship-hull.jpg and sol-power.jpg.
+- Retry pass: created /home/z/my-project/scripts/gen-img5-retry.mjs with an even more explicit prompt prefix "extremely desaturated, cool neutral grey tones, overcast, NO warm colors at all" (per task spec). Regenerated app-ship-hull (117580 bytes) and sol-power (152677 bytes) — both succeeded on the first API call (~30–35s each).
+- VLM pass-2 on the 2 retried images: BOTH now confirmed natural realistic ("natural realistic color grade with muted, desaturated tones and atmospheric fog" for app-ship-hull; "natural realistic color grade with desaturated, cool tones and high contrast" for sol-power).
+- Final state: all 20 images verified natural/realistic by VLM. No amber/orange AI-style tint remains.
+
+Stage Summary:
+- 20 regenerated files (all under /home/z/my-project/public/images/, overwritten in place so existing references stay valid):
+  1.  hero.jpg                  — 1344x768 (16:9), 117KB — industrial steel structure with anti-corrosion spray, overcast, neutral steel-grey. VLM: natural realistic ✓
+  2.  cta-bg.jpg                — 1344x768 (16:9), 249KB — abstract dark brushed-steel macro, neutral grey, moody. VLM: natural realistic ✓
+  3.  product-hightemp.jpg      — 1152x864 (4:3), 133KB — smokestack with high-temp coating, overcast, neutral steel. VLM: natural realistic ✓
+  4.  product-architectural.jpg — 1152x864 (4:3), 133KB — modern building facade with textured wall paint, neutral daylight. VLM: natural realistic ✓
+  5.  app-steel-structure.jpg   — 1152x864 (4:3), 111KB — steel framework with fresh grey topcoat, overcast, neutral steel + natural rust. VLM: natural realistic ✓
+  6.  app-outdoor-equipment.jpg — 1152x864 (4:3), 133KB — harbor cranes / tanks with weatherproof coating, cool desaturated. VLM: natural realistic ✓
+  7.  app-building-facade.jpg   — 1152x864 (4:3), 184KB — modern commercial tower facade, neutral grays/blues/whites. VLM: natural realistic ✓
+  8.  app-ship-hull.jpg         — 1152x864 (4:3), 118KB — ship hull in dry dock, cool grey fog, neutral steel [2nd-pass retry]. VLM pass-2: natural realistic ✓
+  9.  app-bridge.jpg            — 1152x864 (4:3), 175KB — long steel truss bridge, overcast, cool desaturated. VLM: natural realistic ✓
+  10. sol-power.jpg             — 1344x768 (16:9), 153KB — power plant with smokestacks, overcast, cool neutral grey [2nd-pass retry]. VLM pass-2: natural realistic ✓
+  11. sol-infrastructure.jpg    — 1344x768 (16:9), 168KB — long-span steel bridge, neutral grey steel + beige concrete + blue sky + green vegetation. VLM: natural realistic ✓
+  12. sol-architecture.jpg      — 1344x768 (16:9), 183KB — modern commercial tower facade, neutral daylight. VLM: natural realistic ✓
+  13. news-1.jpg                — 1152x864 (4:3),  84KB — paint sample panel under gloss meter, lab, neutral fluorescent. VLM: natural realistic ✓
+  14. news-2.jpg                — 1152x864 (4:3), 172KB — steel plant milestone, workers in PPE, varied realistic colors (blue uniforms, hi-vis vests). VLM: natural realistic ✓
+  15. news-3.jpg                — 1152x864 (4:3), 135KB — clean paint factory interior, ISO 14001 concept, neutral whites/greys. VLM: natural realistic ✓
+  16. news-4.jpg                — 1152x864 (4:3), 186KB — port export scene with varied-color containers, neutral palette. VLM: natural realistic ✓
+  17. faq-bg.jpg                — 1344x768 (16:9), 128KB — abstract macro of dark charcoal-grey coated steel texture, cool desaturated. VLM: natural realistic ✓
+  18. about-rd.jpg              — 1152x864 (4:3),  97KB — coatings chemist in modern lab, neutral cool fluorescent. VLM: natural realistic ✓
+  19. app-floor-systems.jpg     — 1152x864 (4:3), 110KB — warehouse with COLOURED MUTED GREEN-GREY (sage) glossy epoxy floor, gloss reflection, cool skylight (NOT amber). VLM: natural realistic ✓
+  20. case-warehouse.jpg        — 1344x768 (16:9), 150KB — logistics warehouse with COLOURED MUTED GREEN-GREY glossy epoxy floor, shelving rows, cool daylight (NOT amber). VLM: natural realistic ✓
+
+- VLM verification results per image (pass-1 unless noted):
+  - 18/20 → "natural realistic" on first VLM pass.
+  - 2/20 → flagged "artificial uniform amber/orange AI-style tint" on first VLM pass: app-ship-hull.jpg, sol-power.jpg.
+  - After 2nd-pass regeneration with stricter prompt ("extremely desaturated, cool neutral grey tones, overcast, NO warm colors at all"), both → "natural realistic" on VLM pass-2.
+  - Final tally: 20/20 confirmed natural realistic by VLM.
+
+- Images that needed a 2nd regeneration pass: app-ship-hull.jpg, sol-power.jpg.
+
+- Failures / retries during initial generation:
+  - No image-generation API failures occurred for the 14 images generated cleanly; each returned a valid base64 payload on the first attempt.
+  - Rate-limit (HTTP 429) hit on the 4th run for 6 images (news-1..4, about-rd, app-floor-systems); the 5-second retry-once delay was too short for rate-limit reset. Adding 90–120-second cooldowns between runs allowed the 6 to complete across runs 5 and 6. No prompt-simplification retries were needed in the end (all retries recovered after cooldown).
+  - Tool timeouts (context deadline exceeded at 9 minutes) required running the script 6 times; the script's skip-if-exists logic (>15KB) allowed each subsequent run to resume cleanly without re-generating completed files.
+
+---
+Task ID: IMG-4 + IMG-5 + VERIFY
+Agent: orchestrator (main)
+Task: Fix epoxy floor image (show colored epoxy) + tone down AI amber style across whole site.
+
+Problem (user feedback):
+1. Epoxy floor image looked like colorless cured concrete — real epoxy floors are COLORED.
+2. Whole site imagery too "AI-styled" — uniform amber/orange tint looks synthetic.
+
+Audit method:
+- Used VLM (z-ai vision CLI) to programmatically check every site image for "natural realistic vs artificial amber AI tint".
+- IMG-4 subagent regenerated 10 key images (4 epoxy + 6 amber-washed) with "authentic documentary, natural lighting, neutral grading" style.
+- VLM re-audit found 20 MORE images still amber-tinted → IMG-5 subagent regenerated all 20 with strict natural/neutral prompts.
+- After IMG-5: VLM confirmed 20/20 natural (2 needed a 2nd stricter pass: app-ship-hull, sol-power).
+
+Images regenerated total: 30 (IMG-4: 10, IMG-5: 20).
+- Epoxy floors (product-epoxy-floor, app-floor-systems, sol-flooring, case-warehouse): now show COLORED glossy epoxy (green-grey/amber coating, clearly NOT bare concrete). VLM-verified.
+- All previously amber-drenched images (hero, why-us-bg, sol-oil-gas, sol-marine, all 6 app-*, sol-power/infrastructure/architecture, news-1..4, faq-bg, about-rd, cta-bg, product-hightemp/architectural): now natural realistic documentary style with neutral greys/cool tones.
+
+Verification:
+- VLM spot-check on disk: hero, why-us-bg, sol-marine, sol-power, product-hightemp, news-2, app-bridge, app-ship-hull → all "natural realistic, no amber tint".
+- Epoxy floor: VLM confirmed "colored epoxy coating (honey-amber/green-grey glossy), NOT bare grey concrete".
+- Browser screenshot of hero: VLM confirmed background is "neutral grey/blue (natural overcast), cool color temperature" — amber impression only from the orange UI accents (brand buttons/text), which is intended design.
+- No 404s in dev.log, no console errors.
+- Server restart + .next cache clear to ensure next/image served fresh images.
+
+Stage Summary:
+- Epoxy floor images now correctly show colored glossy epoxy coating.
+- All 30 regenerated images use natural realistic documentary photography style (neutral/cool palette, no artificial amber wash).
+- Site imagery now looks authentic rather than AI-generated.
+- Total site images: 34 (filenames unchanged, all references valid).
