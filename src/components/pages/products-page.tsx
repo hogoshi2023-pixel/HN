@@ -243,20 +243,33 @@ export function ProductsPage() {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className="group flex items-center gap-4 rounded-lg border border-border bg-background p-4 text-left transition-all hover:border-brand/40 hover:shadow-md"
+                className="group flex items-center gap-4 overflow-hidden rounded-lg border border-border bg-background p-3 text-left transition-all hover:border-brand/40 hover:shadow-md"
               >
-                <span className="grid size-10 shrink-0 place-items-center rounded-md border border-border text-muted-foreground transition-colors group-hover:border-brand/40 group-hover:text-brand">
-                  <PIcon className="size-5" />
-                </span>
-                <div className="min-w-0">
+                <div className="relative size-16 shrink-0 overflow-hidden rounded-md">
+                  <Image
+                    src={p.image}
+                    alt={loc(p.title)}
+                    fill
+                    sizes="64px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent" />
+                  <span className="absolute bottom-1 left-1 grid size-6 place-items-center rounded bg-ink/70 text-brand backdrop-blur">
+                    <PIcon className="size-3.5" />
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
                   <div className="font-mono text-[10px] tracking-widest text-brand">
                     {p.code}
                   </div>
                   <div className="truncate text-[14px] font-semibold text-foreground">
                     {loc(p.title)}
                   </div>
+                  <div className="truncate text-[11px] text-muted-foreground">
+                    {loc(p.short)}
+                  </div>
                 </div>
-                <ChevronRight className="ml-auto size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />
+                <ChevronRight className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />
               </button>
             );
           })}

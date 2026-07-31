@@ -247,3 +247,74 @@ Stage Summary:
 - Every content section that should have an image now has a contextually-appropriate, AI-generated photorealistic image.
 - Total images on site: 25 (11 original + 14 new). All industrial-coating themed, amber accent, no text/logos.
 - No image duplication across distinct content (CAT-04 vs CAT-05 now distinct; solutions vs cases vs news all unique).
+
+---
+Task ID: IMG-3
+Agent: image-generation subagent
+Task: Generate application grid images + section background images to enrich the site.
+
+Work Log:
+- Read worklog.md to confirm project context (HONG NGUYEN Industrial Coatings, dark industrial aesthetic with amber/orange accent, NO blue/indigo, 8-page SPA). IMG-1 and IMG-2 already produced 25 base + content images.
+- Invoked image-generation skill to confirm z-ai SDK syntax (zai.images.generations.create) and supported sizes (1344x768 for 16:9 section backgrounds, 1152x864 for 4:3 application images — both multiples of 32).
+- Reviewed existing scripts/gen-img2-node.mjs as a template (single ZAI init, sequential generation, skip-if-exists, retry-once-with-simplified-prompt, 2s inter-call delay).
+- Created /home/z/my-project/scripts/gen-img3.mjs with 9 entries: 6 application images (1152x864) for steel-structure / floor-systems / outdoor-equipment / building-facade / ship-hull / bridge, and 3 section background images (1344x768) for why-us-bg / faq-bg / contact-bg. Each prompt carries the shared style suffix "photorealistic cinematic B2B industrial photography, dark moody high-contrast, amber orange accent lighting, no text, no logos, no watermarks" and explicit darkened-background guidance for the 3 bg images.
+- First run: 9-minute tool timeout fired after generating 2 images (app-steel-structure, app-floor-systems).
+- Second run: 9-minute tool timeout fired after generating 3 more images (app-outdoor-equipment, app-building-facade, app-ship-hull). 5 of 9 done on disk.
+- Third run: skip-if-exists logic skipped the 5 completed files; generated the remaining 4 (app-bridge, why-us-bg, faq-bg, contact-bg) in ~125s total. All 9 images now on disk.
+- Verified all 9 files via the `file` command: each is a valid JPEG image with the correct pixel dimensions (6 application images at 1152x864, 3 section bg images at 1344x768). All non-empty.
+- All prompts explicitly forbid text/logos/watermarks and reinforce the amber/orange (no blue/indigo) palette via the shared style suffix.
+
+Stage Summary:
+- Generated image filenames and paths (all under /home/z/my-project/public/images/):
+  1. app-steel-structure.jpg  — 1152x864 (4:3),  148KB — large steel structural framework freshly coated with amber anti-corrosion paint, dramatic low angle
+  2. app-floor-systems.jpg    — 1152x864 (4:3),   97KB — glossy self-leveling epoxy warehouse floor with perspective lines and parked forklift
+  3. app-outdoor-equipment.jpg — 1152x864 (4:3), 134KB — large outdoor harbor crane and storage tanks with weatherproof coating, dramatic overcast sky with amber break
+  4. app-building-facade.jpg  — 1152x864 (4:3),  153KB — modern commercial high-rise tower facade, premium coated panels, golden hour
+  5. app-ship-hull.jpg         — 1152x864 (4:3),  126KB — massive cargo ship hull in dry dock being painted with anti-corrosion coating, moody ocean backdrop
+  6. app-bridge.jpg            — 1152x864 (4:3),  120KB — long cable-stayed steel bridge with freshly coated structure, golden hour wide angle
+  7. why-us-bg.jpg             — 1344x768 (16:9), 177KB — cinematic wide interior of modern paint manufacturing plant, mixing vats + workers in safety gear + amber accent lighting, suitable as darkened section background
+  8. faq-bg.jpg                — 1344x768 (16:9), 118KB — abstract macro close-up of industrial coated steel surface texture with raking amber accent lighting, dark moody, suitable as header background
+  9. contact-bg.jpg            — 1344x768 (16:9), 165KB — wide shot of stacked industrial paint drums in a warehouse with amber accent lighting and perspective vanishing point, suitable as header background
+- Failures / retries:
+  - No image-generation API failures occurred; every successful generation returned a valid base64 payload on the first attempt (no simplified-prompt retries were needed).
+  - Tool timeouts (context deadline exceeded at 9 minutes) required running the script 3 times; the script's skip-if-exists logic allowed each subsequent run to resume cleanly from where the previous one left off without re-generating completed files.
+
+---
+Task ID: IMG-3 + LAYOUT-2
+Agent: orchestrator (main)
+Task: Enrich the site with more images at appropriate locations to reduce monotony.
+
+Audit of remaining image opportunities:
+- Home: product cards (icon-only), applications (text-only rows), why-us (flat grid, no bg) — all enriched.
+- FAQ header: grid-bg placeholder — replaced with faq-bg.jpg.
+- Contact header: grid-bg placeholder — replaced with contact-bg.jpg.
+- Products catalog grid: icon-only quick nav — replaced with image thumbnails.
+
+Images generated (IMG-3 subagent, 9 new):
+- app-steel-structure.jpg, app-floor-systems.jpg, app-outdoor-equipment.jpg, app-building-facade.jpg, app-ship-hull.jpg, app-bridge.jpg (6 application cards)
+- why-us-bg.jpg (why-us section background — paint plant interior)
+- faq-bg.jpg (FAQ header background — coated steel texture macro)
+- contact-bg.jpg (Contact header background — stacked paint drums)
+
+Layout changes:
+- data.ts: added `image` field to applications[] (6 images mapped).
+- home-page.tsx:
+  - Product cards: redesigned with 16:10 image header (gradient + code chip + icon chip) + body. Hover zoom.
+  - Applications: redesigned from text rows to 4:3 image cards with gradient overlay + code chip + title + hover chevron. Clickable → solutions page.
+  - Why-us: wrapped section in relative container with why-us-bg.jpg at opacity-20 + vertical gradient overlay; cards now bg-background/90 backdrop-blur.
+- faq-page.tsx: header now uses faq-bg.jpg (opacity-30 + gradient) instead of grid-bg only.
+- contact-page.tsx: header now uses contact-bg.jpg (opacity-30 + gradient) instead of grid-bg only.
+- products-page.tsx: catalog grid cards redesigned with 64px image thumbnail (gradient + icon overlay) + title + short desc.
+
+Verification (Agent Browser):
+- Home: 17 images (was 4) — hero, 6 product cards, 6 application cards, 3 cases, why-us bg. ✓
+- Products: 7 images — 1 active detail + 6 catalog thumbnails. ✓
+- FAQ: header uses faq-bg.jpg. ✓
+- Contact: header uses contact-bg.jpg. ✓
+- Mobile (iPhone 14) Home: 17 images render correctly. ✓
+- No 404s, no console errors, lint clean.
+
+Stage Summary:
+- Site now visually rich: every major content section has contextual imagery.
+- Total images: 34 (25 + 9 new). Home went from 4 → 17 images.
+- All new images industrial-coating themed, amber accent, no text/logos.

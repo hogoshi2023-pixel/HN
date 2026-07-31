@@ -291,13 +291,13 @@ export const whyUs: { no: string; title: LStr; desc: LStr }[] = [
   },
 ];
 
-export const applications: { code: string; title: LStr }[] = [
-  { code: "APP-01", title: { en: "Steel Structure Anti-Corrosion", zh: "钢结构防腐", vi: "Chống ăn mòn kết cấu thép" } },
-  { code: "APP-02", title: { en: "Industrial Floor Systems", zh: "工业地坪系统", vi: "Hệ sàn công nghiệp" } },
-  { code: "APP-03", title: { en: "Outdoor Equipment Weatherproof", zh: "户外设备耐候", vi: "Thiết bị ngoại thất chịu thời tiết" } },
-  { code: "APP-04", title: { en: "Commercial Building Facades", zh: "商业建筑外墙", vi: "Mặt tiền tòa thương mại" } },
-  { code: "APP-05", title: { en: "Ship Hull & Marine", zh: "船体与海洋", vi: "Thân tàu & hàng hải" } },
-  { code: "APP-06", title: { en: "Bridge & Infrastructure", zh: "桥梁与基础设施", vi: "Cầu & hạ tầng" } },
+export const applications: { code: string; title: LStr; image: string }[] = [
+  { code: "APP-01", title: { en: "Steel Structure Anti-Corrosion", zh: "钢结构防腐", vi: "Chống ăn mòn kết cấu thép" }, image: "/images/app-steel-structure.jpg" },
+  { code: "APP-02", title: { en: "Industrial Floor Systems", zh: "工业地坪系统", vi: "Hệ sàn công nghiệp" }, image: "/images/app-floor-systems.jpg" },
+  { code: "APP-03", title: { en: "Outdoor Equipment Weatherproof", zh: "户外设备耐候", vi: "Thiết bị ngoại thất chịu thời tiết" }, image: "/images/app-outdoor-equipment.jpg" },
+  { code: "APP-04", title: { en: "Commercial Building Facades", zh: "商业建筑外墙", vi: "Mặt tiền tòa thương mại" }, image: "/images/app-building-facade.jpg" },
+  { code: "APP-05", title: { en: "Ship Hull & Marine", zh: "船体与海洋", vi: "Thân tàu & hàng hải" }, image: "/images/app-ship-hull.jpg" },
+  { code: "APP-06", title: { en: "Bridge & Infrastructure", zh: "桥梁与基础设施", vi: "Cầu & hạ tầng" }, image: "/images/app-bridge.jpg" },
 ];
 
 export type ProjectCase = {

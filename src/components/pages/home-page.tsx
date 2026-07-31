@@ -230,26 +230,39 @@ export function HomePage() {
               <Reveal key={p.code} delay={i * 60}>
                 <button
                   onClick={() => navigate("products", p.code)}
-                  className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-background p-5 text-left transition-all hover:border-brand/40 hover:shadow-xl"
+                  className="group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-background text-left transition-all hover:border-brand/40 hover:shadow-xl"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] tracking-widest text-brand">
-                      {p.code}
-                    </span>
-                    <span className="grid size-9 place-items-center rounded-md border border-border bg-card text-muted-foreground transition-colors group-hover:border-brand/40 group-hover:text-brand">
+                  {/* Image header */}
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={p.image}
+                      alt={loc(p.title)}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+                    <div className="absolute left-3 top-3 flex items-center gap-2">
+                      <span className="rounded-full bg-ink/70 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-brand backdrop-blur">
+                        {p.code}
+                      </span>
+                    </div>
+                    <div className="absolute right-3 top-3 grid size-8 place-items-center rounded-md border border-brand/40 bg-ink/70 text-brand backdrop-blur">
                       <Icon className="size-4" />
-                    </span>
+                    </div>
                   </div>
-                  <h3 className="mt-4 text-lg font-bold tracking-tight text-foreground">
-                    {loc(p.title)}
-                  </h3>
-                  <p className="mt-1.5 text-[13px] text-muted-foreground">
-                    {loc(p.short)}
-                  </p>
-                  <div className="mt-4 flex items-center gap-1 text-[12px] font-medium text-brand opacity-0 transition-opacity group-hover:opacity-100">
-                    {t("cta.explore")} <ArrowRight className="size-3.5" />
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="text-lg font-bold tracking-tight text-foreground">
+                      {loc(p.title)}
+                    </h3>
+                    <p className="mt-1.5 text-[13px] text-muted-foreground">
+                      {loc(p.short)}
+                    </p>
+                    <div className="mt-4 flex items-center gap-1 text-[12px] font-medium text-brand opacity-0 transition-opacity group-hover:opacity-100">
+                      {t("cta.explore")} <ArrowRight className="size-3.5" />
+                    </div>
                   </div>
-                  <div className="pointer-events-none absolute -right-12 -top-12 size-32 rounded-full bg-brand/5 blur-2xl transition-opacity group-hover:opacity-100" />
                 </button>
               </Reveal>
             );
@@ -258,36 +271,48 @@ export function HomePage() {
       </Section>
 
       {/* ───────── WHY HONG NGUYEN ───────── */}
-      <Section>
-        <SectionHeading
-          index={t("why.index")}
-          eyebrow={t("why.eyebrow")}
-          title={t("why.title")}
-          align="center"
-          className="mx-auto"
-        />
-        <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {whyUs.map((w) => (
-            <div
-              key={w.no}
-              className="group bg-background p-6 transition-colors hover:bg-card/60"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-2xl font-bold text-brand/30 transition-colors group-hover:text-brand">
-                  {w.no}
-                </span>
-                <span className="size-1.5 rounded-full bg-brand opacity-0 transition-opacity group-hover:opacity-100" />
-              </div>
-              <h3 className="mt-4 text-[15px] font-bold tracking-tight text-foreground">
-                {loc(w.title)}
-              </h3>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                {loc(w.desc)}
-              </p>
-            </div>
-          ))}
+      <section className="relative overflow-hidden border-y border-border">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/why-us-bg.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/85 to-background" />
         </div>
-      </Section>
+        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:py-24">
+          <SectionHeading
+            index={t("why.index")}
+            eyebrow={t("why.eyebrow")}
+            title={t("why.title")}
+            align="center"
+            className="mx-auto"
+          />
+          <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            {whyUs.map((w) => (
+              <div
+                key={w.no}
+                className="group bg-background/90 p-6 backdrop-blur-sm transition-colors hover:bg-card"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-2xl font-bold text-brand/30 transition-colors group-hover:text-brand">
+                    {w.no}
+                  </span>
+                  <span className="size-1.5 rounded-full bg-brand opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+                <h3 className="mt-4 text-[15px] font-bold tracking-tight text-foreground">
+                  {loc(w.title)}
+                </h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                  {loc(w.desc)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ───────── APPLICATIONS ───────── */}
       <Section className="bg-card/40 border-y border-border">
@@ -299,16 +324,30 @@ export function HomePage() {
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {applications.map((a, i) => (
             <Reveal key={a.code} delay={i * 50}>
-              <div className="group relative flex items-center gap-4 overflow-hidden rounded-lg border border-border bg-background p-5 transition-all hover:border-brand/40">
-                <span className="font-mono text-[11px] tracking-widest text-brand">
-                  {a.code}
-                </span>
-                <span className="h-8 w-px bg-border" />
-                <span className="text-[14px] font-medium text-foreground">
-                  {loc(a.title)}
-                </span>
-                <ChevronRight className="ml-auto size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand" />
-              </div>
+              <button
+                onClick={() => navigate("solutions")}
+                className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border border-border transition-all hover:border-brand/40 hover:shadow-xl"
+              >
+                <Image
+                  src={a.image}
+                  alt={loc(a.title)}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent" />
+                <div className="absolute left-4 top-4">
+                  <span className="rounded-full bg-ink/70 px-2.5 py-0.5 font-mono text-[10px] tracking-widest text-brand backdrop-blur">
+                    {a.code}
+                  </span>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
+                  <span className="text-[15px] font-bold leading-tight text-foreground">
+                    {loc(a.title)}
+                  </span>
+                  <ChevronRight className="size-5 shrink-0 text-brand opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+              </button>
             </Reveal>
           ))}
         </div>
