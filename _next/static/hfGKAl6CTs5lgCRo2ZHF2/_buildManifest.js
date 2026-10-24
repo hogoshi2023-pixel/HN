@@ -1,1 +1,16 @@
-c2VsZi5fX0JVSUxEX01BTklGRVNUID0gewogICJfX3Jld3JpdGVzIjogewogICAgImFmdGVyRmlsZXMiOiBbXSwKICAgICJiZWZvcmVGaWxlcyI6IFsKICAgICAgewogICAgICAgICJzb3VyY2UiOiAiL0hOLy9fbmV4dC86cGF0aCsiLAogICAgICAgICJkZXN0aW5hdGlvbiI6ICIvSE4vX25leHQvOnBhdGgrIgogICAgICB9CiAgICBdLAogICAgImZhbGxiYWNrIjogW10KICB9LAogICJzb3J0ZWRQYWdlcyI6IFsKICAgICIvX2FwcCIsCiAgICAiL19lcnJvciIKICBdCn07c2VsZi5fX0JVSUxEX01BTklGRVNUX0NCICYmIHNlbGYuX19CVUlMRF9NQU5JRkVTVF9DQigp
+self.__BUILD_MANIFEST = {
+  "__rewrites": {
+    "afterFiles": [],
+    "beforeFiles": [
+      {
+        "source": "/HN//_next/:path+",
+        "destination": "/HN/_next/:path+"
+      }
+    ],
+    "fallback": []
+  },
+  "sortedPages": [
+    "/_app",
+    "/_error"
+  ]
+};self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()
