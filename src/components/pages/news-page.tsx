@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
+import Image from "@/components/image";
 import { ArrowRight, Clock, Newspaper, ChevronRight } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
