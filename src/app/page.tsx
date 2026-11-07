@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { LangHydrator } from "@/components/language-switcher";
 import { useNav } from "@/lib/nav-store";
+import { useT } from "@/lib/i18n";
 import { HomePage } from "@/components/pages/home-page";
 import { ProductsPage } from "@/components/pages/products-page";
 import { SolutionsPage } from "@/components/pages/solutions-page";
@@ -39,17 +40,36 @@ function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"
   }
 }
 
+const SITE_TITLE = "HONG NGUYEN Industrial Coatings";
+
 export default function Page() {
   const page = useNav((s) => s.page);
-  const navigate = useNav((s) => s.navigate);
+  const syncFromLocation = useNav((s) => s.syncFromLocation);
+  const { t } = useT();
 
-  // Detect ?admin=1 (or #admin) on mount → switch to admin view.
+  // Initialize the view from the URL (hash routes like #/products, legacy
+  // #admin, or ?admin=1) and keep it in sync with browser Back/Forward.
   React.useEffect(() => {
-    if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
-    const isAdmin = url.searchParams.get("admin") === "1" || url.hash === "#admin";
-    if (isAdmin) navigate("admin");
-  }, []);
+    const isAdmin =
+      url.searchParams.get("admin") === "1" ||
+      window.location.hash === "#admin";
+    if (isAdmin) useNav.getState().navigate("admin");
+    else syncFromLocation();
+    const onHashChange = () => syncFromLocation();
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [syncFromLocation]);
+
+  // Per-view document title (also makes each view distinguishable in history).
+  React.useEffect(() => {
+    document.title =
+      page === "home"
+        ? `${SITE_TITLE} — Coating Systems Exporter from Foshan, China`
+        : page === "admin"
+          ? `Admin — ${SITE_TITLE}`
+          : `${t(`nav.${page}`)} — ${SITE_TITLE}`;
+  }, [page, t]);
 
   const isAdmin = page === "admin";
 

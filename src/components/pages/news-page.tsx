@@ -15,6 +15,8 @@ const DATE_LOCALE: Record<Locale, string> = {
   en: "en-US",
   zh: "zh-CN",
   vi: "vi-VN",
+  es: "es-ES",
+  ar: "ar",
 };
 
 function formatDate(iso: string, locale: Locale) {

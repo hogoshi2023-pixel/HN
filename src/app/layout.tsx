@@ -16,9 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HONG NGUYEN Industrial Coatings — Premium Paint Manufacturer & Global B2B Export",
+  title: "HONG NGUYEN Industrial Coatings — Coating Systems Exporter from Foshan, China",
   description:
-    "HONG NGUYEN — ISO 9001 certified industrial paint manufacturer since 2003. Anti-corrosion, high-temperature, epoxy floor, and architectural coatings. Factory direct, OEM/ODM, global export to 60+ countries.",
+    "Chinese exporter of anti-corrosion, high-temperature, epoxy floor and architectural coating systems — sourced from ISO 9001 certified plants in China's coatings hub. Full export documentation · OEM/ODM · RAL/Pantone colour matching · 24-month quality warranty.",
   keywords: [
     "industrial paint",
     "anti-corrosion coating",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "HONG NGUYEN Industrial Coatings",
     description:
-      "Premium industrial coatings manufacturer since 2003. Factory direct, OEM/ODM, global B2B export to 60+ countries.",
+      "Chinese exporter of anti-corrosion, high-temperature, epoxy floor and architectural coating systems — sourced from ISO 9001 certified plants in China's coatings hub.",
     siteName: "HONG NGUYEN",
     type: "website",
   },
