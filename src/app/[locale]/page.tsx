@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { certifications, products, specSheet, stats } from "@/lib/data";
 import { withBasePath } from "@/lib/images";
+import { ContactBadge } from "@/components/contact-badge";
 import { SITE, LOCALE_LIST, P, S, LANG_NATIVE } from "@/lib/ssr-i18n";
 import type { Locale } from "@/lib/i18n";
 
@@ -176,10 +177,18 @@ export default async function LocaleHome({ params }: { params: Promise<Params> }
         {/* Quote CTA */}
         <section className="mt-10 border-t border-border pt-6">
           <p className="text-[15px] font-medium">{S.getQuote[locale]}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[12px] text-muted-foreground">
-            <a href="mailto:hogoshi2023@gmail.com" className="text-brand hover:underline">hogoshi2023@gmail.com</a>
-            <a href="https://wa.me/8613174208290" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">WhatsApp +86 131 7420 8290</a>
-            <a href={spaQuote} className="hover:text-foreground">{S.backSite[locale]} →</a>
+          <div className="mt-4 flex flex-col gap-3">
+            <a href="mailto:hogoshi2023@gmail.com" className="group flex items-center gap-3.5">
+              <ContactBadge kind="mail" />
+              <span className="font-mono text-[13px] text-muted-foreground group-hover:text-foreground">hogoshi2023@gmail.com</span>
+            </a>
+            <a href="https://wa.me/8613174208290" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3.5">
+              <ContactBadge kind="whatsapp" />
+              <span className="font-mono text-[13px] text-muted-foreground group-hover:text-foreground">+86 131 7420 8290 · WhatsApp</span>
+            </a>
+            <a href={spaQuote} className="mt-1 font-mono text-[11px] uppercase tracking-widest text-brand hover:underline">
+              {S.backSite[locale]} →
+            </a>
           </div>
         </section>
       </main>

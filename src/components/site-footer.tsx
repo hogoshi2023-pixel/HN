@@ -1,10 +1,11 @@
 "use client";
 
-import { Phone, Mail, MapPin, MessageCircle, Globe, ChevronRight } from "lucide-react";
+import { MessageCircle, Globe, ChevronRight } from "lucide-react";
 import { company, exportRegions } from "@/lib/data";
 import { useNav, type PageId } from "@/lib/nav-store";
 import { useT } from "@/lib/i18n";
 import { BrandButton } from "@/components/brand-button";
+import { ContactBadge } from "@/components/contact-badge";
 
 const PRODUCT_LINKS: { labelKey: string; target: string }[] = [
   { labelKey: "p:cat-01", target: "CAT-01" },
@@ -99,25 +100,25 @@ export function SiteFooter() {
           <p className="mt-4 max-w-sm text-sm leading-relaxed">
             {t("brand.premiumDesc")}
           </p>
-          <ul className="mt-5 space-y-2.5 text-sm">
-            <li className="flex gap-2.5">
-              <MapPin className="mt-0.5 size-4 shrink-0" style={{ color: "var(--footer-accent)" }} />
+          <ul className="mt-5 space-y-3 text-sm">
+            <li className="flex items-center gap-3.5">
+              <ContactBadge kind="pin" />
               <span className="leading-relaxed">{loc(company.address)}</span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="size-4 shrink-0" style={{ color: "var(--footer-accent)" }} />
+            <li className="flex items-center gap-3.5">
+              <ContactBadge kind="phone" />
               <a href={`tel:${company.phone.replace(/\s/g, "")}`} className="hover:text-white transition-colors">
                 {company.phone}
               </a>
             </li>
-            <li className="flex items-center gap-2.5">
-              <Mail className="size-4 shrink-0" style={{ color: "var(--footer-accent)" }} />
+            <li className="flex items-center gap-3.5">
+              <ContactBadge kind="mail" />
               <a href={`mailto:${company.email}`} className="hover:text-white transition-colors">
                 {company.email}
               </a>
             </li>
-            <li className="flex items-center gap-2.5">
-              <MessageCircle className="size-4 shrink-0" style={{ color: "var(--footer-accent)" }} />
+            <li className="flex items-center gap-3.5">
+              <ContactBadge kind="whatsapp" />
               <a
                 href={`https://wa.me/${company.whatsapp.replace(/\D/g, "")}`}
                 target="_blank"

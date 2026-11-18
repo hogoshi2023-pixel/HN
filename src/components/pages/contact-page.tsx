@@ -1,19 +1,9 @@
 "use client";
 
 import * as React from "react";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Send,
-  CheckCircle2,
-  Clock,
-  ShieldCheck,
-  Factory,
-  Copy,
-} from "lucide-react";
+import { MessageCircle, Send, CheckCircle2, Clock, ShieldCheck, Factory, Copy } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
+import { ContactBadge } from "@/components/contact-badge";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/hooks/use-toast";
@@ -156,34 +146,34 @@ export function ContactPage() {
               {[
                 {
                   key: "phone",
-                  icon: Phone,
+                  kind: "phone" as const,
                   label: t("footer.contact.phone"),
                   value: company.phone,
                   href: `tel:${company.phone.replace(/\s/g, "")}`,
                 },
                 {
                   key: "email",
-                  icon: Mail,
+                  kind: "mail" as const,
                   label: t("footer.contact.email"),
                   value: company.email,
                   href: `mailto:${company.email}`,
                 },
                 {
                   key: "whatsapp",
-                  icon: MessageCircle,
+                  kind: "whatsapp" as const,
                   label: "WhatsApp",
                   value: company.whatsapp,
                   href: `https://wa.me/${whatsappDigits()}`,
                 },
                 {
                   key: "wechat",
-                  icon: MessageCircle,
+                  kind: "wechat" as const,
                   label: t("footer.contact.whatsapp"),
                   value: company.contact,
                 },
                 {
                   key: "address",
-                  icon: MapPin,
+                  kind: "pin" as const,
                   label: t("footer.contact.address"),
                   value: loc(company.address),
                 },
@@ -193,9 +183,7 @@ export function ContactPage() {
                     href={c.href ?? "#"}
                     className="group flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand/40"
                   >
-                    <span className="grid size-10 shrink-0 place-items-center rounded-md border border-brand/30 bg-brand-muted text-brand">
-                      <c.icon className="size-5" />
-                    </span>
+                    <ContactBadge kind={c.kind} />
                     <div className="min-w-0">
                       <div className="font-mono text-[10px] tracking-widest text-muted-foreground">
                         {c.label.toUpperCase()}
