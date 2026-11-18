@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import {
   ArrowRight,
   ChevronRight,
@@ -12,11 +12,11 @@ import {
   Palette,
   FlaskConical,
   CheckCircle2,
-  Quote,
   Star,
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, SpecRow, Reveal } from "@/components/section";
+import { withBasePath } from "@/lib/images";
 import { useNav } from "@/lib/nav-store";
 import { useT } from "@/lib/i18n";
 import {
@@ -28,7 +28,6 @@ import {
   applications,
   cases,
   certifications,
-  testimonials,
   partners,
   coreChips,
 } from "@/lib/data";
@@ -164,7 +163,7 @@ export function HomePage() {
                   key={i}
                   className="font-mono text-lg font-bold tracking-widest text-muted-foreground/70 transition-colors hover:text-brand"
                 >
-                  {p}
+                  {loc(p)}
                 </span>
               ))}
             </div>
@@ -226,7 +225,7 @@ export function HomePage() {
                   {/* Image header */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
-                      src={p.image}
+                      src={withBasePath(p.image)}
                       alt={loc(p.title)}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -265,7 +264,7 @@ export function HomePage() {
       <section className="relative overflow-hidden border-y border-border">
         <div className="absolute inset-0">
           <Image
-            src="/images/why-us-bg.jpg"
+            src={withBasePath("/images/why-us-bg.jpg")}
             alt=""
             fill
             sizes="100vw"
@@ -320,7 +319,7 @@ export function HomePage() {
                 className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl border border-border transition-all hover:border-brand/40 hover:shadow-xl"
               >
                 <Image
-                  src={a.image}
+                  src={withBasePath(a.image)}
                   alt={loc(a.title)}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -365,7 +364,7 @@ export function HomePage() {
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
-                    src={c.image}
+                    src={withBasePath(c.image)}
                     alt={loc(c.title)}
                     fill
                     sizes="(max-width: 1024px) 100vw, 33vw"
@@ -406,7 +405,7 @@ export function HomePage() {
       </Section>
 
       {/* ───────── CERTIFICATIONS ───────── */}
-      <Section className="bg-card/40 border-y border-border">
+      <Section className="border-t border-border bg-card/40">
         <SectionHeading
           index={t("cert.index")}
           eyebrow={t("cert.eyebrow")}
@@ -427,35 +426,6 @@ export function HomePage() {
                   {loc(c.title)}
                 </div>
               </div>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
-
-      {/* ───────── TESTIMONIALS ───────── */}
-      <Section>
-        <SectionHeading
-          index={t("voice.index")}
-          eyebrow={t("voice.eyebrow")}
-          title={t("voice.title")}
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {testimonials.map((t2, i) => (
-            <Reveal key={t2.name} delay={i * 80}>
-              <figure className="flex h-full flex-col rounded-xl border border-border bg-card p-6">
-                <Quote className="size-7 text-brand/60" />
-                <blockquote className="mt-4 flex-1 text-[14px] leading-relaxed text-foreground/90">
-                  &ldquo;{loc(t2.quote)}&rdquo;
-                </blockquote>
-                <figcaption className="mt-6 border-t border-border/60 pt-4">
-                  <div className="text-[14px] font-bold text-foreground">
-                    {t2.name}
-                  </div>
-                  <div className="text-[12px] text-muted-foreground">
-                    {loc(t2.role)}
-                  </div>
-                </figcaption>
-              </figure>
             </Reveal>
           ))}
         </div>

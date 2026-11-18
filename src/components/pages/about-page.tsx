@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle2,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
+import { withBasePath } from "@/lib/images";
 import { useNav } from "@/lib/nav-store";
 import { useT } from "@/lib/i18n";
 import {
@@ -91,7 +92,7 @@ export function AboutPage() {
             <Reveal>
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border">
                 <Image
-                  src="/images/factory.jpg"
+                  src={withBasePath("/images/factory.jpg")}
                   alt="HONG NGUYEN paint manufacturing facility"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -156,36 +157,36 @@ export function AboutPage() {
         <Reveal delay={120}>
           <div className="mt-8 grid overflow-hidden rounded-xl border border-border lg:grid-cols-2">
             <div className="relative aspect-[16/10] lg:aspect-auto">
-              <Image
-                src="/images/about-rd.jpg"
-                alt="HONG NGUYEN R&D laboratory"
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
+                <Image
+                  src={withBasePath("/images/about-rd.jpg")}
+                  alt="Coatings laboratory — illustrative image"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
               <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/40" />
             </div>
             <div className="bg-background p-7 lg:p-9">
               <div className="flex items-center gap-2">
                 <FlaskConical className="size-5 text-brand" />
-                <span className="eyebrow text-brand text-[11px]">R&D / QC LAB</span>
+                <span className="eyebrow text-brand text-[11px]">TECHNICAL &amp; QC SUPPORT</span>
               </div>
               <h3 className="mt-3 text-xl font-bold tracking-tight text-foreground">
-                {loc({ en: "12 senior chemists. Batch-to-batch consistency.", zh: "12名资深化学师,批次间始终如一。", vi: "12 kỹ sư hóa học — đồng đều giữa các lô." })}
+                {loc({ en: "Plant-backed technical support and QC.", zh: "工厂级技术支持与质量把控。", vi: "Hỗ trợ kỹ thuật và QC từ nhà máy." })}
               </h3>
               <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
                 {loc({
-                  en: "Every formulation is tuned in-house and every batch ships with a full QC report. Our spectrophotometry and salt-spray suite cuts sample turnaround to 7 days.",
-                  zh: "每个配方均在内部调校,每批出货附带完整QC报告。光谱分析与盐雾测试套件将样品周转缩短至7天。",
-                  vi: "Mọi công thức đều phối chế nội bộ, mỗi lô kèm báo cáo QC đầy đủ. Bộ quang phổ và phun muối rút ngắn giao mẫu xuống 7 ngày.",
+                  en: "System selection and application guidance are provided together with the producing plants' technical teams. Every order can ship with a batch QC report, and third-party pre-shipment testing is arranged on request.",
+                  zh: "体系选型与施工指导由生产工厂技术团队配合提供。每单可随附批次质检报告，也可按要求安排装运前第三方检测。",
+                  vi: "Tư vấn hệ thống và hướng dẫn thi công phối hợp cùng đội kỹ thuật nhà máy sản xuất. Mỗi đơn có thể kèm báo cáo QC theo lô và thử nghiệm bên thứ ba trước giao theo yêu cầu.",
                 })}
               </p>
               <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                 {[
-                  { en: "Spectrophotometry suite", zh: "光谱分析套件", vi: "Bộ quang phổ" },
-                  { en: "Salt-spray testing", zh: "盐雾测试", vi: "Thử phun muối" },
-                  { en: "Cross-cut adhesion", zh: "划格附着力", vi: "Bám dính cắt chéo" },
-                  { en: "Sample in 7 days", zh: "7天出样", vi: "Mẫu 7 ngày" },
+                  { en: "Batch QC reports per order", zh: "每单批次质检报告", vi: "Báo cáo QC theo lô" },
+                  { en: "System specification support", zh: "体系选型支持", vi: "Hỗ trợ chọn hệ thống" },
+                  { en: "Colour matching (RAL / Pantone)", zh: "RAL / Pantone 调色", vi: "Pha màu RAL / Pantone" },
+                  { en: "Third-party testing on request", zh: "可安排第三方检测", vi: "Thử bên thứ ba theo yêu cầu" },
                 ].map((x) => (
                   <li key={x.en} className="flex items-center gap-2 text-[13px] text-foreground/90">
                     <CheckCircle2 className="size-4 text-brand" /> {loc(x)}
@@ -252,10 +253,10 @@ export function AboutPage() {
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {partners.map((p) => (
                 <div
-                  key={p}
+                  key={p.en}
                   className="grid place-items-center rounded-lg border border-border bg-background px-3 py-5 text-center font-mono text-sm font-bold tracking-widest text-muted-foreground/80"
                 >
-                  {p}
+                  {loc(p)}
                 </div>
               ))}
             </div>

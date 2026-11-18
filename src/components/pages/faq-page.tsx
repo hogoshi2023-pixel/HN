@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import { ArrowRight, MessageCircleQuestion, Search } from "lucide-react";
 import {
   Accordion,
@@ -32,10 +32,10 @@ export function FaqPage() {
 
   const quickFacts: [string, string][] = [
     [t("fp.moq"), "200 kg"],
-    [t("fp.sampleLead"), "7 days"],
+    [t("fp.sampleLead"), "7 – 15 days"],
     [t("fp.prodLead"), "7 – 15 days"],
     [t("fp.warranty"), "24 months"],
-    [t("fp.exportCountries"), "60+"],
+    [t("fp.exportCountries"), "Global"],
   ];
 
   return (

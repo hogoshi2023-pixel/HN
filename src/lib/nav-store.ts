@@ -10,8 +10,7 @@ export type PageId =
   | "about"
   | "news"
   | "faq"
-  | "contact"
-  | "admin"; // hidden — accessible via #/admin, #admin, ?admin=1 or footer link
+  | "contact";
 
 const PAGE_IDS: PageId[] = [
   "home",
@@ -22,7 +21,6 @@ const PAGE_IDS: PageId[] = [
   "news",
   "faq",
   "contact",
-  "admin",
 ];
 
 type NavState = {
@@ -36,14 +34,15 @@ type NavState = {
 function parseLocation(): { page: PageId; target?: string } {
   if (typeof window === "undefined") return { page: "home" };
   const raw = window.location.hash.replace(/^#\/?/, "");
-  if (raw === "admin") return { page: "admin" }; // legacy #admin link
   const [seg, ...rest] = raw.split("/");
   const page = (PAGE_IDS as string[]).includes(seg) ? (seg as PageId) : "home";
   return { page, target: rest.join("/") || undefined };
 }
 
 /** Reflect the current view in the URL. Assigning location.hash pushes a
-    history entry, so the browser Back/Forward buttons work across views. */
+    history entry, so the browser Back/Forward buttons work across views.
+    Static SEO pages deep-link into the SPA with this, e.g. /HN/#/contact
+    or /HN/#/products/CAT-01. */
 function writeLocation(page: PageId, target?: string) {
   if (typeof window === "undefined") return;
   const desired = page === "home" && !target ? "#/" : `#/${page}${target ? `/${target}` : ""}`;

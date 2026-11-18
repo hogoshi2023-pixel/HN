@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import {
   Factory,
   Ship,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
+import { withBasePath } from "@/lib/images";
 import { useNav } from "@/lib/nav-store";
 import { useT } from "@/lib/i18n";
 import { solutions, applications, solutionsProcess } from "@/lib/data";
@@ -69,8 +70,8 @@ export function SolutionsPage() {
                 <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-brand/40 hover:shadow-xl">
                   {/* Image header */}
                   <div className="relative aspect-[16/9] overflow-hidden">
-                    <Image
-                      src={s.image}
+                        <Image
+                          src={withBasePath(s.image)}
                       alt={loc(s.title)}
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"

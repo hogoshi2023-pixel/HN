@@ -20,77 +20,43 @@ import { useToast } from "@/hooks/use-toast";
 import { company, products, exportRegions } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
-type Status = "idle" | "submitting" | "success" | "error";
-
-const WECHAT_ID = "hogo13";
-const MAPS_URL =
-  "https://www.google.com/maps/search/?api=1&query=" +
-  encodeURIComponent(
-    "Xiashi Industrial Zone, Lunjiao Subdistrict, Shunde District, Foshan, Guangdong, China"
-  );
+type Status = "idle" | "success" | "error";
 
 export function ContactPage() {
   const { toast } = useToast();
   const { t, loc } = useT();
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorMsg, setErrorMsg] = React.useState<string>("");
-  const [waHref, setWaHref] = React.useState<string>("");
+  const [waLink, setWaLink] = React.useState<string>("");
   const [mailHref, setMailHref] = React.useState<string>("");
   const [summary, setSummary] = React.useState<string>("");
 
+  /** Defensive: never crash if the deployed bundle is missing a field —
+   *  fall back to the known business WhatsApp number. */
   function whatsappDigits(): string {
-    const raw = (company as { whatsapp?: string })?.whatsapp;
-    const digits = typeof raw === "string" ? raw.replace(/\D/g, "") : "";
+    const digits = typeof company.whatsapp === "string" ? company.whatsapp.replace(/\D/g, "") : "";
     return digits || "8613174208290";
   }
 
-  function buildSummary(fd: FormData): string {
-    const val = (k: string) => String(fd.get(k) ?? "").trim();
-    const line = (label: string, v: string) => (v ? `${label}: ${v}` : "");
-    const lines = [
-      `${t("form.fullName")}: ${val("name")}`,
-      line(t("form.company"), val("company")),
-      `${t("form.email")}: ${val("email")}`,
-      line(t("form.phone"), val("phone")),
-      line(t("form.country"), val("country")),
-      line(t("form.product"), val("product")),
-      line(t("form.substrate"), val("substrate")),
-      line(t("form.environment"), val("environment")),
-      line(t("form.quantity"), val("quantity")),
-      "",
-      `${t("form.message")}: ${val("message")}`,
-      "",
-      `— ${t("ctp.eyebrow")} · ${loc(company.address)}`,
-    ].filter(Boolean);
-    return lines.join("\n");
-  }
-
-  async function copyText(text: string, toastMsg: string) {
+  async function copyText(text: string) {
     try {
       await navigator.clipboard.writeText(text);
-      toast({ title: toastMsg });
     } catch {
       // clipboard API unavailable (http/permissions) — last-resort path
-      try {
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        document.body.removeChild(ta);
-        toast({ title: toastMsg });
-      } catch {
-        setErrorMsg(text.slice(0, 400));
-        setStatus("error");
-      }
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
     }
+    toast({ title: t("inq.copied") });
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("submitting");
     setErrorMsg("");
     const form = e.currentTarget;
     const fd = new FormData(form);
@@ -103,22 +69,37 @@ export function ContactPage() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErrorMsg(t("err.emailRequired")); setStatus("error"); return; }
     if (!message) { setErrorMsg(t("err.messageRequired")); setStatus("error"); return; }
 
-    // Static deployment: hand the inquiry straight to WhatsApp / Email.
-    const text = buildSummary(fd);
-    const digits = whatsappDigits();
-    const wa = `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+    // Localized inquiry summary (the buyer pastes this into their own app,
+    // so the labels follow the language they are reading the site in).
+    const val = (k: string) => String(fd.get(k) ?? "").trim();
+    const line = (label: string, v: string) => (v ? `${label}: ${v}` : "");
+    const fields = [
+      `${t("form.fullName")}: ${name}`,
+      line(t("form.company"), val("company")),
+      `${t("form.email")}: ${email}`,
+      line(t("form.phone"), val("phone")),
+      line(t("form.country"), val("country")),
+      line(t("form.product"), val("product")),
+      line(t("form.substrate"), val("substrate")),
+      line(t("form.environment"), val("environment")),
+      line(t("form.quantity"), val("quantity")),
+    ].filter(Boolean).join("\n");
+    const text = `${fields}\n\n${t("form.message")}:\n${message}`;
+
+    // Every field required for the hand-off is computed BEFORE any
+    // navigation/open call, so a missing field can never lose an inquiry.
     const subject = encodeURIComponent(`Website inquiry from ${name}`);
-    const body = encodeURIComponent(text);
-    const mail = `mailto:${company.email}?subject=${subject}&body=${body}`;
-
-    setSummary(text);
-    setWaHref(wa);
+    const mail = `mailto:${company.email}?subject=${subject}&body=${encodeURIComponent(text)}`;
+    const wa = `https://wa.me/${whatsappDigits()}?text=${encodeURIComponent(text)}`;
     setMailHref(mail);
+    setWaLink(wa);
+    setSummary(text);
 
-    // Best-effort auto-open (may be blocked by popup blockers — the success
-    // screen below always offers explicit WhatsApp / Email / Copy actions).
+    // Best-effort: open the visitor's email app with everything pre-filled.
+    // If no mail client exists the success screen below still offers
+    // WhatsApp / Email / Copy, so the inquiry is never silently lost.
     try {
-      window.open(wa, "_blank", "noopener,noreferrer");
+      window.location.href = mail;
     } catch {
       /* ignore — fallback buttons cover this */
     }
@@ -199,19 +180,19 @@ export function ContactPage() {
                   icon: MessageCircle,
                   label: t("footer.contact.whatsapp"),
                   value: company.contact,
-                  wechatCopy: true,
                 },
                 {
                   key: "address",
                   icon: MapPin,
                   label: t("footer.contact.address"),
                   value: loc(company.address),
-                  href: MAPS_URL,
-                  external: true,
                 },
-              ].map((c) => {
-                const inner = (
-                  <>
+              ].map((c) => (
+                <li key={c.key}>
+                  <a
+                    href={c.href ?? "#"}
+                    className="group flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand/40"
+                  >
                     <span className="grid size-10 shrink-0 place-items-center rounded-md border border-brand/30 bg-brand-muted text-brand">
                       <c.icon className="size-5" />
                     </span>
@@ -221,43 +202,11 @@ export function ContactPage() {
                       </div>
                       <div className="mt-0.5 text-[14px] font-medium leading-snug text-foreground">
                         {c.value}
-                        {"wechatCopy" in c && c.wechatCopy ? (
-                          <Copy className="ml-1.5 inline size-3.5 text-muted-foreground" />
-                        ) : null}
                       </div>
                     </div>
-                  </>
-                );
-                const cls =
-                  "group flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-brand/40";
-                if ("wechatCopy" in c && c.wechatCopy) {
-                  return (
-                    <li key={c.key}>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          copyText(WECHAT_ID, t("wechat.copied"))
-                        }
-                        className={cn(cls, "w-full text-left")}
-                      >
-                        {inner}
-                      </button>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={c.key}>
-                    <a
-                      href={c.href ?? "#"}
-                      target={"external" in c && c.external ? "_blank" : undefined}
-                      rel={"external" in c && c.external ? "noopener noreferrer" : undefined}
-                      className={cls}
-                    >
-                      {inner}
-                    </a>
-                  </li>
-                );
-              })}
+                  </a>
+                </li>
+              ))}
             </ul>
 
             {/* Trust strip */}
@@ -296,16 +245,18 @@ export function ContactPage() {
                     {t("inq.waHint")}
                   </p>
                   <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                    <BrandButton onClick={() => window.open(waHref, "_blank", "noopener,noreferrer")}>
-                      {t("cta.whatsappChat")}
-                    </BrandButton>
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex h-10 items-center gap-2 rounded-md bg-brand px-5 text-sm font-semibold text-brand-foreground transition-all hover:brightness-110"
+                    >
+                      <MessageCircle className="size-4" /> WhatsApp
+                    </a>
                     <BrandButton asChild>
                       <a href={mailHref}>{t("inq.sendEmail")}</a>
                     </BrandButton>
-                    <BrandButton
-                      variant="ghost"
-                      onClick={() => copyText(summary, t("inq.copied"))}
-                    >
+                    <BrandButton variant="outline" onClick={() => copyText(summary)}>
                       <Copy className="size-4" /> {t("inq.copyInquiry")}
                     </BrandButton>
                   </div>
@@ -320,7 +271,6 @@ export function ContactPage() {
               ) : (
                 <form
                   onSubmit={onSubmit}
-                  name="contact"
                   className="space-y-5"
                 >
                   <div className="grid gap-5 sm:grid-cols-2">
@@ -421,18 +371,8 @@ export function ContactPage() {
                     <p className="text-[12px] text-muted-foreground">
                       {t("ctp.formPrivacy")}
                     </p>
-                    <BrandButton
-                      type="submit"
-                      size="lg"
-                      disabled={status === "submitting"}
-                    >
-                      {status === "submitting" ? (
-                        t("cta.sending")
-                      ) : (
-                        <>
-                          {t("cta.sendInquiry")} <Send className="size-4" />
-                        </>
-                      )}
+                    <BrandButton type="submit" size="lg">
+                      {t("cta.sendInquiry")} <Send className="size-4" />
                     </BrandButton>
                   </div>
                 </form>

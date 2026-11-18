@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import {
   ArrowRight,
   ChevronRight,
@@ -17,9 +17,10 @@ import {
 } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, SpecRow, Reveal } from "@/components/section";
+import { withBasePath } from "@/lib/images";
 import { useNav } from "@/lib/nav-store";
-import { useT } from "@/lib/i18n";
-import { products } from "@/lib/data";
+import { useT, type LStr } from "@/lib/i18n";
+import { products, tdsPdfs } from "@/lib/data";
 
 const PRODUCT_ICONS: Record<string, React.ElementType> = {
   "CAT-01": Shield,
@@ -40,14 +41,14 @@ function ModelList({
   detailLabel,
   hideDetailLabel,
 }: {
-  models: { model: string; desc: { en: string; zh: string; vi: string }; details?: { en: string; zh: string; vi: string } }[];
+  models: { model: string; desc: LStr; details?: LStr }[];
   title: string;
   expandLabel: string;
   collapseLabel: string;
   detailLabel: string;
   hideDetailLabel: string;
 }) {
-  const { loc } = useT();
+  const { t, loc } = useT();
   const [open, setOpen] = React.useState(true);
   const [expandedModel, setExpandedModel] = React.useState<string | null>(null);
 
@@ -100,9 +101,20 @@ function ModelList({
                   )}
                 </div>
                 {hasDetails && isExpanded && (
-                  <pre className="mt-3 max-h-80 overflow-y-auto scroll-thin whitespace-pre-wrap rounded-lg border border-border/60 bg-background p-4 font-sans text-[12.5px] leading-relaxed text-foreground/85">
-                    {loc(m.details)}
-                  </pre>
+                  <>
+                    <pre className="mt-3 max-h-80 overflow-y-auto scroll-thin whitespace-pre-wrap rounded-lg border border-border/60 bg-background p-4 font-sans text-[12.5px] leading-relaxed text-foreground/85">
+                      {loc(m.details)}
+                    </pre>
+                    {tdsPdfs.includes(m.model) && (
+                      <a
+                        href={withBasePath(`/tds/${m.model}-en.pdf`)}
+                        download
+                        className="mt-2 inline-flex w-fit items-center gap-1.5 rounded-md border border-brand bg-brand-muted px-2.5 py-1 text-[11px] font-medium text-brand transition-colors hover:bg-brand hover:text-background"
+                      >
+                        {t("cta.getTds")} · PDF
+                      </a>
+                    )}
+                  </>
                 )}
               </li>
             );
@@ -215,7 +227,7 @@ export function ProductsPage() {
             <Reveal key={product.code}>
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border">
                 <Image
-                  src={product.image}
+                  src={withBasePath(product.image)}
                   alt={loc(product.title)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"
@@ -358,7 +370,7 @@ export function ProductsPage() {
               >
                 <div className="relative size-16 shrink-0 overflow-hidden rounded-md">
                   <Image
-                    src={p.image}
+                    src={withBasePath(p.image)}
                     alt={loc(p.title)}
                     fill
                     sizes="64px"

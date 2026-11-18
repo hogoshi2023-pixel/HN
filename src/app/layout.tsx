@@ -16,11 +16,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://hogoshi2023-pixel.github.io/HN"),
   title: "HONG NGUYEN Industrial Coatings — Coating Systems Exporter from Foshan, China",
   description:
-    "Chinese exporter of anti-corrosion, high-temperature, epoxy floor and architectural coating systems — sourced from ISO 9001 certified plants in China's coatings hub. Full export documentation · OEM/ODM · RAL/Pantone colour matching · 24-month quality warranty.",
+    "HONG NGUYEN — Chinese exporter of industrial coating systems: anti-corrosion, high-temperature, epoxy floor and architectural paints, sourced from ISO 9001 certified plants. OEM/ODM, RAL/Pantone colour matching, full export documentation, worldwide shipping.",
   keywords: [
-    "industrial paint",
+    "industrial paint supplier China",
     "anti-corrosion coating",
     "epoxy floor paint",
     "high-temperature paint",
@@ -31,15 +32,62 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "HONG NGUYEN Co., Ltd." }],
   icons: {
-    icon: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/favicon.svg`,
+    icon: "/favicon.svg",
+  },
+  alternates: {
+    canonical: "https://hogoshi2023-pixel.github.io/HN/",
   },
   openGraph: {
     title: "HONG NGUYEN Industrial Coatings",
     description:
-      "Chinese exporter of anti-corrosion, high-temperature, epoxy floor and architectural coating systems — sourced from ISO 9001 certified plants in China's coatings hub.",
+      "Industrial coating systems exported from Foshan, China — anti-corrosion, high-temperature, epoxy floor and architectural paints. OEM/ODM, colour matching, full export documentation.",
+    url: "https://hogoshi2023-pixel.github.io/HN/",
     siteName: "HONG NGUYEN",
     type: "website",
+    images: [{ url: "https://hogoshi2023-pixel.github.io/HN/images/hero.jpg", width: 1200, height: 630, alt: "HONG NGUYEN industrial coatings" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "HONG NGUYEN Industrial Coatings",
+    description: "Coating systems exporter from Foshan, China — anti-corrosion, high-temperature, epoxy floor and architectural paints.",
+    images: ["https://hogoshi2023-pixel.github.io/HN/images/hero.jpg"],
+  },
+};
+
+/** 站点级结构化数据：Organization + WebSite（所有页面共用） */
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://hogoshi2023-pixel.github.io/HN/#org",
+      name: "HONG NGUYEN Industrial Coatings",
+      url: "https://hogoshi2023-pixel.github.io/HN/",
+      logo: "https://hogoshi2023-pixel.github.io/HN/favicon.svg",
+      description:
+        "Chinese exporter of industrial coating systems — anti-corrosion, high-temperature, epoxy floor and architectural paints sourced from ISO 9001 certified plants.",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Shunde, Foshan",
+        addressRegion: "Guangdong",
+        addressCountry: "CN",
+      },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        email: "hogoshi2023@gmail.com",
+        telephone: "+86-131-7420-8290",
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://hogoshi2023-pixel.github.io/HN/#site",
+      url: "https://hogoshi2023-pixel.github.io/HN/",
+      name: "HONG NGUYEN Industrial Coatings",
+      publisher: { "@id": "https://hogoshi2023-pixel.github.io/HN/#org" },
+      inLanguage: ["en", "zh", "vi", "es", "ar"],
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -52,6 +100,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased bg-background text-foreground`}
       >
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }} />
         {children}
         <Toaster />
       </body>

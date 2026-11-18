@@ -40,7 +40,7 @@ export function SiteFooter() {
 
   const companyLabelMap: Record<string, string> = {
     "footer.about": loc({ en: "About Us", zh: "关于我们", vi: "Giới thiệu" }),
-    "footer.cases": loc({ en: "Project Cases", zh: "项目案例", vi: "Dự án tiêu biểu" }),
+    "footer.cases": loc({ en: "Application Systems", zh: "应用体系", vi: "Hệ thống ứng dụng" }),
     "footer.solutions": loc({ en: "Solutions", zh: "解决方案", vi: "Giải pháp" }),
     "footer.news": loc({ en: "News & Blog", zh: "新闻与博客", vi: "Tin tức & Blog" }),
     "footer.faq": loc({ en: "FAQ", zh: "常见问题", vi: "Câu hỏi" }),
@@ -184,7 +184,7 @@ export function SiteFooter() {
       <div className="border-t border-white/8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-5 text-[12px] sm:flex-row" style={{ color: "var(--footer-fg)" }}>
           <p>
-            © 2019 {company.name} Co., Ltd. {t("footer.rights")}
+            © {new Date().getFullYear()} {company.name} Co., Ltd. {t("footer.rights")}
           </p>
           <p className="flex flex-wrap items-center gap-2 font-mono tracking-wider">
             {company.certs.map((c, i) => (
@@ -193,14 +193,6 @@ export function SiteFooter() {
                 {c}
               </span>
             ))}
-            <span className="opacity-30">·</span>
-            <button
-              onClick={() => navigate("admin")}
-              className="transition-colors hover:text-white"
-              title="Admin"
-            >
-              Admin
-            </button>
           </p>
         </div>
       </div>

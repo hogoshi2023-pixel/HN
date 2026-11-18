@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import Image from "@/components/image";
+import Image from "next/image";
 import { ArrowRight, MapPin, Calendar, Ruler, Layers, ShieldCheck } from "lucide-react";
 import { BrandButton } from "@/components/brand-button";
 import { Section, SectionHeading, Eyebrow, Reveal } from "@/components/section";
+import { withBasePath } from "@/lib/images";
 import { useNav } from "@/lib/nav-store";
 import { useT } from "@/lib/i18n";
 import { cases, caseOutcomes, type ProjectCase } from "@/lib/data";
@@ -71,7 +72,7 @@ export function CasesPage() {
               >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <Image
-                    src={cc.image}
+                    src={withBasePath(cc.image)}
                     alt={loc(cc.title)}
                     fill
                     sizes="(max-width: 640px) 100vw, 33vw"
@@ -104,8 +105,8 @@ export function CasesPage() {
             {/* Image */}
             <div className="lg:col-span-7">
               <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border">
-                <Image
-                  src={c.image}
+              <Image
+                src={withBasePath(c.image)}
                   alt={loc(c.title)}
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"

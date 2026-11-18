@@ -24,12 +24,12 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm install --no-audit --no-fund
-      - run: npx prisma generate
-      - name: Build static export
-        run: npx next build
+      - name: Build static export (5 languages, 240+ product pages)
+        run: npm run build:gh
         env:
-          GH_PAGES: "1"
-          NEXT_PUBLIC_BASE_PATH: "/HN"
+          NEXT_TELEMETRY_DISABLED: "1"
+      - name: Set per-language <html lang/dir>
+        run: node scripts/fix-html-lang.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

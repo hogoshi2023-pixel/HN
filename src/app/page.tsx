@@ -14,7 +14,6 @@ import { AboutPage } from "@/components/pages/about-page";
 import { NewsPage } from "@/components/pages/news-page";
 import { FaqPage } from "@/components/pages/faq-page";
 import { ContactPage } from "@/components/pages/contact-page";
-import { AdminPage } from "@/components/pages/admin-page";
 
 function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"] }) {
   switch (page) {
@@ -32,55 +31,42 @@ function CurrentPage({ page }: { page: ReturnType<typeof useNav.getState>["page"
       return <FaqPage />;
     case "contact":
       return <ContactPage />;
-    case "admin":
-      return <AdminPage />;
     case "home":
     default:
       return <HomePage />;
   }
 }
 
-const SITE_TITLE = "HONG NGUYEN Industrial Coatings";
-
 export default function Page() {
   const page = useNav((s) => s.page);
   const syncFromLocation = useNav((s) => s.syncFromLocation);
-  const { t } = useT();
+  const { t, locale } = useT();
 
-  // Initialize the view from the URL (hash routes like #/products, legacy
-  // #admin, or ?admin=1) and keep it in sync with browser Back/Forward.
+  // Deep links (#/contact, #/products/CAT-01) and browser Back/Forward:
+  // keep the active view in sync with the URL hash.
   React.useEffect(() => {
-    const url = new URL(window.location.href);
-    const isAdmin =
-      url.searchParams.get("admin") === "1" ||
-      window.location.hash === "#admin";
-    if (isAdmin) useNav.getState().navigate("admin");
-    else syncFromLocation();
-    const onHashChange = () => syncFromLocation();
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    syncFromLocation();
+    const onHash = () => syncFromLocation();
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, [syncFromLocation]);
 
-  // Per-view document title (also makes each view distinguishable in history).
+  // Keep the browser tab / SEO title in sync with the active view and language.
   React.useEffect(() => {
-    document.title =
-      page === "home"
-        ? `${SITE_TITLE} — Coating Systems Exporter from Foshan, China`
-        : page === "admin"
-          ? `Admin — ${SITE_TITLE}`
-          : `${t(`nav.${page}`)} — ${SITE_TITLE}`;
-  }, [page, t]);
-
-  const isAdmin = page === "admin";
+    const label = page === "home" ? "" : `${t(`nav.${page}`)} — `;
+    document.title = `${label}HONG NGUYEN Industrial Coatings`;
+    document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  }, [page, locale, t]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <LangHydrator />
-      {!isAdmin && <SiteHeader />}
+      <SiteHeader />
       <main className="flex-1">
         <CurrentPage key={page} page={page} />
       </main>
-      {!isAdmin && <SiteFooter />}
+      <SiteFooter />
     </div>
   );
 }
