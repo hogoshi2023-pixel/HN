@@ -109,7 +109,7 @@ export function ContactPage() {
         <div className="absolute inset-0 grid-bg text-steel opacity-[0.06]" />
         <div className="pointer-events-none absolute -right-24 top-1/2 size-80 -translate-y-1/2 rounded-full bg-brand/8 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
+        <div className="relative mx-auto max-w-7xl px-6 py-10 sm:py-12">
           <Reveal>
             <div className="flex items-center gap-3">
               <span className="font-mono text-[11px] text-brand tracking-widest">{t("ctp.index")}</span>
@@ -118,14 +118,14 @@ export function ContactPage() {
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               {t("ctp.title1")}
               <br />
               <span className="text-brand">{t("ctp.title2")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
-            <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
               {t("ctp.desc")}
             </p>
           </Reveal>

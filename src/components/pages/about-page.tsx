@@ -44,7 +44,7 @@ export function AboutPage() {
         <div className="absolute inset-0 grid-bg text-steel opacity-[0.06]" />
         <div className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-brand/8 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand to-transparent" />
-        <div className="relative mx-auto max-w-7xl px-6 py-16 sm:py-20">
+        <div className="relative mx-auto max-w-7xl px-6 py-10 sm:py-12">
           <Reveal>
             <div className="flex items-center gap-3">
               <span className="font-mono text-[11px] text-brand tracking-widest">{t("ap.index")}</span>
@@ -53,13 +53,13 @@ export function AboutPage() {
             </div>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 max-w-3xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               {t("ap.titlePre")}{" "}
               <span className="text-brand">{t("ap.titleAccent")}</span>
             </h1>
           </Reveal>
           <Reveal delay={160}>
-            <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
               {t("ap.desc")}
             </p>
           </Reveal>

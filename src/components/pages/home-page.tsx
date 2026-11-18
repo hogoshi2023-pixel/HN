@@ -54,7 +54,7 @@ export function HomePage() {
         <div className="absolute inset-0 grid-bg text-steel opacity-[0.07]" />
         <div className="pointer-events-none absolute -right-32 -top-32 size-[480px] rounded-full bg-brand/8 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-6 pt-14 pb-16 sm:pt-18 sm:pb-24 lg:pt-20 lg:pb-28">
+        <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-14 sm:pt-16 sm:pb-16">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-6">
               <Reveal>
@@ -68,7 +68,7 @@ export function HomePage() {
               </Reveal>
 
               <Reveal delay={80}>
-                <h1 className="mt-5 text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-[4.2rem]">
+                <h1 className="mt-3 text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl xl:text-[4.2rem]">
                   {t("hero.title1")}{" "}
                   {t("hero.title2")}{" "}
                   <span className="text-brand">{t("hero.titleAccent")}</span>{" "}
@@ -77,7 +77,7 @@ export function HomePage() {
               </Reveal>
 
               <Reveal delay={160}>
-                <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
+                <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
                   {t("hero.desc")}
                 </p>
               </Reveal>
